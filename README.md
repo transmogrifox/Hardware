@@ -1,0 +1,2 @@
+# Hardware
+Miscellaneous circuit musings
