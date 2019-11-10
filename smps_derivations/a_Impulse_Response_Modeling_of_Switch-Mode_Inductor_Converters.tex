@@ -6,6 +6,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{float}
+\usepackage{subcaption}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -17,10 +18,10 @@
 \textit{Schweitzer Engineering Laboratories}\\
 ryan\_billing@selinc.com}
 \and
-\IEEEauthorblockN{Alte R. Nate}
+\IEEEauthorblockN{Joseph Amodemo}
 	\IEEEauthorblockA{
 		\textit{Schweitzer Engineering Laboratories}\\
-		alte\_rnate@selinc.com}
+		joseph\_amodemo@selinc.com}
 }
 
 
@@ -32,58 +33,130 @@ Charging and discharging current waveforms are treated as an impulse response.
 
 
 \section{Introduction}
-Switched-mode power converters are a well-established technology used for emulating the behavior of an ideal DC transformer.  Although the physics of magnetism fail to realize practical systems in which $V_{2} I_{2} = V_{1} I_{1}$ as a frequency-independent formula, the high-frequency characteristics of electromagnetism can be exploited for producing this relationship on average, with the caveat that the dynamics of such a system are not necessarily Linear, Time-Invariant (LTI) systems.  
+Switched-mode power converters are the power electronics industry's practical answer to a need for systems in which $V_{2} I_{2} = V_{1} I_{1}$, and, in which this relationship is valid for low frequency and DC operation. High-frequency commutation of voltage across an inductor affords controlled storage and release of energy between power sources and loads.  The primary benefits include accurate regulation, small physical size and minimal dissipative loss (high power density). 
 
-This article addresses a subset of switched-mode power converters, specifically those in which high frequency commutation of inductor currents are controlled by limiting cycle-by-cycle peak current.  In this document, the method of using a switch for commutation of an inductor is termed a "Switched Inductor Converter".  The technique used for controlling inductor average current based upon limiting a charge cycle at sampled peak current values will be called "Peak Current Mode Control".
+Implementation of a switched-mode converter is not without challenges. In addition to other difficulties outside the scope of this document, it is here brought to the forefront that controlling such a system is nontrivial: the control-loop dynamics are emphatically not Linear, Time-Invariant (LTI) systems.
+
+This document steps through the analytical deconstruction and reconstruction of the inductor current geometry as required to expose time dependence and nonlinear gain functions. The analytical representations of the signal at each step are combined to define an impulse response characterizing the relationship between control input and inductor current waveforms.  The derived system impulse response exactly reproduces the switched inductor current waveforms when triggered by a sampled version of the control signal. In the proposed approach it is seen that the use of averaging is not strictly necessary for understanding the dynamic behavior of a switched-mode converter.
+
+A linearized model of this nature is useful as an analytical tool for understanding what features affect gain and frequency response of a switched mode converter.  Furthermore the geometrically correct nonlinear model can be judiciously simplified to create a SPICE model with two salient benefits. The first is that it can be quickly resolved as a band-limited continuous time system, reducing simulation time.  The second benefit is that it can be solved and linearized at a steady-state operating point to take advantage of AC analysis. The reduced simulation improves the designer's work flow while the AC analysis is not possible with a simulation tool such as SPICE when the model has discontinuities in the time domain.
 
 \section{Background}
+The conventional approach used to express the transfer function for switched inductor converters considers the average behavior of the switch element as a continuous-time impedance.  In this approach the system dynamic behavior is evaluated by modulating the switch's average impedance as a function of duty cycle. The modulator gain of the Averaged Switch Model may be applied as a nonlinear impedance for use in numerical simulations, or as a small-signal linear system for analytical characterization.
 
-Power converters using a switched-mode inductor combined with peak current mode control scheme are the basis for the most common topologies used for low to moderate power conversion applications. It is arguable that mastery of these fundamental topologies provides a strong foundation for understanding later developments in switched-mode converter technologies. Several fundamental techniques suitable for understanding non-LTI systems and sampling theory are invoked for providing practical analysis of switched-mode inductor systems.
+The most notable cleverness in the conventional approach is the ability to treat the switch element as a three-terminal device that is characterized using only terminal voltages and currents. This switch model may be placed in any configuration to represent a large subset of switched-mode converters.  Generalization of the switch element allows for development of a unified model capturing dynamic behavior of switched-mode converters over a broader class of converter topologies. With the switch modeled as a nonlinear impedance element, there is no need to re-evaluate fundamental assumptions about averaging of the switch's dynamic behavior when using this to evaluate most converter topologies.
 
-The conventional approach to switched inductor converters expresses the average behavior of the switch element as a continuous-time impedance (also sometimes known as a Loss-Free Resistor).  In this approach the steady-state duty cyle is determined from the switching waveform geometry and then the system dynamic behavior is evaluated with the switch expressed as a linear impedance for small perturbations about the pre-defined steady-state operating point. Alternatively the Averaged Switch Model may be applied as a nonlinear (yet continuous time) impedance for use in numerical simulations.
+One behavior missing from an averaged system is a sampling sub-system.  A model neglecting the sampling effect loses visibility into a part of the dynamic behavior prominent above $\frac{1}{4} F_{SW}$ and has material impact on evaluation of the system's gain margin. This effect was addressed in a further development to the averaged converter behavior presented by Tan, Middlebrook in [ref]. This document introduces a sampler and derives a method to account for it in the averaged model.
 
-The most notable cleverness in the conventional approach is the ability to treat the switch element independently from other impedances in the power train input and output circuits.  The generalization of the switch element then allows for development of a unified model that may be used to describe the behavior of several different converter topologies without the need to re-evaluate fundamental assumptions about averaging of the switch's dynamic behavior.
+The sampling effect as introduced by Tan, Middlebrook when coupled with the averaged switch model completes a unified model with good accuracy demonstrated up to the converter Nyquist rate. The averaged switch element presents the system response in terms familiar to an analog designer.
 
-Similarly the analysis technique presented in this document synthesizes a single component to model the switch behavior and also assumes small-signal behavior can be used to adequately characterize the dynamics of a non-LTI system if evaluated at a well-chosen set of operating points. By contrast, this proposed technique diverges in the treatment of switching elements.  Where the conventional approach treats a switch element as an averaged continuous-time impedance, the proposed approach considers the switch and inductor together as a current amplifier in which the switched current waveforms are an impulse response excited by a continuous-time control signal sampled at the onset of the signal operating the switch.  In this approach the impulse response is simply a geometric function, and the converter switching frequency becomes irrelevant since this property of the converter is considered the signal rather than the system. The theoretical open loop transfer function is analytically expressed as an IIR filter cascaded into an arrangement of FIR filters, from which the system output currents are derived.
+\begin{figure*}[ht]
+	\centerline{\includegraphics [
+		width=15cm,
+		keepaspectratio,
+		] {a_SMPS_Topologies.png}}
+	\caption{Review of switched-mode power converter topologies.}
+	\label{fig:asmpstopologies}
+\end{figure*}
 
+\section{An Alternative Approach}
+This document revisits the problem of characterizing dynamic behavior in switched mode converters. The defining feature of this approach is the use of inductor current waveform geometry to synthesize a series of cascaded filters representing the switched inductor's impulse response.  The system is synthesized as a signal processing chain involving a sampler, discrete time filters and a continuous time reconstruction filter.  Through a judicious process of sampling, re-sampling and reconstruction the inductor currents are expressed as a non-LTI filter response to the control input signal. The non-LTI filter may be evaluated directly by use of computerized numerical solvers or further developed analytically using small-signal analysis methods.
 
-\subsection{Common Switched-Mode Converter Topologies Overview}
+The equivalent circuit model is prepared by combining the inductor and switch together as a pair of behavioral current sources as shown in Fig. \ref{fig:asmpstopologies}. The currents $i_{cg}$ and $i_{dg}$ correspond to charging and discharging inductor currents where control-to-current transfer functions are expressed as a set of cascaded filters.  The geometry of switched current waveforms serve as a specification for the time-domain impulse responses for continuous time filters in this system's transfer function.
 
-It is at this point deemed beneficial to review classic switched-mode converter technologies to help further define the class of inductor current waveforms being considered, and how these can be expressed as a system of cascaded filters.
+Several common switched inductor topologies are identified in Fig. \ref{fig:asmpstopologies} to better illustrate how this alternative model is substituted for the switch and inductor in the greater context of a switched-mode converter circuit.  
 
-\subsection{Switched-Mode Converters as Current Sources}
+The lack of diodes shown schematically does not imply this model cannot accommodate diode behavior.  On the contrary, this switch representation generalizes the model to any type of device exhibiting switch-like behavior.  A diode, for example, is a special type of switch in which current may flow in only one direction -- the behavior defined for the current source representing the diode switch leg will account for this.  For circuits in the left-hand column of Fig. \ref{fig:asmpstopologies} one would consider the center position of the switch a legal state (no connection to either throw) so the switch could open like a diode preventing reverse current flow.
 
-Detail how current sources can be inserted in-circuit representing currents during charging and discharging modes of each cycle.
+\section{Peak Current Mode Control System}
+At this point the proposed approach has been prepared in a generalized form. The next step is to derive expressions for $i_c$ and $i_d$ as a function of known quantities. To this end, a specific control scheme must be considered. Rather than providing exhaustive treatment of current source behaviors for multiple control schemes, this document will focus on the peak current mode control scheme (some other texts refer to this as current programmed mode). Peak current control is chosen as an example because of the widespread availability of reference designs and switched-mode converter controller IC's using this control implementation.
 
+Peak Current Mode Control is a technique used for controlling inductor currents in a switched-mode converter on a cycle-by-cycle decision-making interval. The control signal sets a threshold to limit inductor peak intake currents during the charging portion of the cycle. When the inductor current crosses this threshold, a latch is reset to signal shut-down of the primary switch device. A compensating ramp is often added to the inductor's current sense signal to induce pre-mature tripping of the comparator -- a tecnique used to stabilize the peak current control loop.
+
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_01}
+		\caption{}
+		\label{fig:resampling_a}
+	\end{subfigure}%
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_02}
+		\caption{}
+		\label{fig:resampling_b}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_03}
+		\caption{}
+		\label{fig:resampling_c}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_04}
+		\caption{}
+		\label{fig:resampling_d}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_05}
+		\caption{}
+		\label{fig:resampling_e}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_06}
+		\caption{}
+		\label{fig:resampling_f}
+	\end{subfigure}
+	
+	\begin{subfigure}[t]{\columnwidth}
+		\centering	
+		\includegraphics[
+		width=\columnwidth,
+		keepaspectratio,]{a_sampling_sequences/sampling_07}
+		\caption{}
+		\label{fig:resampling_g}
+	\end{subfigure}
+	
+	\caption{Illustration of the analytical process used to re-sample the peak current control input (shown in (a)) and construct output currents as a system of filters with impulse responses derived from inductor current geometry. Waveform in (a) is sampled in (b), then reconstructed with Zero-Order-Hold function in (c). Inductor current is geometrically expressed in (d) and valley currents re-sampled as a discrete time signal in (e). Sequences in (f) and (g) illustrate steps used to generate system output with a set of FIR filters using valley currents as an input.}
+	\label{fig:resampling}
+\end{figure}
 
 \section{Dissection of the Sampled System}
-Diagram the process of sampling, ZOH, resampling and impulse responses.
+The diagram in Fig. \ref{fig:resampling} steps through the analytical process used to understand the system as a series of cascaded filters. The control input signal, $i_c(t)$ is shown in Fig. \ref{fig:resampling_a} as an arbitrary waveform with features illustrating a possibility the bandwidth of this signal may exceed the Nyquist rate.  A sampled version of this signal is illustrated in Fig. \ref{fig:resampling_b}.
 
+The first objective is to derive a relationship between the sampled control inputs of Fig. \ref{fig:resampling_b} and valley currents shown in Fig. \ref{fig:resampling_e}. The charging currents ($i_{cg}[n]$) and discharging currents ($i_{dg}[n]$) can be expressed as an FIR filter in discrete time as shown in Fig. \ref{fig:resampling_f} and \ref{fig:resampling_g}. The discrete-time impulse train is reconstructed to a continuous time waveform by convolution with an impulse response having the same shape as the inductor currents.
 
+The purpose for using a process involving multiple sampling, resampling and discrete time processing operations lies in considering the direct process is not a linear time-invariant operation. For example, the frequency response of an FIR filter having the shape of inductor currents is simply low-pass, rolling off at some frequency above the Nyquist rate. As is well-known from measurements made on switched-mode power supplies the open-loop transfer function has more features than what is indicated by a flat gain response up to Nyquist rate. As exaggerated by a large-signal response in Fig. \ref{fig:resampling_d}, every inductor current pulse may have a different geometry than the last, and such features are not linearly related to the peak current control signal. 
 
-\section{Peak Current Control System}
+Non-LTI systems are often evaluated as LTI systems where the excitation and response are constrained to an infinitesimal perturbation centered at a steady-state operating point. This technique, known as small-signal analysis, can be applied most easily to the immediate problem in a discrete time system.  It is intuitive to evaluate discrete units of energy transferred and stored within the system per cycle. The inductor current geometry is used to relate the energy storage and release from one cycle to the next.
 
-Peak Current Mode Control is a technique used for controlling inductor currents in a switched-mode converter on a cycle-by-cycle decision-making interval. The control signal sets a threshold to limit inductor peak intake currents during the charging portion of the cycle. A compensating ramp is often added to the inductor's current sense signal to force pre-mature tripping of the comparator (the reason will become apparent later).
+In the discussion of analysis steps illustrated in Fig. \ref{fig:resampling} the function illustrated in Fig. \ref{fig:resampling_c} was not fully addressed.  This step constructs a type of input signal in which the sampled value is held for the entire sampling interval. Using this assumption simplifies the geometry problem of the next step, yet the consequence is not entirely immaterial. This function is commonly known as Zero-Order-Hold (ZOH), interpreted as a moving-average FIR filter having an easily derived frequency response. The consequence of this operation is well understood and can be precisely compensated in the system transfer function.
 
-It is important to note that the peak current control signal is most commonly derived from the converter’s output voltage error amplifier, and this signal is not band-limited.
+The associative and distributive algebraic properties of convolution imply the ZOH function is canceled using a filter having a resopnse that is the reciprocal of ZOH in the frequency domain.  The strategy employed in this analysis applies the ZOH function in the time domain (Fig. \ref{fig:resampling_c}), perform a set of linear operations (Fig. \ref{fig:resampling_d}, \ref{fig:resampling_f} and \ref{fig:resampling_g}), and then apply the inverse ZOH function in the frequency domain (not illustrated) to reconstruct $i_{cg}$ and $i_{dg}$. 
 
-The difficulty with deterministic sampling of the control signal can be overcome by using an analytical technique which is compatible with the following assumptions:
-\begin{enumerate}
-	\item Steady-state and small signal behavior are of greatest interest.
-	\item The large signal response can be characterized by evaluating small signal behavior over a range of steady-state operating points. 
-	\item The peak current control threshold does not change during the sampling interval.
-\end{enumerate}
-
-The third assumption has material consequence to the high frequency dynamics of the model, but there is an analytical technique to handle this situation precisely.
-
-The first observation is that the system being modeled is sampled at an instant in time when the sum of inductor peak current and compensation ramp exceed the comparator threshold. In the context of small signal analysis this sampler is periodic, and the sampling action can be expressed by multiplication of the peak current control signal with a Dirac comb function.
-
-The frequency response of the sampler is flat up to half the switching frequency...
-
-To   
-
- Fig.~\ref{cpm_waveforms} illustrates an analytical technique which can be used to enforce the validity of this assumption. 
-
+\subsection{Derivation of the Discrete Time IIR Filter}
+The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak current threshold being sampled synchronous to the valley currents and then held constant throughout the switching cycle.  Charging and discharging slopes are sampled values held static throughout the sampling interval, and the compensating ramp is considered linear (constant). This system is geometrically characterized using values sampled at the rising edge of the primary gate drive signal (coincident with inductor valley currents). The effect of ZOH function is reversed for all sampled values in a single operation on the valley currents using the distributive property of convolution.
 
 \begin{figure}[ht]
 	\centerline{\includegraphics [
@@ -94,10 +167,7 @@ To
 	\label{cpm_waveforms}
 \end{figure}
 
-In \ref{cpm_waveforms} it has been made apparent that the control current  $ i_c[n]  $ is not band-limited.
-
-\subsection{Derivation of the Discrete Time IIR Filter}
-The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak current threshold being sampled synchronous to the valley currents and being held constant throughout the switching cycle.  If the charge, discharge and compensating slopes are also considered static throughout the sampling interval, then the system can be fully characterized on the rising edge of the primary gate drive signal (coincident with inductor valley currents).  The relationship between valley currents is then,
+The relationship between valley currents is then,
 \begin{equation}
 i_v[n] =  i_v[n-1] + m_c D T_{SW} - m_d  D' T_{SW}   \label{ivd}
 \end{equation} 
@@ -116,31 +186,26 @@ D = \dfrac{i_c [n-1] - i_v [n-1]} {(m_c + m_{cmp})T_{SW}}
 \end{equation}
 \begin{align*}
 \text{where, } \\
-m_{cmp} &= \text{Slope compensation (A/s)}
-\text{and time-varying signals,} \\
-i_c &= \text{Sampled peak current threshold.} 
+m_{cmp} &= \text{ Slope compensation (A/s)}\\
+i_c &= \text{ Sampled peak current threshold.} 
 \end{align*}
 Then expanding $ D $ and $ D' $ in (\ref{ivd}), the following recurrence relation emerges,
 \begin{equation}
 i_v[n] =  \alpha i_c[n-1] + ( 1 - \alpha ) i_v [n-1] - T_{SW} m_d   \label{ivn}
 \end{equation}
-
-It is now apparent from (\ref{ivn}) the peak current controller has the form of a discrete-time IIR filter. If the assumptions used to build this difference equation result in negligible error, then the IIR filter is a Linear Time Invariant (LTI) system. Such a system can be evaluated using a conventional signals and systems approach for discrete-time functions.
+where,
+\begin{align}
+\alpha &= \frac{m_c + m_d} {m_c + m_{cmp}} \label{const_alpha}
+\end{align}
+It is now apparent from (\ref{ivn}) the peak current controller has the form of a discrete-time first order IIR filter. The IIR filter closely approximates the properties of a Linear Time Invariant (LTI) system under small-signal conditions in which the inductor current slopes do not change appreciably from sample-to-sample.   
 
 \subsection{Z-transform of the Peak Current Controller}
 Given a difference equation for an LTI system (as assumed in (\ref{ivn}) ) the z-transform can be evaluated by inspection.  
 \begin{equation}
-\mathcal{Z} \{ i_v[n] \} = I_v (z) =  \alpha I_c(z) z^{-1} + ( 1 - \alpha ) I_v (z) z^{-1}  \label{ivz}
+\mathcal{Z} \{ i_v[n] \} =  \alpha I_c(z) z^{-1} + ( 1 - \alpha ) I_v (z) z^{-1} - \mathcal{Z} \{T_{SW}m_d\}  \label{ivz}
 \end{equation}
-where,
-\begin{align}
-\alpha &= \frac{m_c + m_d} {m_c + m_{cmp}}
-\end{align}
-The resulting transfer function is then
-\begin{equation}
-H_v(z) = \frac {I_v(z)} {I_c(z)} = \frac {\alpha z^{-1}} {1 - (1-\alpha) z^{-1}}  \label{hvz}
-\end{equation}
-Eqn.~\ref{hvz} is correct if it can be shown that
+
+The expression in (~\ref{ivz}) is easily rearranged into a canonical form transfer function if the Z-transform of the constant term is resolved.
 \begin{equation}
  \mathcal{Z} \{ T_{SW} m_d \} = 0 \label{zconst}
 \end{equation}
@@ -179,9 +244,9 @@ The choice of relationships expressed in Table \ref{tabun} plays on the followin
 \begin{equation}
 u[n-1] + u[-n] = 1 \label{funny_one}
 \end{equation}
-Any constant can be multiplied by one, which may be expanded according to (\ref{funny_one}), and then the z-transform becomes straightforward. Specifically when the constant is $ k = -T_{SW} m_d $,
+The expression in (\ref{funny_one}) is used to substitute unity in the constant expression, $ k = -T_{SW} m_d $,
 \begin{equation}
-	\mathcal{Z}\{ k * 1 \} = 
+	\mathcal{Z}\{ 1k \} = 
 	\mathcal{Z}\{ k (u[n-1] + u[-n]) \}
 \end{equation}
 hence,
@@ -189,80 +254,196 @@ hence,
 \mathcal{Z}\{ k \} = k \bigg( \dfrac{z^{-1}}{1-z^{-1}} + \dfrac{-z^{-1}}{1-z^{-1}} \bigg) = 0
 \end{equation}
 
+Having reasonably dismissed the constant term, (\ref{ivz}) is refactored to the following transfer function,
+\begin{equation}
+H_v(z) = \frac {I_v(z)} {I_c(z)} = \frac {\alpha z^{-1}} {1 - (1-\alpha) z^{-1}}  \label{hvz}
+\end{equation}
+
 
 \subsection{Peak Current Controller Stability Analysis}
 
-The expression in (\ref{hvz}) becomes unstable in the cases when the denominator approaches zero. Using Euler's formula, the complex exponential term in the denominator expands to the following.
+The expression in (\ref{hvz}) becomes unstable in cases when the system is defined outside of the Region of Convergence (ROC) or the denominator approaches zero. Using Euler's formula, the complex exponential term in the denominator expands to the following.
 \begin{equation}
 	z^{-1} = e^{-j \omega T_{SW}} = \cos (\omega T_{SW}) - j \sin (\omega T_{SW}) 
 \end{equation} 
-The only condition in which the denominator can go to zero is $\omega T_{SW} = \pi$, when the imaginary part goes to zero.
-
-In that case, $e^{-j \pi} = \cos ( \pi) = -1$, and the transfer function becomes
+The condition for which it is possible for the denominator to become zero is at frequency $\omega T_{SW} = \pi$, where the expression is purely real -- specifically, $e^{-j \pi} = \cos ( \pi) = -1$, so the transfer function becomes
 \begin{equation}
 H_V(z) |_{\dfrac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
 \end{equation}
-The condition for stability therefore requires that $\alpha \le 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
-Recall that $\alpha$ is a function of inductor current slopes as well as the ramp compensation parameter, $m_{cmp}$.  It then follows from (\ref{cpmstability}) that the minimum amount of slope compensation required for stability is
+The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
+Recall that $\alpha$ is a function of inductor current slopes as well as the slope compensation parameter, $m_{cmp}$.  Expanding (\ref{const_alpha}) into (\ref{cpmstability}) and rearranging terms, the amount of slope compensation necessary for stability is found by ensuring the following inequality is satisfied,
 \begin{equation}
 m_{cmp} > \dfrac{m_d - m_c}{2} \label{slope_stab}
 \end{equation}
 
 \subsection{Comparison to Conventional Approach}
-In $[ref]$ Middlebrook, Tan state the condition for stability in the peak current controller per following.
+In $[ref]$ Middlebrook, Tan state the condition for stability in the peak current controller per following (with the exception that (\ref{transl_stab}) translates notation to symbols consistent with the current text.).
 
 \begin{equation}
 D'_{min} = \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_{mc}}} \label{transl_stab}
 \end{equation}
 
-The expression in (\ref{transl_stab}) makes use of notation consistent with the current text.
+For consistency with the inequality stated in (\ref{slope_stab}), the quantity in (\ref{transl_stab}) will be re-expressed as an inequality defining the values for $D'$ for which the controller is stable,
+\begin{equation}
+D' > \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_{mc}}} \label{transl_stab_ineq}
+\end{equation}
 
 The steady-state condition within the peak current mode controller occurs when $i_v[n] - i_v[n-1]$. Evaluation of (\ref{ivd}) in the steady state condition yields the following.
 \begin{equation}
 	D T_s{SW} m_c - D' T_{SW} m_d = 0 \label{dsteadystate}
 \end{equation}
 
-Substituting $D' = (1-D)$, the expression in (\ref{dsteadystate}) is manipulated into the following form.
+Substituting $D = (1-D')$, the expression in (\ref{dsteadystate}) is manipulated into the following form.
 \begin{equation}
 	D' = \dfrac{m_c}{m_c+m_d} \label{dp_mc_md}
 \end{equation}
-Combining (\ref{transl_stab}) and (\ref{dp_mc_md}),
+Combining (\ref{transl_stab_ineq}) and (\ref{dp_mc_md}),
 \begin{equation}
-	\dfrac{m_c}{m_c + m_d} = \dfrac{0.5}{1 + \dfrac{m_{mcmp}}{m_c}} \label{tan_stab_eq}
+	\dfrac{m_c}{m_c + m_d} > \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_c}} \label{tan_stab_eq}
 \end{equation}
 Then solving (\ref{tan_stab_eq}) for slope compensation yields the following.
 \begin{equation}
-	m_{mcmp} = \dfrac{m_d - m_c}{2} \label{mid_stab}
+	m_{cmp} > \dfrac{m_d - m_c}{2} \label{mid_stab}
 \end{equation}
 
-The inequality expressed in (\ref{slope_stab}) is obtained from (\ref{mid_stab}) when $D'$ in (\ref{dp_mc_md}) is evaluated in the limit as $D'$ approaches $D'_{min}$.
+It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in perfect agreement.
 
 \subsection{Peak Current Controller Peaking}
 Peak controller expression for peaking.
 
-\section{Average Currents FIR Filters}
-Derive expression or FIR filters for charging and discharging currents.
+\begin{figure}[ht]
+	\centerline{\includegraphics [
+		width=5cm,
+		keepaspectratio,
+		] {a_discharge_current.png}}
+	\caption{Inductor current waveform illustrated as a geometric problem. }
+	\label{FIR_geometry}
+\end{figure}
 
-\subsection{Small-Signal Analysis}
+\section{Cycle Average Current as FIR Filter}
+The total energy transferred per cycle can be expressed as a function of valley currents. The minimum set of known parameters needed to express the area enclosed in the geometric shape illustrated in Fig. \ref{FIR_geometry} are $i_0$, $i_1$, $m_c$, $m_d$, and $T_{SW}$. Since the anchor points identifed as $i_0$ and $i_1$ are analogous to valley currents.  An observation worth noting is this portion of the system is responsive to valley currents and is agnostic to the control scheme implemented.  For example, whether voltage mode, peak-current mode, quasi-resonant or even hysteretic control, this part of the system has exactly the same response. A control scheme only indirectly affects system average currents through its relationship between control input and valley current.
+
+Referring back to the equivalent circuit models presented in Fig. \ref{fig:asmpstopologies} it is apparent that the discharging and charging cycle currents must be treated as separate geometric problems if a unified general model is to be had from this approach.
+
+\subsection{Geometric Area of Charging Current}
+The average charging current is expressed as an integral of the geometric shape in Fig. \ref{FIR_geometry} over the charging interval, $t=0$ to $t=t_c$.
+\begin{align}
+i_{cg} = & \frac{1}{T_{SW}}\int_0^{t_c}(m_ct+i_1)dt \label{icg_integral}
+\end{align}
+The integral expressed in (\ref{icg_integral}) evaluates to the following:
+\begin{align}
+i_{cg} = & i_1\frac{t_c}{T_{SW}}+\frac{m_ct_c^2}{2T_{SW}} \label{icg_eval}
+\end{align}
+It is necessary to further expand (\ref{icg_eval}) in terms of defined system constants and signals.  Specifically, \(t_c\) must be re-expressed in terms of $T_{SW}$, $m_c$, $m_d$, $i_0$ and $i_1$. This quantity can be solved geometrically by finding the intersection of the two lines representing charging and discharging slopes. The location of this intersection on the x-axis will be \(t_c\). The charging and discharging slopes can be modeled as two lines using the following identities:
+\begin{align}
+f_c(t) & = m_ct+i_1\\
+f_d(t) & = -m_d(t-T_{SW})+i_0
+\end{align}
+The function, \(f_c(t)\), expresses the value of the current from \(t = 0\) to \(t = t_c\) as a function of t and \(f_d(t)\) expresses the value of the current from \(t = 0\) to \(t = T_{SW}\). As can be inferred from Figure \ref{FIR_geometry}, the intersection of $f_c(t)$ and $f_d(t)$ occurs at time \(t_c\). The expression for $t_c$ can be solved by setting $f_c(t) = f_d(t)$, evaluated at $t=t_c$.
+\begin{align}
+m_ct_c+i_1 & = -m_d(t_c-T_{SW})+i_0\\
+t_c & = \frac{i_0-i_1+T_{SW}m_d}{m_c+m_d} \label{tcharge}
+\end{align}
+
+Substituting (\ref{tcharge}) into (\ref{icg_eval}) provides the following solution for \(i_{cg}\):
+\begin{equation}
+i_{cg} = a_{cg}i_0^2+b_{cg}i_1^2+c_{cg}i_0i_1+d_{cg}i_0+e_{cg}i_1+f_{cg} \label{i_cg_canon}
+\end{equation}
+Where the constants are expanded per below,
+\begin{align*}
+a_{cg} = & \frac{m_c}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}\nonumber\\
+b_{cg} = & \frac{m_c}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}-\frac{1}{T_{SW}m_c+T_{SW}m_d}\nonumber\\
+c_{cg} = & \frac{1}{T_{SW}m_c+T_{SW}m_d}-\frac{m_c}{T_{SW}m_c^2+2T_{SW}m_cm_d+T_{SW}m_d^2}\nonumber\\
+d_{cg} = & \frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+e_{cg} = & \frac{m_d}{m_c+m_d}-\frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+f_{cg} = & \frac{T_{SW}m_c m_d^2}{2m_c^2+4m_cm_d+2m_d^2}\nonumber\\
+\end{align*}
+
+\subsection{Geometric Area of Discharging Current}
+The process for finding a canonical solution for the discharging current follows the same process used for finding the average charging current. In this case the integral is evaluated over the interval $t_c$ to $T_{SW}$ where the geometry is defined by the discharging current slope, $m_d$.
+\begin{align}
+i_{dg} = \frac{1}{T_{SW}}\int_{t_c}^{T_{SW}}(-m_d(t-T_{SW})+i_0)dt
+\label{tdcharge}
+\end{align}
+The integral in (\ref{tdcharge}) evaluates to the following.
+\begin{align}
+i_{dg} = & i_0-i_0\frac{t_c}{Ts}+\frac{T_{SW}m_d}{2}+\frac{m_dt_c^2}{2T_{SW}}-m_dt_c+T_{SW}m_d
+\label{idg_noncanon}
+\end{align}
+
+Substituting (\ref{tcharge}) into (\ref{idg_noncanon}) provides the following solution for \(i_{dg}\):
+\begin{equation}
+i_{dg} = a_{dg}i_0^2+b_{dg}i_1^2+c_{dg}i_0i_1+d_{dg}i_0+e_{dg}i_1+f_{dg} \label{i_dg_canon}
+\end{equation}
+Where the constants are expanded per below.
+\begin{align*}
+a_{dg} = & \frac{m_d}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}+\frac{1}{T_{SW}m_c+T_{SW}m_d}\nonumber\\
+b_{dg} = & \frac{m_d}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}\nonumber\\
+c_{dg} = & \frac{1}{T_{SW}m_c+T_{SW}m_d}-\frac{m_d}{T_{SW}m_c^2+2T_{SW}m_cm_d+T_{SW}m_d^2}\nonumber\\
+d_{dg} = & \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}-\frac{1-m_c}{m_c+m_d}\nonumber\\
+e_{dg} = & \frac{1}{m_c+m_d}-\frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+f_{dg} = & \frac{T_{SW}m_d^3}{2m_c^2+4m_cm_d+2m_d^2}+\frac{T_{SW}m_d^2}{m_c+m_d}+\frac{T_{SW}m_d}{2}
+\end{align*}
+
+\subsection{Small-Signal Analysis of the Non-LTI Inductor Currents}
+It is no surprise (\ref{i_cg_canon}) and (\ref{i_dg_canon}) follow the same form since the geometric shapes are fundamentally similar. This commonality affords the convenience of having a generalized solution for the small signal model since the charging and discharging currents differ only in specific values used for the coefficients.
+
+The formulae expressed in (\ref{i_cg_canon}) and (\ref{i_dg_canon}) constitute a pair of non-LTI FIR filters when the geometric shape represents inductor current, specifically,
+\begin{align*}
+i_0 &= i_v[n]\\
+i_1 &= i_v[n-1]
+\end{align*}
+
+This system can be understood as an LTI filter if the signals and response are constrained to infinitesimal amplitude, as though operating on a linear tangent at a point on the quadratic curve. This treatment of nonlinear systems is more commonly known as small-signal analysis, and treated in greater detail in [ref].
+
+In this document discussion of small-signal analysis theory will be omitted, but the mechanics of this technique are introduced as a segue into the analysis.  Considering the general form of a nonlinear function, $y = f(x)$, the function is approximated as linear at an operating point $x_0$.  The approximation becomes increasingly accurate as deviations from $x_0$ are reduced in amplitude.
+
+The linearized function is expressed using a partial derivative of $f(x)$ with respect to $x$,
+\begin{equation}
+	G_{lin} = \frac{\partial f(x)}{\partial x}\bigg|_{x=x_0}
+\end{equation}
+Where $G_{lin}$ is the equivalent linear gain on small deviations about $x_0$. In this case, $x$ can be reinterpreted as,
+\begin{equation}
+y = f(x_0) + \Delta_x G_{lin}
+\end{equation}
+where $\Delta_x$ represents a small perturbation superimposed on $x$ when biased at operating point $x_0$.  Since DC offsets within the transfer function are already captured in steady-state analysis, the small-signal transfer function is simplified to express only changes about the operating point, more specifically,
+ \begin{equation}
+ \Delta_y = \Delta_x G_{lin} \label{ss_transfer}
+ \end{equation}
+where $\Delta_y$ is the amount of change in $y$ due to a small change in $x$ with DC offsets absent from the expression; therefore, (\ref{ss_transfer}) is the small-signal transfer function for $y=f(x)$.
+
+Now having briefly outlined the process, this will be applied to the generalized form of (\ref{i_cg_canon}) and (\ref{i_dg_canon}). Below the quantity $i_{avg}$ is used as a placeholder for $i_{cg}$ and $i_{dg}$ to generalize the expression.
+
+\begin{equation}
+i_{avg} = a i_0^2+b i_1^2+c i_0i_1+d i_0+e i_1+f  \label{i_av_gen}
+\end{equation}
+
+In this case there are two independent variables, $i_0$ and $i_1$, so the partial derivative must be evaluated for both variables. One helpful observation is when considering the system is operating in a small-signal steady-state the preceding IIR filter stage is also presumed operating in this state, hence $i_v[n] = i_v[n-1] = i_{v\infty}$, where $i_{v\infty}$ is used to identify the final steady-state value for the valley current.
+
+\begin{align}
+\Delta{_{avg}} &= \Delta{_0}\frac{\partial i_{avg}}{\partial i_0}\bigg|_{\stackrel{i_0=i_{v\infty}}{i_1=i_{v\infty}}} + \Delta{_1}\frac{\partial i_{avg}}{\partial i_1}\bigg|_{\stackrel{i_0=i_{v\infty}}{i_1=i_{v\infty}}} 
+  \label{i_av_deriv}
+\end{align}
+
+
 
 \subsubsection{Discharging Current Small-Signal Behavior}
 
 \subsubsection{Charging Current Small-Signal Behavior}
 
 \subsection{Impulse Response Analysis}
+
 \subsubsection{Frequency Response of Discharging Current}
+
 \subsubsection{Frequency Response of Charging Current}
+
 Example inline citation
-\cite{b6}.
+\cite{b1}, but really don't know why is not making new line.
+
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{b1} Reference 1.
+\bibitem{b2} Reference 2.
 \end{thebibliography}
 
 
