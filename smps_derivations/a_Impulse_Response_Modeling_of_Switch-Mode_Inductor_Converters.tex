@@ -389,10 +389,11 @@ f_{dg} = & \frac{T_{SW}m_d^3}{2m_c^2+4m_cm_d+2m_d^2}+\frac{T_{SW}m_d^2}{m_c+m_d}
 It is no surprise (\ref{i_cg_canon}) and (\ref{i_dg_canon}) follow the same form since the geometric shapes are fundamentally similar. This commonality affords the convenience of having a generalized solution for the small signal model since the charging and discharging currents differ only in specific values used for the coefficients.
 
 The formulae expressed in (\ref{i_cg_canon}) and (\ref{i_dg_canon}) constitute a pair of non-LTI FIR filters when the geometric shape represents inductor current, specifically,
-\begin{align*}
-i_0 &= i_v[n]\\
+\begin{align}
+i_0 &= i_v[n] \nonumber \\
 i_1 &= i_v[n-1]
-\end{align*}
+\label{i0i1ivn}
+\end{align}
 
 This system can be understood as an LTI filter if the signals and response are constrained to infinitesimal amplitude, as though operating on a linear tangent at a point on the quadratic curve. This treatment of nonlinear systems is more commonly known as small-signal analysis, and treated in greater detail in [ref].
 
@@ -421,25 +422,77 @@ i_{avg} = a i_0^2+b i_1^2+c i_0i_1+d i_0+e i_1+f  \label{i_av_gen}
 In this case there are two independent variables, $i_0$ and $i_1$, so the partial derivative must be evaluated for both variables. One helpful observation is when considering the system is operating in a small-signal steady-state the preceding IIR filter stage is also presumed operating in this state, hence $i_v[n] = i_v[n-1] = i_{v\infty}$, where $i_{v\infty}$ is used to identify the final steady-state value for the valley current.
 
 \begin{align}
-\Delta{_{avg}} &= \Delta{_0}\frac{\partial i_{avg}}{\partial i_0}\bigg|_{\stackrel{i_0=i_{v\infty}}{i_1=i_{v\infty}}} + \Delta{_1}\frac{\partial i_{avg}}{\partial i_1}\bigg|_{\stackrel{i_0=i_{v\infty}}{i_1=i_{v\infty}}} 
+\Delta{_{avg}} &= \Delta{_0}\frac{\partial i_{avg}}{\partial i_0}\bigg|_{i_1=i_{v\infty}} + \Delta{_1}\frac{\partial i_{avg}}{\partial i_1}\bigg|_{i_0=i_{v\infty}} 
   \label{i_av_deriv}
 \end{align}
 
 where,
 \begin{align}
-	\Delta_0 & \text{ represents a small change in } i_0 \\
+	\Delta_0 & \text{ represents a small change in } i_0 \nonumber \\
 	\Delta_1 & \text{ represents a small change in } i_1 
+	\label{deltai0i1}
 \end{align}
 and the partial derivatives represent the small-signal gain on each input parameter.
 
 Now let us consider the cycle-averaged output current to be the following,
 \begin{equation}	
-	i_{avg} = I_{\infty} + \Delta_{\infty}
+	i_{avg} = I_{\infty} + \Delta_{avg}
 \end{equation}
 
-\subsubsection{Discharging Current Small-Signal Behavior}
+where $I_{\infty}$ is the steady-state average current obtained given the condition that control input, $i_c[n]$, is held constant and $i_v[n]$ is allowed to settle to its final steady state operating point as expressed in the following.
 
-\subsubsection{Charging Current Small-Signal Behavior}
+\begin{equation}
+	i_{v\infty} = \lim_{n \to \infty} i_{v}[n] = \lim_{n \to \infty}  i_{v}[n-1]
+	\label{ivinf}
+\end{equation}
+
+Then $i_{avg}$ from (\ref{i_av_gen}) is evaluated using (\ref{i0i1ivn}) and (\ref{ivinf}),
+\begin{equation}
+	I_{\infty} = i_{avg} \bigg|_{\stackrel{i0=i_{v \infty}}{i1=i_{v \infty}}} = a i_{v \infty}^2+b i_{v \infty}^2+c i_{v \infty}i_{v \infty}+d i_{v \infty}+e i_{v \infty}+f 
+\end{equation}
+
+which simplifies to the following after collecting like terms,
+
+\begin{equation}
+I_{\infty} = (a + b +c)i_{v \infty}^2 + (d+e)i_{v \infty} + f
+\label{iavg_steady_state}
+\end{equation}
+
+Now having the DC gain of the FIR filter, the gain on small perturbations about this operating point remains to be determined.  For this,  (\ref{i_av_gen}) is evaluated using terms defined in (\ref{deltai0i1}) as substituted into (\ref{i_av_deriv}).
+
+\begin{align}
+	\Delta_{avg} &= 
+	\frac{\partial}{\partial i_0} 
+	\bigg [
+	a i_0^2+b i_1^2+c i_0i_1+d i_0+e i_1+f \bigg ] 
+	\Delta_0 \bigg |_{i_0=i_{v\infty}} \nonumber \\
+	&+ 
+	\frac{\partial}{\partial i_1} 
+	\bigg [
+	a i_0^2+b i_1^2+c i_0i_1+d i_0+e i_1+f \bigg ] 
+	\Delta_1 \bigg |_{i_1=i_{v\infty}}
+	\label{avgdelta_partial}
+\end{align}
+Evaluating (\ref{avgdelta_partial}) results in the following expression for small-signal changes in average currents.
+
+\begin{equation}
+	\Delta_{avg} = \big ( 2 a i_{v\infty} + c i_{v\infty} + d  \big) \Delta_0 + 
+	\big ( 2 b i_{v\infty} + c i_{v\infty} + g  \big) \Delta_1
+	\label{adelta_LTI}
+\end{equation}
+Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area bounded by the inductor current waveform during a single switching cycle as a function of small changes to the anchor points $i_0$ and $i_1$, expressed as $\Delta_0$ and $\Delta_1$. This geometry problem represents a time dependent function for which the following is a valid interpretation.
+
+\begin{equation}
+		\Delta_{avg} [n] = k_0 \Delta_v[n] + 
+	k_1 \Delta_v [n-1]
+	\label{avg_FIR}
+\end{equation}
+Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter. The new quantities introduced include coefficients $k_0$ and $k_1$ are variable substitutions for coefficients of (\ref{adelta_LTI}), below expanded for clarity.
+\begin{align}
+	k_0 = 2 a i_{v\infty} + c i_{v\infty} + d \nonumber \\
+	k_1 = 2 b i_{v\infty} + c i_{v\infty} + g 
+\end{align}
+The other new quantity, $\Delta_v$, represents the AC small-signal valley current, $i_v$.  FIR filter expressed in (\ref{avg_FIR}) is now easily expanded to an expression of AC transfer function between valley currents and average output currents for both charging and discharging cycles simply by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}). 
 
 \subsection{Impulse Response Analysis}
 
