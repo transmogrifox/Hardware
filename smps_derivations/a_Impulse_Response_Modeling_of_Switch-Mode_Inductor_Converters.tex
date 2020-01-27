@@ -309,7 +309,26 @@ Then solving (\ref{tan_stab_eq}) for slope compensation yields the following.
 It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in perfect agreement.
 
 \subsection{Peak Current Controller Peaking}
-Peak controller expression for peaking.
+In addition to evaluating peak current controller stability the expression in (\ref{cpmstability}) may be rearranged to express a desired peak magnitude response in terms of the coefficient $\alpha$.
+\begin{equation}
+	\alpha =  2 \frac{|H_v|}{1 + |H_v|} 
+\end{equation}
+Expanding $\alpha$ from (\ref{const_alpha}) and using additional algebraic manipulation, the amount of slope compensation corresponding to a pre-determined magnitude response is obtained.
+\begin{equation}
+	m_{cmp} = \frac{1 + |H_v|}{2|H_v|}(m_c + m_d) - m_c
+\end{equation}
+
+Plotting a series of magnitude responses for values of $\alpha$ corresponding to a (notch) gain of -9 dB, increasing in 3 dB steps to +9 dB is shown below.
+
+\begin{figure}[H]
+	\centerline{\includegraphics [
+		width=10cm,
+		keepaspectratio,
+		] {a_Peak_Current_Controller_Response_Plot.png}}
+	\caption{Peak current controller family of magnitude plots. }
+	\label{PCM_mag_resp}
+\end{figure}
+ 
 
 \begin{figure}[ht]
 	\centerline{\includegraphics [
@@ -500,8 +519,10 @@ The other new quantity, $\Delta_v$, represents the AC small-signal valley curren
 
 \subsubsection{Frequency Response of Charging Current}
 
+\section{Conclusion}
+
 Example inline citation
-\cite{b1}, but really don't know why is not making new line.
+\cite{b1}, is a citation.
 
 
 \begin{thebibliography}{00}
