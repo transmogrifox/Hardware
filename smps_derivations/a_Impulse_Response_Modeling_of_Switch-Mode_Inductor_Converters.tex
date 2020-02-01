@@ -268,7 +268,7 @@ The expression in (\ref{hvz}) becomes unstable in cases when the system is defin
 \end{equation} 
 The condition for which it is possible for the denominator to become zero is at frequency $\omega T_{SW} = \pi$, where the expression is purely real -- specifically, $e^{-j \pi} = \cos ( \pi) = -1$, so the transfer function becomes
 \begin{equation}
-H_V(z) |_{\dfrac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
+H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
 \end{equation}
 The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
 Recall that $\alpha$ is a function of inductor current slopes as well as the slope compensation parameter, $m_{cmp}$.  Expanding (\ref{const_alpha}) into (\ref{cpmstability}) and rearranging terms, the amount of slope compensation necessary for stability is found by ensuring the following inequality is satisfied,
@@ -311,23 +311,24 @@ It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in perfect a
 \subsection{Peak Current Controller Peaking}
 In addition to evaluating peak current controller stability the expression in (\ref{cpmstability}) may be rearranged to express a desired peak magnitude response in terms of the coefficient $\alpha$.
 \begin{equation}
-	\alpha =  2 \frac{|H_v|}{1 + |H_v|} 
+	\alpha =  2 \frac{|H_v(z)|}{1 + |H_v(z)|} \bigg|_{z=\frac{\omega_{SW}}{2}} 
 \end{equation}
 Expanding $\alpha$ from (\ref{const_alpha}) and using additional algebraic manipulation, the amount of slope compensation corresponding to a pre-determined magnitude response is obtained.
 \begin{equation}
-	m_{cmp} = \frac{1 + |H_v|}{2|H_v|}(m_c + m_d) - m_c
+	m_{cmp} = \frac{1 + |H_v(z)|}{2|H_v(z)|}(m_c + m_d) - m_c \bigg|_{z=\frac{\omega_{SW}}{2}}
 \end{equation}
 
 Plotting a series of magnitude responses for values of $\alpha$ corresponding to a (notch) gain of -9 dB, increasing in 3 dB steps to +9 dB is shown below.
 
 \begin{figure}[H]
 	\centerline{\includegraphics [
-		width=10cm,
+		width=9cm,
 		keepaspectratio,
 		] {a_Peak_Current_Controller_Response_Plot.png}}
-	\caption{Peak current controller family of magnitude plots. }
+	\caption{Peak current controller frequency response, $H_v(z)$, magnitude plots with different values of $\alpha$. }
 	\label{PCM_mag_resp}
 \end{figure}
+
  
 
 \begin{figure}[ht]
@@ -370,12 +371,12 @@ i_{cg} = a_{cg}i_0^2+b_{cg}i_1^2+c_{cg}i_0i_1+d_{cg}i_0+e_{cg}i_1+f_{cg} \label{
 \end{equation}
 Where the constants are expanded per below,
 \begin{align*}
-a_{cg} = & \frac{m_c}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}\nonumber\\
-b_{cg} = & \frac{m_c}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}-\frac{1}{T_{SW}m_c+T_{SW}m_d}\nonumber\\
-c_{cg} = & \frac{1}{T_{SW}m_c+T_{SW}m_d}-\frac{m_c}{T_{SW}m_c^2+2T_{SW}m_cm_d+T_{SW}m_d^2}\nonumber\\
+a_{cg} = & \frac{1}{2T_{SW}} \bigg[ \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
+b_{cg} = & \frac{1}{2T_{SW}} \bigg[ \frac{m_c}{m_c^2+2m_cm_d+m_d^2}-\frac{2}{m_c+m_d} \bigg]\nonumber\\
+c_{cg} = & \frac{1}{2T_{SW}} \bigg[  \frac{2}{m_c+m_d}-\frac{2m_c}{m_c^2+2m_cm_d+m_d^2} \bigg] \nonumber\\
 d_{cg} = & \frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
 e_{cg} = & \frac{m_d}{m_c+m_d}-\frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{cg} = & \frac{T_{SW}m_c m_d^2}{2m_c^2+4m_cm_d+2m_d^2}\nonumber\\
+f_{cg} = & T_{SW} \frac{m_c m_d^2}{2m_c^2+4m_cm_d+2m_d^2}\nonumber\\
 \end{align*}
 
 \subsection{Geometric Area of Discharging Current}
@@ -396,12 +397,12 @@ i_{dg} = a_{dg}i_0^2+b_{dg}i_1^2+c_{dg}i_0i_1+d_{dg}i_0+e_{dg}i_1+f_{dg} \label{
 \end{equation}
 Where the constants are expanded per below.
 \begin{align*}
-a_{dg} = & \frac{m_d}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}+\frac{1}{T_{SW}m_c+T_{SW}m_d}\nonumber\\
-b_{dg} = & \frac{m_d}{2T_{SW}m_c^2+4T_{SW}m_cm_d+2T_{SW}m_d^2}\nonumber\\
-c_{dg} = & \frac{1}{T_{SW}m_c+T_{SW}m_d}-\frac{m_d}{T_{SW}m_c^2+2T_{SW}m_cm_d+T_{SW}m_d^2}\nonumber\\
+a_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{m_d}{m_c^2+2m_cm_d+m_d^2}+\frac{2}{m_c+m_d} \bigg ] \nonumber\\
+b_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ] \nonumber\\
+c_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{2}{m_c+m_d}-\frac{2m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ]\nonumber\\
 d_{dg} = & \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}-\frac{1-m_c}{m_c+m_d}\nonumber\\
 e_{dg} = & \frac{1}{m_c+m_d}-\frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{dg} = & \frac{T_{SW}m_d^3}{2m_c^2+4m_cm_d+2m_d^2}+\frac{T_{SW}m_d^2}{m_c+m_d}+\frac{T_{SW}m_d}{2}
+f_{dg} = & T_{SW} \bigg [ \frac{m_d^3}{2m_c^2+4m_cm_d+2m_d^2}+\frac{m_d^2}{m_c+m_d}+\frac{m_d}{2} \bigg ]
 \end{align*}
 
 \subsection{Small-Signal Analysis of the Non-LTI Inductor Currents}
@@ -496,7 +497,7 @@ Evaluating (\ref{avgdelta_partial}) results in the following expression for smal
 
 \begin{equation}
 	\Delta_{avg} = \big ( 2 a i_{v\infty} + c i_{v\infty} + d  \big) \Delta_0 + 
-	\big ( 2 b i_{v\infty} + c i_{v\infty} + g  \big) \Delta_1
+	\big ( 2 b i_{v\infty} + c i_{v\infty} + e  \big) \Delta_1
 	\label{adelta_LTI}
 \end{equation}
 Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area bounded by the inductor current waveform during a single switching cycle as a function of small changes to the anchor points $i_0$ and $i_1$, expressed as $\Delta_0$ and $\Delta_1$. This geometry problem represents a time dependent function for which the following is a valid interpretation.
@@ -509,7 +510,7 @@ Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area b
 Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter. The new quantities introduced include coefficients $k_0$ and $k_1$ are variable substitutions for coefficients of (\ref{adelta_LTI}), below expanded for clarity.
 \begin{align}
 	k_0 = 2 a i_{v\infty} + c i_{v\infty} + d \nonumber \\
-	k_1 = 2 b i_{v\infty} + c i_{v\infty} + g 
+	k_1 = 2 b i_{v\infty} + c i_{v\infty} + e 
 \end{align}
 The other new quantity, $\Delta_v$, represents the AC small-signal valley current, $i_v$.  FIR filter expressed in (\ref{avg_FIR}) is now easily expanded to an expression of AC transfer function between valley currents and average output currents for both charging and discharging cycles simply by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}). 
 
