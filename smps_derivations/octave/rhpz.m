@@ -11,7 +11,7 @@ z1 = e.^(-s*Ts);
 
 hizoh = Ts*s./((1-e.^(-s*Ts)));
 
-Lm = 2300*u
+Lm = 230*u
 Vin = 18.75
 Vout = 5.25
 Nsp = 4
