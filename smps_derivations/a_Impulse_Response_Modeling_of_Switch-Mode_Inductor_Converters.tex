@@ -348,11 +348,11 @@ Referring back to the equivalent circuit models presented in Fig. \ref{fig:asmps
 \subsection{Geometric Area of Charging Current}
 The average charging current is expressed as an integral of the geometric shape in Fig. \ref{FIR_geometry} over the charging interval, $t=0$ to $t=t_c$.
 \begin{align}
-i_{cg} = & \frac{1}{T_{SW}}\int_0^{t_c}(m_ct+i_1)dt \label{icg_integral}
+i_{cg} = & \frac{1}{T_{SW}}\int_0^{t_c}(i_1 + m_c t)dt \label{icg_integral}
 \end{align}
 The integral expressed in (\ref{icg_integral}) evaluates to the following:
 \begin{align}
-i_{cg} = & i_1\frac{t_c}{T_{SW}}+\frac{m_ct_c^2}{2T_{SW}} \label{icg_eval}
+i_{cg} = & \frac{t_c}{T_{SW}} i_1 + \frac{m_ct_c^2}{2T_{SW}} \label{icg_eval}
 \end{align}
 It is necessary to further expand (\ref{icg_eval}) in terms of defined system constants and signals.  Specifically, \(t_c\) must be re-expressed in terms of $T_{SW}$, $m_c$, $m_d$, $i_0$ and $i_1$. This quantity can be solved geometrically by finding the intersection of the two lines representing charging and discharging slopes. The location of this intersection on the x-axis will be \(t_c\). The charging and discharging slopes can be modeled as two lines using the following identities:
 \begin{align}
@@ -372,11 +372,11 @@ i_{cg} = a_{cg}i_0^2+b_{cg}i_1^2+c_{cg}i_0i_1+d_{cg}i_0+e_{cg}i_1+f_{cg} \label{
 Where the constants are expanded per below,
 \begin{align*}
 a_{cg} = & \frac{1}{2T_{SW}} \bigg[ \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
-b_{cg} = & \frac{1}{2T_{SW}} \bigg[ \frac{m_c}{m_c^2+2m_cm_d+m_d^2}-\frac{2}{m_c+m_d} \bigg]\nonumber\\
-c_{cg} = & \frac{1}{2T_{SW}} \bigg[  \frac{2}{m_c+m_d}-\frac{2m_c}{m_c^2+2m_cm_d+m_d^2} \bigg] \nonumber\\
+b_{cg} = & -\frac{1}{2T_{SW}} \bigg[ \frac{m_c + 2m_d}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
+c_{cg} = & \frac{1}{T_{SW}} \bigg[  \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \bigg] \nonumber\\
 d_{cg} = & \frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-e_{cg} = & \frac{m_d}{m_c+m_d}-\frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{cg} = & T_{SW} \frac{m_c m_d^2}{2m_c^2+4m_cm_d+2m_d^2}\nonumber\\
+e_{cg} = & \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+f_{cg} = & \frac{T_{SW}}{2} \bigg[ \frac{m_c m_d^2}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
 \end{align*}
 
 \subsection{Geometric Area of Discharging Current}
@@ -397,12 +397,12 @@ i_{dg} = a_{dg}i_0^2+b_{dg}i_1^2+c_{dg}i_0i_1+d_{dg}i_0+e_{dg}i_1+f_{dg} \label{
 \end{equation}
 Where the constants are expanded per below.
 \begin{align*}
-a_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{m_d}{m_c^2+2m_cm_d+m_d^2}+\frac{2}{m_c+m_d} \bigg ] \nonumber\\
+a_{dg} = & -\frac{1}{2T_{SW}} \bigg [ \frac{2m_c + m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ] \nonumber\\
 b_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ] \nonumber\\
-c_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{2}{m_c+m_d}-\frac{2m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ]\nonumber\\
-d_{dg} = & \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}+\frac{m_c - m_d}{m_c+m_d}\nonumber\\
-e_{dg} = & \frac{m_d}{m_c+m_d}-\frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{dg} = & \frac{T_{SW}}{2} \bigg [ \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}+\frac{mc-md}{m_c+m_d} \bigg ]m_d
+c_{dg} = & \frac{1}{T_{SW}} \bigg [ \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \bigg ]\nonumber\\
+d_{dg} = & \frac{m_c^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+e_{dg} = & \frac{m_c m_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
+f_{dg} = & \frac{T_{SW}}{2} \bigg [ \frac{m_c^2 m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ]
 \end{align*}
 
 \subsection{Small-Signal Analysis of the Non-LTI Inductor Currents}

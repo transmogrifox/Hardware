@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  1 FEB 2020 19:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  2 FEB 2020 21:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -586,7 +586,7 @@ Before submitting the final camera ready copy, remember to:
 Here is how much of TeX's memory you used:
  5623 strings out of 494847
  86985 string characters out of 6179080
- 158531 words of memory out of 5000000
+ 157531 words of memory out of 5000000
  8856 multiletter control sequences out of 15000+600000
  41736 words of font info for 89 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
@@ -614,7 +614,7 @@ r/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmri8a.pfb>
 Output written on a_Impulse_Response_Modeling_of_Switch-Mode_Inductor_Converter
-s.pdf (8 pages, 375289 bytes).
+s.pdf (8 pages, 374897 bytes).
 PDF statistics:
  131 PDF objects out of 1000 (max. 8388607)
  87 compressed objects within 1 object stream
