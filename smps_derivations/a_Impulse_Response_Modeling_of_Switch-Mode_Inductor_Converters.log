@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  8 FEB 2020 20:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  10 MAR 2020 23:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -548,28 +548,29 @@ File: a_cpm_waveforms.png Graphic file (type png)
 Package pdftex.def Info: a_cpm_waveforms.png  used on input line 165.
 (pdftex.def)             Requested size: 199.16928pt x 166.4825pt.
  [4 <./a_cpm_waveforms.png (PNG copy)>]
-<illustrations/peak_current_traces.png, id=34, 949.5475pt x 893.3375pt>
-File: illustrations/peak_current_traces.png Graphic file (type png)
-<use illustrations/peak_current_traces.png>
-Package pdftex.def Info: illustrations/peak_current_traces.png  used on input l
-ine 327.
-(pdftex.def)             Requested size: 256.0748pt x 240.91809pt.
+<a_Peak_Current_Controller_Response_Plot.png, id=34, 569.12625pt x 512.91624pt>
+
+File: a_Peak_Current_Controller_Response_Plot.png Graphic file (type png)
+<use a_Peak_Current_Controller_Response_Plot.png>
+Package pdftex.def Info: a_Peak_Current_Controller_Response_Plot.png  used on i
+nput line 327.
+(pdftex.def)             Requested size: 256.0748pt x 230.79453pt.
  [5]
 <a_discharge_current.png, id=50, 591.71063pt x 557.08125pt>
 File: a_discharge_current.png Graphic file (type png)
 <use a_discharge_current.png>
-Package pdftex.def Info: a_discharge_current.png  used on input line 338.
+Package pdftex.def Info: a_discharge_current.png  used on input line 340.
 (pdftex.def)             Requested size: 142.26378pt x 133.93173pt.
- [6 <./illustrations/peak_current_traces.png> <./a_discharge_current.png (PNG c
-opy)>]
-Overfull \hbox (0.57295pt too wide) detected at line 472
+ [6 <./a_Peak_Current_Controller_Response_Plot.png> <./a_discharge_current.png 
+(PNG copy)>] [7]
+Overfull \hbox (0.57295pt too wide) detected at line 483
 \OML/cmm/m/it/10 I[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 i[][][] \OT1/cmr/m/n/10
  = \OML/cmm/m/it/10 ai[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 bi[] \OT1/cmr/m/n/1
 0 + \OML/cmm/m/it/10 ci[]i[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 di[] \OT1/cmr/m
 /n/10 + \OML/cmm/m/it/10 ei[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 f
  []
 
-[7]
+[8]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -581,17 +582,17 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[8
+[9
 
 ] (./a_Impulse_Response_Modeling_of_Switch-Mode_Inductor_Converters.aux) ) 
 Here is how much of TeX's memory you used:
- 5624 strings out of 494847
- 86955 string characters out of 6179080
- 156531 words of memory out of 5000000
- 8856 multiletter control sequences out of 15000+600000
+ 5630 strings out of 494847
+ 87118 string characters out of 6179080
+ 157594 words of memory out of 5000000
+ 8863 multiletter control sequences out of 15000+600000
  41736 words of font info for 89 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 42i,16n,40p,868b,425s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,16n,40p,1102b,425s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr
 /share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/
@@ -615,10 +616,10 @@ r/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmri8a.pfb>
 Output written on a_Impulse_Response_Modeling_of_Switch-Mode_Inductor_Converter
-s.pdf (8 pages, 406798 bytes).
+s.pdf (9 pages, 400198 bytes).
 PDF statistics:
- 133 PDF objects out of 1000 (max. 8388607)
- 88 compressed objects within 1 object stream
+ 136 PDF objects out of 1000 (max. 8388607)
+ 90 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 

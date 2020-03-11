@@ -1,7 +1,7 @@
 k = 1000;
 u = 1e-6;
 
-fsw = 130*k
+fsw = 130*k*10
 Ts = 1/fsw;
 
 ff = 10:10:fsw*5;
@@ -33,14 +33,14 @@ f = (b-md*a*b)/Ts
 g = md*a*b/Ts
 h = (0.5*md*b*b)/Ts
 
-td = a*iv - a*iv + b
-td = (1-D)*Ts
-td2 = td*td
-td2 = a*a*iv*iv + a*a*iv*iv - 2*a*a*iv*iv - 2*a*b*iv + 2*a*b*iv + b*b
+td = a*iv - a*iv + b;
+td = (1-D)*Ts;
+td2 = td*td;
+td2 = a*a*iv*iv + a*a*iv*iv - 2*a*a*iv*iv - 2*a*b*iv + 2*a*b*iv + b*b;
 
-tdio = (a*iv*iv - a*iv*iv + b)*iv
-hmdtd2 = 0.5*md*td2 
-Ioo = (tdio + hmdtd2)/Ts
+tdio = (a*iv*iv - a*iv*iv + b)*iv;
+hmdtd2 = 0.5*md*td2 ;
+Ioo = (tdio + hmdtd2)/Ts;
 
 Ioo = (c + d + ee)*iv*iv + (f + g)*iv + h
 Ioo = (td*iv + 0.5*md*td*td)/Ts
@@ -58,6 +58,10 @@ A1 = (2*d*iv + ee*iv + g)
 hz = (1./(A0 + A1)) .* (A0 + A1*z1);
 hs = (1/wrhpz)*(s - wrhpz);
 %hz = A0 + A1*z1;
+wz = A1/A0 
+wc = fsw*acos( (wz/2)*(2*((1/wz + 1)^2) -1 - 1/(wz^2)) );
+fc = wc/(2000*pi)
+
 
 semilogx(ff, 20*log10(abs(hz)), ff, 20*log10(abs(hz.*hizoh)), ff, 20*log10(abs(hs)) )
 

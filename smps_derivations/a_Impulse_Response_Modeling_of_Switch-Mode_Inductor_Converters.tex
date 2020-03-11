@@ -308,14 +308,14 @@ Then solving (\ref{tan_stab_eq}) for slope compensation yields the following.
 
 It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in perfect agreement.
 
-\subsection{Peak Current Controller Peaking}
+\subsection{Peak Current Controller magnitude response}
 In addition to evaluating peak current controller stability the expression in (\ref{cpmstability}) may be rearranged to express a desired peak magnitude response in terms of the coefficient $\alpha$.
 \begin{equation}
-	\alpha =  2 \frac{|H_v(z)|}{1 + |H_v(z)|} \bigg|_{z=\frac{\omega_{SW}}{2}} 
+	\alpha =  2 \frac{|H_v(z)|}{1 + |H_v(z)|} \bigg|_{z=\frac{1}{2}\omega_{SW}} 
 \end{equation}
 Expanding $\alpha$ from (\ref{const_alpha}) and using additional algebraic manipulation, the amount of slope compensation corresponding to a pre-determined magnitude response is obtained.
 \begin{equation}
-	m_{cmp} = \frac{1 + |H_v(z)|}{2|H_v(z)|}(m_c + m_d) - m_c \bigg|_{z=\frac{\omega_{SW}}{2}}
+	m_{cmp} = \frac{1 + |H_v(z)|}{2|H_v(z)|}(m_c + m_d) - m_c \bigg|_{z=\frac{1}{2}\omega_{SW}}
 \end{equation}
 
 Plotting a series of magnitude responses for values of $\alpha$ corresponding to a (notch) gain of -9 dB, increasing in 3 dB steps to +9 dB is shown below.
@@ -324,10 +324,12 @@ Plotting a series of magnitude responses for values of $\alpha$ corresponding to
 	\centerline{\includegraphics [
 		width=9cm,
 		keepaspectratio,
-		] {illustrations/peak_current_traces.png}}
-	\caption{Peak current controller frequency response, $H_v(z)$, plots with different values of $\alpha$. }
+		] {a_Peak_Current_Controller_Response_Plot.png}}
+	\caption{Peak current controller frequency response, $H_v(z)$, plots with different values of $\alpha$ ($F_{SW}=100kHz$). }
 	\label{PCM_mag_resp}
 \end{figure}
+
+The utility of having slope compensation expressed as a function of peak magnitude response is apparent when considering switched-mode converter design flow.  For example, one can identify the minimum slope compensation required to achieve a desired amount of gain margin at $\frac{1}{2}F_{SW}$.
 
  
 
@@ -341,9 +343,13 @@ Plotting a series of magnitude responses for values of $\alpha$ corresponding to
 \end{figure}
 
 \section{Cycle Average Current as FIR Filter}
-The total energy transferred per cycle can be expressed as a function of valley currents. The minimum set of known parameters needed to express the area enclosed in the geometric shape illustrated in Fig. \ref{FIR_geometry} are $i_0$, $i_1$, $m_c$, $m_d$, and $T_{SW}$. Since the anchor points identifed as $i_0$ and $i_1$ are analogous to valley currents.  An observation worth noting is this portion of the system is responsive to valley currents and is agnostic to the control scheme implemented.  For example, whether voltage mode, peak-current mode, quasi-resonant or even hysteretic control, this part of the system has exactly the same response. A control scheme only indirectly affects system average currents through its relationship between control input and valley current.
+The inductor energy stored and released per switching cycle is a discrete quantity which may be expressed as a function of valley currents. If other quantities feeding into the waveform geometry are treated as sampled values (held constant over the switching interval), then the problem of relating average inductor currents to valley currents is reduced to that of a simple geometry problem as illustrated in Fig. \ref{FIR_geometry}. Since all quantities defining the inductor waveform begin and end within the same switching cycle, the valley-to-average-current transfer function response is finite and limited to a single switching cycle.
 
-Referring back to the equivalent circuit models presented in Fig. \ref{fig:asmpstopologies} it is apparent that the discharging and charging cycle currents must be treated as separate geometric problems if a unified general model is to be had from this approach.
+The set of parameters needed to express the area enclosed in the geometric shape illustrated in Fig. \ref{FIR_geometry}  are $i_0$, $i_1$, $m_c$, $m_d$, and $T_{SW}$. The anchor points identified as $i_0$ and $i_1$ serve as the interface linking the geometric problem to valley currents.
+
+A noteworthy benefit of describing the discrete energy-per-cycle quantity as a function of valley current is that the system's core transfer function is agnostic to the control scheme implemented.  For example, whether voltage mode, peak-current mode, quasi-resonant or even hysteretic control, the geometric problem presented in Fig. \ref{FIR_geometry} remains unchanged.
+
+Referring back to the equivalent circuit models presented in Fig. \ref{fig:asmpstopologies} it is apparent that the discharging and charging cycle currents must be treated as separate geometric problems if a generalized model is to be had from this approach.
 
 \subsection{Geometric Area of Charging Current}
 The average charging current is expressed as an integral of the geometric shape in Fig. \ref{FIR_geometry} over the charging interval, $t=0$ to $t=t_c$.
@@ -354,18 +360,19 @@ The integral expressed in (\ref{icg_integral}) evaluates to the following:
 \begin{align}
 i_{cg} = & \frac{t_c}{T_{SW}} i_1 + \frac{m_ct_c^2}{2T_{SW}} \label{icg_eval}
 \end{align}
-It is necessary to further expand (\ref{icg_eval}) in terms of defined system constants and signals.  Specifically, \(t_c\) must be re-expressed in terms of $T_{SW}$, $m_c$, $m_d$, $i_0$ and $i_1$. This quantity can be solved geometrically by finding the intersection of the two lines representing charging and discharging slopes. The location of this intersection on the x-axis will be \(t_c\). The charging and discharging slopes can be modeled as two lines using the following identities:
-\begin{align}
-f_c(t) & = m_ct+i_1\\
-f_d(t) & = -m_d(t-T_{SW})+i_0
-\end{align}
-The function, \(f_c(t)\), expresses the value of the current from \(t = 0\) to \(t = t_c\) as a function of t and \(f_d(t)\) expresses the value of the current from \(t = 0\) to \(t = T_{SW}\). As can be inferred from Figure \ref{FIR_geometry}, the intersection of $f_c(t)$ and $f_d(t)$ occurs at time \(t_c\). The expression for $t_c$ can be solved by setting $f_c(t) = f_d(t)$, evaluated at $t=t_c$.
-\begin{align}
-m_ct_c+i_1 & = -m_d(t_c-T_{SW})+i_0\\
-t_c & = \frac{i_0-i_1+T_{SW}m_d}{m_c+m_d} \label{tcharge}
-\end{align}
+It is necessary to further expand (\ref{icg_eval}) in terms of defined system constants and signals.  To this end, the following equality is easily derived by inspection of Fig. \ref{FIR_geometry}.
 
-Substituting (\ref{tcharge}) into (\ref{icg_eval}) provides the following solution for \(i_{cg}\):
+\begin{equation}
+m_ct_c+i_1 = m_d(T_{SW} - t_c)+i_0\\ \label{tc_equality}
+\end{equation}
+
+Where (\ref{tc_equality}) is used to solve for the unknown, $t_c$, in terms of known quantities.
+
+\begin{equation}
+t_c = \frac{i_0-i_1+T_{SW}m_d}{m_c+m_d} \label{tcharge}
+\end{equation}	
+
+Substituting (\ref{tcharge}) into (\ref{icg_eval}) the following solution for \(i_{cg}\) is obtained with sufficient use of algebraic simplification.
 \begin{equation}
 i_{cg} = a_{cg}i_0^2+b_{cg}i_1^2+c_{cg}i_0i_1+d_{cg}i_0+e_{cg}i_1+f_{cg} \label{i_cg_canon}
 \end{equation}
@@ -380,29 +387,33 @@ f_{cg} = & \frac{T_{SW}}{2} \bigg[ \frac{m_c m_d^2}{m_c^2+2m_cm_d+m_d^2} \bigg]\
 \end{align*}
 
 \subsection{Geometric Area of Discharging Current}
-The process for finding a canonical solution for the discharging current follows the same process used for finding the average charging current. In this case the integral is evaluated over the interval $t_c$ to $T_{SW}$ where the geometry is defined by the discharging current slope, $m_d$.
+The process for finding a canonical solution for the discharging current follows the same process used for finding the average charging current. In this case the problem is simplified by reversing the shape in Fig. \ref{FIR_geometry} and evaluating an integral having the same form as (\ref{icg_integral}), substituting $i_0$, $m_d$ and $t_d$ for the initial current, slope and time variable.
 \begin{align}
-i_{dg} = \frac{1}{T_{SW}}\int_{t_c}^{T_{SW}}(-m_d(t-T_{SW})+i_0)dt
-\label{tdcharge}
+i_{cg} = & \frac{1}{T_{SW}}\int_0^{t_d}(i_0 + m_d t)dt \label{idg_integral}
 \end{align}
-The integral in (\ref{tdcharge}) evaluates to the following.
+The integral in (\ref{idg_integral}) evaluates to the following.
 \begin{align}
-i_{dg} = & i_0-i_0\frac{t_c}{Ts}+\frac{T_{SW}m_d}{2}+\frac{m_dt_c^2}{2T_{SW}}-m_dt_c+T_{SW}m_d
-\label{idg_noncanon}
+i_{dg} = & \frac{t_d}{T_{SW}} i_0 + \frac{m_dt_d^2}{2T_{SW}}
+\label{idg_integral_eval}
 \end{align}
 
-Substituting (\ref{tcharge}) into (\ref{idg_noncanon}) provides the following solution for \(i_{dg}\):
+Using the identity $t_d = T_{SW} - t_c$, (\ref{idg_integral_eval}) becomes the following.
+\begin{align}
+i_{dg} = & \frac{ T_{SW} - t_c}{T_{SW}} i_0 + \frac{m_d( T_{SW} - t_c)^2}{2T_{SW}}
+\label{idg_noncanon}
+\end{align}
+and then substituting (\ref{tcharge}) into (\ref{idg_noncanon}), the solution for \(i_{dg}\) is seen to have the same form as (\ref{i_cg_canon}), differing only by the set of coefficients characterizing the familiar polynomial expression.
 \begin{equation}
 i_{dg} = a_{dg}i_0^2+b_{dg}i_1^2+c_{dg}i_0i_1+d_{dg}i_0+e_{dg}i_1+f_{dg} \label{i_dg_canon}
 \end{equation}
 Where the constants are expanded per below.
 \begin{align*}
-a_{dg} = & -\frac{1}{2T_{SW}} \bigg [ \frac{2m_c + m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ] \nonumber\\
-b_{dg} = & \frac{1}{2T_{SW}} \bigg [ \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ] \nonumber\\
-c_{dg} = & \frac{1}{T_{SW}} \bigg [ \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \bigg ]\nonumber\\
+a_{dg} = & - \bigg (\frac{1}{2T_{SW}} \bigg)  \frac{2m_c + m_d}{m_c^2+2m_cm_d+m_d^2}  \nonumber\\
+b_{dg} = &  \bigg ( \frac{1}{2T_{SW}} \bigg ) \frac{m_d}{m_c^2+2m_cm_d+m_d^2}  \nonumber\\
+c_{dg} = & \bigg ( \frac{1}{T_{SW}} \bigg ) \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \nonumber\\
 d_{dg} = & \frac{m_c^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
 e_{dg} = & \frac{m_c m_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{dg} = & \frac{T_{SW}}{2} \bigg [ \frac{m_c^2 m_d}{m_c^2+2m_cm_d+m_d^2} \bigg ]
+f_{dg} = & \bigg ( \frac{T_{SW}}{2} \bigg ) \frac{m_c^2 m_d}{m_c^2+2m_cm_d+m_d^2}
 \end{align*}
 
 \subsection{Small-Signal Analysis of the Non-LTI Inductor Currents}
@@ -425,7 +436,7 @@ The linearized function is expressed using a partial derivative of $f(x)$ with r
 \end{equation}
 Where $G_{lin}$ is the equivalent linear gain on small deviations about $x_0$. In this case, $x$ can be reinterpreted as,
 \begin{equation}
-y = f(x_0) + \Delta_x G_{lin}
+y \approx f(x_0) + \Delta_x G_{lin}
 \end{equation}
 where $\Delta_x$ represents a small perturbation superimposed on $x$ when biased at operating point $x_0$.  Since DC offsets within the transfer function are already captured in steady-state analysis, the small-signal transfer function is simplified to express only changes about the operating point, more specifically,
  \begin{equation}
@@ -456,7 +467,7 @@ and the partial derivatives represent the small-signal gain on each input parame
 
 Now let us consider the cycle-averaged output current to be the following,
 \begin{equation}	
-	i_{avg} = I_{\infty} + \Delta_{avg}
+	i_{avg} \approx I_{\infty} + \Delta_{avg}
 \end{equation}
 
 where $I_{\infty}$ is the steady-state average current obtained given the condition that control input, $i_c[n]$, is held constant and $i_v[n]$ is allowed to settle to its final steady state operating point as expressed in the following.
@@ -500,21 +511,98 @@ Evaluating (\ref{avgdelta_partial}) results in the following expression for smal
 	\big ( 2 b i_{v\infty} + c i_{v\infty} + e  \big) \Delta_1
 	\label{adelta_LTI}
 \end{equation}
-Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area bounded by the inductor current waveform during a single switching cycle as a function of small changes to the anchor points $i_0$ and $i_1$, expressed as $\Delta_0$ and $\Delta_1$. This geometry problem represents a time dependent function for which the following is a valid interpretation.
+In which the parenthetical expressions from (\ref{adelta_LTI}) represent a set of coefficients which are further abstracted per the following.
+\begin{align}
+k_0 = 2 a i_{v\infty} + c i_{v\infty} + d \nonumber \\
+k_1 = 2 b i_{v\infty} + c i_{v\infty} + e 
+\end{align}
+Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area bounded by the inductor current waveform during a single switching cycle as a function of small changes to the anchor points $i_0$ and $i_1$, expressed as $\Delta_0$ and $\Delta_1$. The geometry problem has been set up for re-interpretation using a symbolic convention consistent with more widely known literature.
 
 \begin{equation}
-		\Delta_{avg} [n] = k_0 \Delta_v[n] + 
-	k_1 \Delta_v [n-1]
+		\hat{i}_{avg} = k_0 \hat{i}_v[n] + 
+	k_1 \hat{i}_v[n-1]
 	\label{avg_FIR}
 \end{equation}
-Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter. The new quantities introduced include coefficients $k_0$ and $k_1$ are variable substitutions for coefficients of (\ref{adelta_LTI}), below expanded for clarity.
+Where the circumflex notation (e.g. $\hat{i}[n]$) represents the AC small-signal response of a nonlinear system. The proposed translation is executed by interpreting the $\Delta_{avg}$, $\Delta_0$, and $\Delta_1$ as peak-to-peak limits on arbitrary AC waveforms $\hat{i}_{avg}$, $\hat{i}[n]$ and $\hat{i}[n-1]$, respectively. Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter.
+
+The form of the FIR filter expressed in (\ref{avg_FIR}) is expanded to an expression of the AC transfer function between valley currents and average output currents for both charging and discharging cycles by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}), specifically,
+\begin{equation}
+\hat{i}_{cg} = k_{0_{cg}} \hat{i}_{v}[n] + 
+k_{1_{cg}} \hat{i}_v[n-1]
+\label{avg_FIR_cg}
+\end{equation}
+for the charging cycle current, and
+\begin{equation}
+\hat{i}_{dg} = k_{0_{dg}} \hat{i}_{v}[n] + 
+k_{1_{dg}} \hat{i}_v[n-1]
+\label{avg_FIR_dg}
+\end{equation}
+represents the discharging cycle current.
+
+\subsection{Continuous Time Approximation of FIR Averaging Filter}
+A well-documented phenomenon of the switched inductor discharge current response (commonly associated with a flyback topology) is the right-half-plane-zero (RHPZ) that shows up in the loop response.  The system evaluated according to the equivalent circuit models of Fig. \ref{fig:asmpstopologies} indicates the RHPZ exists in buck and forward converters but its response is swamped by the complementary left-half-plane zero characteristic of the charging cycle current.
+
+To give intuitive context for the following derivation the FIR responses of (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are plotted as discrete-time systems overlaid with the corrected response (inverse ZOH), and continuous time approximation (conventional RHPZ).
+
+\subsubsection{Derivation of the conventional RHPZ}
+From above plots it is apparent the impulse response based approach presented in this document traces the shape of the RHPZ as presented in conventional literature [ref]. It is here shown how the well-known RHPZ expression is readily obtained by evaluating (\ref{avg_FIR_dg}) in the limit as $T_{SW} \to 0$.
+
+First an intermediate variable is defined,
+\begin{equation}
+g_{dg} = \frac{1}{m_c^2+2m_cm_d+m_d^2}
+\end{equation} 
+
+which is a quantity common in every coefficient found in the discharging current polynomial expressed in (\ref{i_dg_canon}). Now the small-signal FIR filter in (\ref{avg_FIR_dg}) can be neatly expanded as follows.
+
+\begin{equation}
+\hat{i}_{dg}[n] = (2a+c)i_{v\infty} \hat{i}_{v}[n] + d + 
+(2b+c)i_{v\infty} \hat{i}_v[n-1] + e
+\label{avg_FIR_dg_expanded}
+\end{equation}
+
+Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_dg_canon}),
+
+ \begin{align}
+ \hat{i}_{dg}[n] = &-\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c^2 \hat{i}_v[n-1] \nonumber \\ 
+ &+ \frac{m_c + m_d}{T_{SW}} \hat{i}_v[n-1] + m_c m_d \hat{i}_v[n-1]
+ \label{avg_FIR_dg_expanded_coeffs}
+ \end{align}
+ 
+Re-expressing the difference equation in the continuous time domain with further rearrangement exposes a form of the derivative definition,
+
 \begin{align}
-	k_0 = 2 a i_{v\infty} + c i_{v\infty} + d \nonumber \\
-	k_1 = 2 b i_{v\infty} + c i_{v\infty} + e 
+	\hat{i}_{dg}(t) =&  -\frac{\hat{i}_v(t) - \hat{i}_v (t-T_{SW})} {T_{SW}}
+	(m_c + m_d) i_{v\infty} \nonumber \\
+	&+	( m_c^2 + m_c m_d ) \hat{i}_v(t-T_{SW}) 
+	\label{idg_t_differential_def}
 \end{align}
-The other new quantity, $\Delta_v$, represents the AC small-signal valley current, $i_v$.  FIR filter expressed in (\ref{avg_FIR}) is now easily expanded to an expression of AC transfer function between valley currents and average output currents for both charging and discharging cycles simply by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}). 
+
+The expression in (\ref{idg_t_differential_def}) exposes a differential equation if considering what happens when sampling frequency approaches infinity.
+	
+\begin{equation}
+\lim_{T_{SW} \to 0} \hat{i}_{v}(t) = -(m_c + m_d) i_{v\infty} \frac{d \hat{i}_v(t)}{dt}
++ 	( m_c^2 + m_c m_d ) \hat{i}_v(t) 
+\end{equation}
+
+The Laplace transform is then obtained by inspection,
+
+\begin{equation}
+	 \hat{I}_{dg}(s) =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) \hat{I}_{v}(s)
+\end{equation}
+
+Finally a transfer function is defined,
+
+\begin{equation}
+H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) 
+\big (\frac{m_c}{i_{v\infty}} - s \big )
+\end{equation}
+
+The continuous time RHPZ is now apparent in the form derived to this point.  However, further algebraic manipulation is required to see it in its well-known form.
+
+
 
 \subsection{Impulse Response Analysis}
+The IIR filters characterized by (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are a discrete time representation of charging and discharging currents, resampled as averaged values.  Information missing from the discrete time system includes high-frequency response and group delay (phase) associated with the real output current pulse shape. However, the small signal change from cycle-to-cycle has now been captured by the discrete-time transfer functions relating peak-control, valley and average currents. The final step in reconstructing the complete impulse response is performed by convolving the discrete time system output pulse train with a continuous-time FIR filter, having impulse response shape identical to that of the inductor current geometry.  The steady-state inductor current pulse shape includes information about the high-frequency response as well as the filter group delay.  The steady-state inductor current pulse may be considered analogous to a digital-to-analog converter's reconstruction filter. 
 
 \subsubsection{Frequency Response of Discharging Current}
 
