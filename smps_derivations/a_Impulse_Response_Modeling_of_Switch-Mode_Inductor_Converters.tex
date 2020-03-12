@@ -563,7 +563,7 @@ which is a quantity common in every coefficient found in the discharging current
 Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_dg_canon}),
 
  \begin{align}
- \hat{i}_{dg}[n] = &-\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c^2 \hat{i}_v[n-1] \nonumber \\ 
+ \frac{\hat{i}_{dg}[n]}{g_{dg}} = &-\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c^2 \hat{i}_v[n-1] \nonumber \\ 
  &+ \frac{m_c + m_d}{T_{SW}} \hat{i}_v[n-1] + m_c m_d \hat{i}_v[n-1]
  \label{avg_FIR_dg_expanded_coeffs}
  \end{align}
@@ -571,7 +571,7 @@ Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_dg_can
 Re-expressing the difference equation in the continuous time domain with further rearrangement exposes a form of the derivative definition,
 
 \begin{align}
-	\hat{i}_{dg}(t) =&  -\frac{\hat{i}_v(t) - \hat{i}_v (t-T_{SW})} {T_{SW}}
+	\frac{\hat{i}_{dg}(t)}{g_{dg}} =&  -\frac{\hat{i}_v(t) - \hat{i}_v (t-T_{SW})} {T_{SW}}
 	(m_c + m_d) i_{v\infty} \nonumber \\
 	&+	( m_c^2 + m_c m_d ) \hat{i}_v(t-T_{SW}) 
 	\label{idg_t_differential_def}
@@ -580,14 +580,14 @@ Re-expressing the difference equation in the continuous time domain with further
 The expression in (\ref{idg_t_differential_def}) exposes a differential equation if considering what happens when sampling frequency approaches infinity.
 	
 \begin{equation}
-\lim_{T_{SW} \to 0} \hat{i}_{v}(t) = -(m_c + m_d) i_{v\infty} \frac{d \hat{i}_v(t)}{dt}
+\lim_{T_{SW} \to 0} \frac{\hat{i}_{dg}(t)}{g_{dg}} = -(m_c + m_d) i_{v\infty} \frac{d \hat{i}_v(t)}{dt}
 + 	( m_c^2 + m_c m_d ) \hat{i}_v(t) 
 \end{equation}
 
 The Laplace transform is then obtained by inspection,
 
 \begin{equation}
-	 \hat{I}_{dg}(s) =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) \hat{I}_{v}(s)
+	 \frac{\hat{I}_{dg}(s)}{g_{dg}} =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) \hat{I}_{v}(s)
 \end{equation}
 
 Finally a transfer function is defined,
@@ -595,10 +595,71 @@ Finally a transfer function is defined,
 \begin{equation}
 H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) 
 \big (\frac{m_c}{i_{v\infty}} - s \big )
+\label{RHPZ_s_raw}
 \end{equation}
 
-The continuous time RHPZ is now apparent in the form derived to this point.  However, further algebraic manipulation is required to see it in its well-known form.
+The conventional notion of a continuous time RHPZ is now apparent in (\ref{RHPZ_s_raw}).  
+Further algebraic manipulation is required to see it in its well-known form.  The first item to re-express is the steady-state valley current, $i_{v\infty}$, which must be re-expressed in terms of the steady-state $i_{dg}$ if $R_{out} = V_{dg}/i_{dg}$ is to be pulled out of this expression.
 
+\begin{equation}
+	i_{dg} = \frac{L_m}{2V_{dg}T_{SW}} (i_{pk}^2 - i_{v\infty}^2)
+	\label{steady_state_idg}
+\end{equation}
+
+where $i_{pk}$ is the peak current, so the following substitution may be used.
+
+\begin{equation}
+i_{pk} = i_{v\infty} + \Delta_R
+\label{ipk_ripple}
+\end{equation}
+
+The quantity $\Delta_R$ is the steady-state ripple observed during CCM operation, further expanded to the following expression.
+
+\begin{equation}
+\Delta_R = \frac{V_{cg}V_{dg}}{V_{cg} + V_{dg}} \frac{T_{SW}}{L_m} =
+D'\frac{V_{dg} T_{SW}}{L_m}
+\label{steady_state_ripple}
+\end{equation}
+
+Substituting (\ref{steady_state_ripple}) and (\ref{ipk_ripple}) into (\ref{steady_state_idg}), the following is obtained.
+
+\begin{align}
+i_{dg} =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2\Delta_R i_{v\infty} + \Delta_R^2 \bigg) \nonumber \\
+=& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2 D'\frac{V_{dg} T_{SW}}{L_m} i_{v\infty} + \bigg(D'\frac{V_{dg} T_{SW}}{L_m}\bigg)^2\bigg) \nonumber \\
+=&  D' i_{v\infty} + D'^2\frac{V_{dg} T_{SW}}{L_m}
+\end{align}
+
+Recall this system has been evaluated in the limit as $T_{SW} \to 0$, so the steady-state relationship between $i_{dg}$ and $i_{v\infty}$ simplifies to the following.
+
+\begin{align}
+i_{dg} = D' i_{v\infty}
+\end{align}
+
+Now, from (\ref{RHPZ_s_raw}) the location of the right-half-plane zero is extracted per following.
+
+\begin{equation}
+	\omega_{RHPZ} = \frac{m_c}{i_{v\infty}} = \frac{V_{cg}}{L_m} \frac{D'}{i_{dg}}
+	\label{wrhpz_raw}
+\end{equation}
+
+A little more work is needed to obtain the canonical continuous-time expression for the RHPZ location, specifically, re-casting $V_{cg}$ in terms of $V_{dg}$.
+
+\begin{equation}
+V_{cg} = V_{dg} (\frac{1}{D} - 1)
+\label{vcgdg_equivalence}
+\end{equation}
+
+Then substituting (\ref{vcgdg_equivalence}) into (\ref{wrhpz_raw}) the following emerges.
+
+\begin{align}
+	\omega_{RHPZ} =& \frac{V_{dg}}{ i_{dg} L_m } D' (\frac{1}{D} - 1) \nonumber \\
+	=& \frac{R_{OUT}}{L_m} (\frac{D'}{D} - D') \nonumber \\
+	=&  \frac{R_{OUT}}{L_m D} D'(1-D) \nonumber \\
+	=& \frac{D'^2}{L_m D} R_{OUT}
+	\label{WHRPZ_canonical}
+\end{align}
+
+It is now apparent the expression in (\ref{WHRPZ_canonical}) exactly matches the expression given in [ref].
 
 
 \subsection{Impulse Response Analysis}
