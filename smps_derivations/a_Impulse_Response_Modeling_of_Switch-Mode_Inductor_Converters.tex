@@ -544,6 +544,25 @@ A well-documented phenomenon of the switched inductor discharge current response
 
 To give intuitive context for the following derivation the FIR responses of (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are plotted as discrete-time systems overlaid with the corrected response (inverse ZOH), and continuous time approximation (conventional RHPZ).
 
+\begin{figure}[H]
+	\centerline{\includegraphics [
+		width=9cm,
+		keepaspectratio,
+		] {illustrations/average_current_zeros_traces_100kHz.png}}
+	\caption{Peak current controller transfer function of valley currents to charge/discharge currents ($i_{cg}$, $i_{dg}$) ($F_{SW}=100kHz$). }
+	\label{RHPZ_LHPZ_mag_resp_100kHz}
+\end{figure}
+
+\begin{figure}[H]
+	\centerline{\includegraphics [
+		width=9cm,
+		keepaspectratio,
+		] {illustrations/average_current_zeros_traces_1MHz.png}}
+	\caption{Peak current controller transfer function of valley currents to charge/discharge currents ($i_{cg}$, $i_{dg}$) ($F_{SW}=1MHz$). }
+	\label{RHPZ_LHPZ_mag_resp_1MHz}
+\end{figure}
+
+
 \subsubsection{Derivation of the conventional RHPZ}
 From above plots it is apparent the impulse response based approach presented in this document traces the shape of the RHPZ as presented in conventional literature [ref]. It is here shown how the well-known RHPZ expression is readily obtained by evaluating (\ref{avg_FIR_dg}) in the limit as $T_{SW} \to 0$.
 
