@@ -582,8 +582,8 @@ which is a quantity common in every coefficient found in the discharging current
 Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_dg_canon}),
 
  \begin{align}
- \frac{\hat{i}_{dg}[n]}{g_{dg}} = &-\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c^2 \hat{i}_v[n-1] \nonumber \\ 
- &+ \frac{m_c + m_d}{T_{SW}} \hat{i}_v[n-1] + m_c m_d \hat{i}_v[n-1]
+ \frac{\hat{i}_{dg}[n]}{g_{dg}} = &-\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c^2 \hat{i}_v[n] \nonumber \\ 
+ &+ \frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_v[n-1] + m_c m_d \hat{i}_v[n-1]
  \label{avg_FIR_dg_expanded_coeffs}
  \end{align}
  
@@ -592,7 +592,8 @@ Re-expressing the difference equation in the continuous time domain with further
 \begin{align}
 	\frac{\hat{i}_{dg}(t)}{g_{dg}} =&  -\frac{\hat{i}_v(t) - \hat{i}_v (t-T_{SW})} {T_{SW}}
 	(m_c + m_d) i_{v\infty} \nonumber \\
-	&+	( m_c^2 + m_c m_d ) \hat{i}_v(t-T_{SW}) 
+	&+	m_c^2 i_{v\infty}  \hat{i}_v(t)
+	+ m_c m_d i_{v\infty}  \hat{i}_v(t-T_{SW})
 	\label{idg_t_differential_def}
 \end{align}
 
@@ -600,19 +601,19 @@ The expression in (\ref{idg_t_differential_def}) exposes a differential equation
 	
 \begin{equation}
 \lim_{T_{SW} \to 0} \frac{\hat{i}_{dg}(t)}{g_{dg}} = -(m_c + m_d) i_{v\infty} \frac{d \hat{i}_v(t)}{dt}
-+ 	( m_c^2 + m_c m_d ) \hat{i}_v(t) 
++ 	( m_c^2 + m_c m_d ) i_{v\infty} \hat{i}_v(t) 
 \end{equation}
 
 The Laplace transform is then obtained by inspection,
 
 \begin{equation}
-	 \frac{\hat{I}_{dg}(s)}{g_{dg}} =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) \hat{I}_{v}(s)
+	 \frac{\hat{I}_{dg}(s)}{g_{dg}} =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) i_{v\infty} \hat{I}_{v}(s)
 \end{equation}
 
 Finally a transfer function is defined,
 
 \begin{equation}
-H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) 
+H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) i_{v\infty}
 \big (\frac{m_c}{i_{v\infty}} - s \big )
 \label{RHPZ_s_raw}
 \end{equation}
@@ -628,14 +629,14 @@ Further algebraic manipulation is required to see it in its well-known form.  Th
 where $i_{pk}$ is the peak current, so the following substitution may be used.
 
 \begin{equation}
-i_{pk} = i_{v\infty} + \Delta_R
+i_{pk} = i_{v\infty} + \Delta_{IL}
 \label{ipk_ripple}
 \end{equation}
 
-The quantity $\Delta_R$ is the steady-state ripple observed during CCM operation, further expanded to the following expression.
+The quantity $\Delta_{IL}$ is the steady-state ripple observed during CCM operation, further expanded to the following expression.
 
 \begin{equation}
-\Delta_R = \frac{V_{cg}V_{dg}}{V_{cg} + V_{dg}} \frac{T_{SW}}{L_m} =
+\Delta_{IL} = \frac{V_{cg}V_{dg}}{V_{cg} + V_{dg}} \frac{T_{SW}}{L_m} =
 D'\frac{V_{dg} T_{SW}}{L_m}
 \label{steady_state_ripple}
 \end{equation}
@@ -643,7 +644,7 @@ D'\frac{V_{dg} T_{SW}}{L_m}
 Substituting (\ref{steady_state_ripple}) and (\ref{ipk_ripple}) into (\ref{steady_state_idg}), the following is obtained.
 
 \begin{align}
-i_{dg} =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2\Delta_R i_{v\infty} + \Delta_R^2 \bigg) \nonumber \\
+i_{dg} =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2\Delta_{IL} i_{v\infty} + \Delta_{IL}^2 \bigg) \nonumber \\
 =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2 D'\frac{V_{dg} T_{SW}}{L_m} i_{v\infty} + \bigg(D'\frac{V_{dg} T_{SW}}{L_m}\bigg)^2\bigg) \nonumber \\
 =&  D' i_{v\infty} + D'^2\frac{V_{dg} T_{SW}}{L_m}
 \end{align}
@@ -674,7 +675,7 @@ Then substituting (\ref{vcgdg_equivalence}) into (\ref{wrhpz_raw}) the following
 	\omega_{RHPZ} =& \frac{V_{dg}}{ i_{dg} L_m } D' (\frac{1}{D} - 1) \nonumber \\
 	=& \frac{R_{OUT}}{L_m} (\frac{D'}{D} - D') \nonumber \\
 	=&  \frac{R_{OUT}}{L_m D} D'(1-D) \nonumber \\
-	=& \frac{D'^2}{L_m D} R_{OUT}
+	=& \frac{D'^2}{D L_m} R_{OUT}
 	\label{WHRPZ_canonical}
 \end{align}
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.8.2)  11 MAR 2020 22:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.8.2)  12 MAR 2020 20:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -659,8 +659,16 @@ sed on input line 560.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [8 <./illustrations/average_current_zeros_traces_100kHz.png>] [9 <./illustrati
-ons/average_current_zeros_traces_1MHz.png>]
+ [8 <./illustrations/average_current_zeros_traces_100kHz.png>]
+Overfull \hbox (9.66893pt too wide) detected at line 605
+[] [] \OT1/cmr/m/n/10 = \OMS/cmsy/m/n/10 ^^@\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 m
+[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 m[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 i[][
+] \OT1/cmr/m/n/10 + (\OML/cmm/m/it/10 m[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 m[
+]m[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 i[][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\
+OT1/cmr/m/n/10 )
+ []
+
+[9 <./illustrations/average_current_zeros_traces_1MHz.png>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -706,7 +714,7 @@ r/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmri8a.pfb>
 Output written on a_Impulse_Response_Modeling_of_Switch-Mode_Inductor_Converter
-s.pdf (10 pages, 463429 bytes).
+s.pdf (10 pages, 463859 bytes).
 PDF statistics:
  143 PDF objects out of 1000 (max. 8388607)
  92 compressed objects within 1 object stream
