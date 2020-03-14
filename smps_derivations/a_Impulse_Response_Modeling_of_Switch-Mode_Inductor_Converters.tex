@@ -270,7 +270,7 @@ The condition for which it is possible for the denominator to become zero is at 
 \begin{equation}
 H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
 \end{equation}
-The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
+The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$, and the system response is a sustained oscillation with $\alpha = 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
 Recall that $\alpha$ is a function of inductor current slopes as well as the slope compensation parameter, $m_{cmp}$.  Expanding (\ref{const_alpha}) into (\ref{cpmstability}) and rearranging terms, the amount of slope compensation necessary for stability is found by ensuring the following inequality is satisfied,
 \begin{equation}
 m_{cmp} > \dfrac{m_d - m_c}{2} \label{slope_stab}
@@ -679,15 +679,33 @@ Then substituting (\ref{vcgdg_equivalence}) into (\ref{wrhpz_raw}) the following
 	\label{WHRPZ_canonical}
 \end{align}
 
-It is now apparent the expression in (\ref{WHRPZ_canonical}) exactly matches the expression given in [ref].
+It is now apparent the expression in (\ref{WHRPZ_canonical}) exactly matches the expression given in \cite{b2} for a buck-boost topology converter.  The significance of the buck-boost is output transfer function has sole dependence on the discharge cycle current.
 
 
 \subsection{Impulse Response Analysis}
 The IIR filters characterized by (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are a discrete time representation of charging and discharging currents, resampled as averaged values.  Information missing from the discrete time system includes high-frequency response and group delay (phase) associated with the real output current pulse shape. However, the small signal change from cycle-to-cycle has now been captured by the discrete-time transfer functions relating peak-control, valley and average currents. The final step in reconstructing the complete impulse response is performed by convolving the discrete time system output pulse train with a continuous-time FIR filter, having impulse response shape identical to that of the inductor current geometry.  The steady-state inductor current pulse shape includes information about the high-frequency response as well as the filter group delay.  The steady-state inductor current pulse may be considered analogous to a digital-to-analog converter's reconstruction filter. 
 
-\subsubsection{Frequency Response of Discharging Current}
-
 \subsubsection{Frequency Response of Charging Current}
+Referring back to Fig. \ref{FIR_geometry}, the Laplace transform of the charging pulse is computed per the following.
+
+\begin{align}
+i_{cg}' =& \int_0^{t_c}(i_{v\infty} + m_c t)e^{-st}dt \nonumber \\
+	   =& i_{v\infty}\bigg[ \frac{-e^{-st}}{s} \bigg]^{\stackrel{t_c}{}} _{\stackrel{0}{}}
+	   + m_c\bigg[ \bigg( \frac{-t}{s} - \frac{1}{s^2} \bigg) e^{-st} \bigg]^{\stackrel{t_c}{}} _{\stackrel{0}{}} \nonumber \\
+	   =&  i_{v\infty} \frac{1 - e^{-t_c}}{s} 
+	   + m_c\bigg( \frac{1 - (1 + st_c)e^{-st_c}}{s^2} \bigg)
+	   \label{icg_IR_laplace}
+\end{align}
+
+\subsubsection{Frequency Response of Discharging Current}
+The Laplace transform of the discharging current can be obtained by inspection of (\ref{icg_IR_laplace}) by substituting $t_d$ for instances of $t_c$ and $m_d$ for instances of $m_c$, time reversal and time delay properties.
+
+\begin{align}
+i_{dg}' = & \bigg( \frac{1 - e^{-t_d}}{s} \bigg) i_{v\infty} e^{-st_c} \nonumber \\
+- &\bigg( \frac{1 - (1 + st_d)e^{-st_d}}{s^2} \bigg) m_d e^{-st_c}
+\label{idg_IR_laplace}
+\end{align}
+
 
 \section{Conclusion}
 
@@ -697,7 +715,7 @@ Example inline citation
 
 \begin{thebibliography}{00}
 \bibitem{b1} Reference 1.
-\bibitem{b2} Reference 2.
+\bibitem{b2} Erickson, Maksimovic, Fundamentals of Power Electronics, 2nd Ed, transfer function salient characteristics, pg. 300, Table 8.2, Buck-Boost RHPZ.
 \end{thebibliography}
 
 
