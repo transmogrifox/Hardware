@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  15 MAR 2020 19:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.1.26)  15 MAR 2020 21:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -476,10 +476,11 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 36.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<a_SMPS_Topologies.png, id=1, 1053.9375pt x 1159.33125pt>
-File: a_SMPS_Topologies.png Graphic file (type png)
-<use a_SMPS_Topologies.png>
-Package pdftex.def Info: a_SMPS_Topologies.png  used on input line 57.
+<illustrations/a_SMPS_Topologies.png, id=1, 1053.9375pt x 1159.33125pt>
+File: illustrations/a_SMPS_Topologies.png Graphic file (type png)
+<use illustrations/a_SMPS_Topologies.png>
+Package pdftex.def Info: illustrations/a_SMPS_Topologies.png  used on input lin
+e 57.
 (pdftex.def)             Requested size: 455.24408pt x 500.76704pt.
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
@@ -490,7 +491,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [2 <./a_SMPS_Topologies.png (PNG copy)>]
+ [2 <./illustrations/a_SMPS_Topologies.png (PNG copy)>]
 <a_sampling_sequences/sampling_01.png, id=18, 1303.87125pt x 225.84375pt>
 File: a_sampling_sequences/sampling_01.png Graphic file (type png)
 <use a_sampling_sequences/sampling_01.png>
@@ -542,27 +543,30 @@ sampling_02.png (PNG copy)> <./a_sampling_sequences/sampling_03.png (PNG copy)>
  <./a_sampling_sequences/sampling_04.png (PNG copy)> <./a_sampling_sequences/sa
 mpling_05.png (PNG copy)> <./a_sampling_sequences/sampling_06.png (PNG copy)> <
 ./a_sampling_sequences/sampling_07.png (PNG copy)>]
-<a_cpm_waveforms.png, id=28, 968.11688pt x 809.27344pt>
-File: a_cpm_waveforms.png Graphic file (type png)
-<use a_cpm_waveforms.png>
-Package pdftex.def Info: a_cpm_waveforms.png  used on input line 165.
+<illustrations/a_cpm_waveforms.png, id=28, 968.11688pt x 809.27344pt>
+File: illustrations/a_cpm_waveforms.png Graphic file (type png)
+<use illustrations/a_cpm_waveforms.png>
+Package pdftex.def Info: illustrations/a_cpm_waveforms.png  used on input line 
+165.
 (pdftex.def)             Requested size: 199.16928pt x 166.4825pt.
- [4 <./a_cpm_waveforms.png (PNG copy)>]
-<a_Peak_Current_Controller_Response_Plot.png, id=34, 569.12625pt x 512.91624pt>
-
-File: a_Peak_Current_Controller_Response_Plot.png Graphic file (type png)
-<use a_Peak_Current_Controller_Response_Plot.png>
-Package pdftex.def Info: a_Peak_Current_Controller_Response_Plot.png  used on i
-nput line 327.
+ [4 <./illustrations/a_cpm_waveforms.png (PNG copy)>]
+<illustrations/a_Peak_Current_Controller_Response_Plot.png, id=34, 569.12625pt 
+x 512.91624pt>
+File: illustrations/a_Peak_Current_Controller_Response_Plot.png Graphic file (t
+ype png)
+<use illustrations/a_Peak_Current_Controller_Response_Plot.png>
+Package pdftex.def Info: illustrations/a_Peak_Current_Controller_Response_Plot.
+png  used on input line 327.
 (pdftex.def)             Requested size: 256.0748pt x 230.79453pt.
  [5]
-<a_discharge_current.png, id=50, 591.71063pt x 557.08125pt>
-File: a_discharge_current.png Graphic file (type png)
-<use a_discharge_current.png>
-Package pdftex.def Info: a_discharge_current.png  used on input line 350.
+<illustrations/a_discharge_current.png, id=50, 591.71063pt x 557.08125pt>
+File: illustrations/a_discharge_current.png Graphic file (type png)
+<use illustrations/a_discharge_current.png>
+Package pdftex.def Info: illustrations/a_discharge_current.png  used on input l
+ine 350.
 (pdftex.def)             Requested size: 142.26378pt x 133.93173pt.
- [6 <./a_Peak_Current_Controller_Response_Plot.png> <./a_discharge_current.png 
-(PNG copy)>] [7]
+ [6 <./illustrations/a_Peak_Current_Controller_Response_Plot.png> <./illustrati
+ons/a_discharge_current.png (PNG copy)>] [7]
 Overfull \hbox (0.57295pt too wide) detected at line 493
 \OML/cmm/m/it/10 I[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 i[][][] \OT1/cmr/m/n/10
  = \OML/cmm/m/it/10 ai[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 bi[] \OT1/cmr/m/n/1
@@ -612,7 +616,7 @@ Before submitting the final camera ready copy, remember to:
 [10] (./a_Impulse_Response_Modeling_of_Switch-Mode_Inductor_Converters.aux) ) 
 Here is how much of TeX's memory you used:
  5652 strings out of 494847
- 87856 string characters out of 6179080
+ 88080 string characters out of 6179080
  158696 words of memory out of 5000000
  8882 multiletter control sequences out of 15000+600000
  41736 words of font info for 89 fonts, out of 8000000 for 9000
