@@ -331,7 +331,17 @@ Plotting a series of magnitude responses for values of $\alpha$ corresponding to
 
 The utility of having slope compensation expressed as a function of peak magnitude response is apparent when considering switched-mode converter design flow.  For example, one can identify the minimum slope compensation required to achieve a desired amount of gain margin at $\frac{1}{2}F_{SW}$.
 
- 
+\subsection{Reversing the Zero-Order-Hold Assumption}
+Derivation of the transfer function for valley currents assumes all values fed into the peak current mode controller were sampled at the rising edge of the switching clock and held for the entire period. Performing analysis under said assumption implicitly low-pass filters the input signal with a moving-average filter during the sampling process. 
+
+In the physical system, no such filtering is applied in the sampler, so the consequence of this operation must be reversed if the sampled system frequency response is to accurately describe the sampler as it actually behaves.
+
+Because input voltages and inductor currents were sampled at the rising edge of the primary switching signal, these errors may all be simultaneously corrected by a single filtering operation applied to $\hat{i_{v}[n]}$.
+
+The ZOH reversal filter is the frequency-domain inverse of the ZOH function.  The ZOH frequency response is documented in [ref], and the inverse of this function stated below as $H_{IZOH}$, representing "Inverse Zero-Order-Hold".
+\begin{equation}
+H_{IZOH}(s) = \frac{s}{1 - e^{-sT_{SW}}}
+\end{equation}
 
 \begin{figure}[ht]
 	\centerline{\includegraphics [
@@ -389,7 +399,7 @@ f_{cg} = & \frac{T_{SW}}{2} \bigg[ \frac{m_c m_d^2}{m_c^2+2m_cm_d+m_d^2} \bigg]\
 \subsection{Geometric Area of Discharging Current}
 The process for finding a canonical solution for the discharging current follows the same process used for finding the average charging current. In this case the problem is simplified by reversing the shape in Fig. \ref{FIR_geometry} and evaluating an integral having the same form as (\ref{icg_integral}), substituting $i_0$, $m_d$ and $t_d$ for the initial current, slope and time variable.
 \begin{align}
-i_{cg} = & \frac{1}{T_{SW}}\int_0^{t_d}(i_0 + m_d t)dt \label{idg_integral}
+i_{dg} = & \frac{1}{T_{SW}}\int_0^{t_d}(i_0 + m_d t)dt \label{idg_integral}
 \end{align}
 The integral in (\ref{idg_integral}) evaluates to the following.
 \begin{align}
@@ -619,7 +629,7 @@ H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) i_{v\i
 \end{equation}
 
 The conventional notion of a continuous time RHPZ is now apparent in (\ref{RHPZ_s_raw}).  
-Further algebraic manipulation is required to see it in its well-known form.  The first item to re-express is the steady-state valley current, $i_{v\infty}$, which must be re-expressed in terms of the steady-state $i_{dg}$ if $R_{out} = V_{dg}/i_{dg}$ is to be pulled out of this expression.
+Further algebraic manipulation is required to see it in its well-known form.  The first item to re-express is the steady-state valley current, $i_{v\infty}$, which must be re-expressed in terms of the steady-state $i_{dg}$ if $R_{OUT} = V_{dg}/i_{dg}$ is to be pulled out of this expression.
 
 \begin{equation}
 	i_{dg} = \frac{L_m}{2V_{dg}T_{SW}} (i_{pk}^2 - i_{v\infty}^2)
@@ -675,34 +685,42 @@ Then substituting (\ref{vcgdg_equivalence}) into (\ref{wrhpz_raw}) the following
 	\omega_{RHPZ} =& \frac{V_{dg}}{ i_{dg} L_m } D' (\frac{1}{D} - 1) \nonumber \\
 	=& \frac{R_{OUT}}{L_m} (\frac{D'}{D} - D') \nonumber \\
 	=&  \frac{R_{OUT}}{L_m D} D'(1-D) \nonumber \\
-	=& \frac{D'^2}{D L_m} R_{OUT}
+	=& \frac{D'^2 R_{OUT}}{D L_m}
 	\label{WHRPZ_canonical}
 \end{align}
 
 It is now apparent the expression in (\ref{WHRPZ_canonical}) exactly matches the expression given in \cite{b2} for a buck-boost topology converter.  The significance of the buck-boost is output transfer function has sole dependence on the discharge cycle current.
 
 
-\subsection{Impulse Response Analysis}
-The IIR filters characterized by (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are a discrete time representation of charging and discharging currents, resampled as averaged values.  Information missing from the discrete time system includes high-frequency response and group delay (phase) associated with the real output current pulse shape. However, the small signal change from cycle-to-cycle has now been captured by the discrete-time transfer functions relating peak-control, valley and average currents. The final step in reconstructing the complete impulse response is performed by convolving the discrete time system output pulse train with a continuous-time FIR filter, having impulse response shape identical to that of the inductor current geometry.  The steady-state inductor current pulse shape includes information about the high-frequency response as well as the filter group delay.  The steady-state inductor current pulse may be considered analogous to a digital-to-analog converter's reconstruction filter. 
+\subsection{Discrete to Continuous Reconstruction}
+The steady-state inductor current pulse shape includes information about the high-frequency response and (more importantly) the filter group delay. The sampled system derived to this point accurately reconstructs the system magnitude response up to half the Nyquist frequency, but fails to predict phase response in the band where gain margin might be evaluated.  In this section it is shown how the sampled system is reconstructed when assuming small-signal perturbation.
+
+The steady-state inductor current pulse may be considered analogous to a digital-to-analog converter's (DAC) reconstruction filter. A simple form of such a filter is the Zero-Order-Hold system, intuitively understood as latching and holding the sampled value in the DAC output until the next sampling interval is clocked.  In the frequency domain the ZOH system is evaluated as a moving average filter that operates over the sampling interval.  The Laplace transform of a single rectangular pulse constitutes the frequency domain transfer function of said filter.  
+
+In the context of the approach being developed in this document, the inductor current pulse shapes during the charging and discharging cycles are not square pulses as assumed by a ZOH function and such would here misrepresent the system frequency response.  The geometry of the output pulse is known and the discrete-to-continuous reconstruction filters can be derived by a similar process used to characterize the frequency response of a ZOH DAC. 
+
+The FIR filters characterized by (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) define the discrete-time pulse train, representing a sampled version of average inductor currents.  Using these samples to trigger pulses with shapes illustrated in Fig. \ref{FIR_geometry}, the transfer function is obtained for reconstructing the sampled system to its continuous time representation. 
 
 \subsubsection{Frequency Response of Charging Current}
-Referring back to Fig. \ref{FIR_geometry}, the Laplace transform of the charging pulse is computed per the following.
+Referring back to Fig. \ref{FIR_geometry}, the frequency response for the system reconstructing the charging-cycle currents is obtained by the following.
 
 \begin{align}
-i_{cg}' =& \int_0^{t_c}(i_{v\infty} + m_c t)e^{-st}dt \nonumber \\
+i_{cg} =& \int_0^{t_c}(i_{v\infty} + m_c t)e^{-st}dt \nonumber \\
 	   =& i_{v\infty}\bigg[ \frac{-e^{-st}}{s} \bigg]^{\stackrel{t_c}{}} _{\stackrel{0}{}}
 	   + m_c\bigg[ \bigg( \frac{-t}{s} - \frac{1}{s^2} \bigg) e^{-st} \bigg]^{\stackrel{t_c}{}} _{\stackrel{0}{}} \nonumber \\
-	   =&  i_{v\infty} \frac{1 - e^{-t_c}}{s} 
+	   =&  i_{v\infty} \bigg( \frac{1 - e^{-t_c}}{s} \bigg)
 	   + m_c\bigg( \frac{1 - (1 + st_c)e^{-st_c}}{s^2} \bigg)
 	   \label{icg_IR_laplace}
 \end{align}
 
 \subsubsection{Frequency Response of Discharging Current}
-The Laplace transform of the discharging current can be obtained by inspection of (\ref{icg_IR_laplace}) by substituting $t_d$ for instances of $t_c$ and $m_d$ for instances of $m_c$, time reversal and time delay properties.
+Referring back to Fig. \ref{FIR_geometry}, the frequency response for the system reconstructing the discharging-cycle currents is obtained by the Laplace transform of the discharging current pulse.  The process is similar to what was done in (\ref{icg_IR_laplace}), so the intermediate step is omitted.
 
 \begin{align}
-i_{dg}' = & \bigg( \frac{1 - e^{-t_d}}{s} \bigg) i_{v\infty} e^{-st_c} \nonumber \\
-- &\bigg( \frac{1 - (1 + st_d)e^{-st_d}}{s^2} \bigg) m_d e^{-st_c}
+i_{dg} =& \int_{t_c}^{T_{SW}+t_d}(i_{v\infty} 
++ m_d t_d - m_d t) e^{-st}dt \nonumber \\
+ = & (i_{v\infty} +m_d t_d) \bigg( \frac{1 - e^{-t_d}}{s} \bigg)  e^{-st_c} \nonumber \\
+- & m_d \bigg( \frac{1 - (1 + st_d)e^{-st_d}}{s^2} \bigg)  e^{-st_c}
 \label{idg_IR_laplace}
 \end{align}
 
