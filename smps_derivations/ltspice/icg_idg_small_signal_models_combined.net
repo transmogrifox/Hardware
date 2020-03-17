@@ -1,0 +1,118 @@
+* Z:\home\jakuleth\Documents\Electronics\Hardware\smps_derivations\ltspice\icg_idg_small_signal_models_combined.asc
+B1 icg_irm_ss 0 V=V(k0)*V(iv0) + V(k1)*V(iv1) + fcg
+B2 Ioo 0 V=(acg+bcg+ccg)*V(iv0)*V(iv0) + (dcg+ecg)*V(iv0) + fcg
+B3 k0 0 V=2*acg*iv + ccg*iv +dcg
+B4 k1 0 V=2*bcg*iv +ccg*iv + ecg
+B6 icg_irm 0 V=acg*V(iv0)*V(iv0) + bcg*V(iv1)*V(iv1) + ccg*V(iv0)*V(iv1) + dcg*V(iv0) + ecg*V(iv1) + fcg
+B7 <icgbasso> 0 V=V(Ioo) Laplace=(1 + s/wrhpz)
+B10 IooChk 0 V=Iinf
+B13 icg_izoh 0 V=V(icg_irm_ss) Laplace=s*Tsw/(1 - exp(-s*Tsw))
+B8 idg_irm_ss 0 V=V(kdg0)*V(iv0) + V(kdg1)*V(iv1) + fdg
+B9 Ioodg 0 V=(adg+bdg+cdg)*V(iv0)*V(iv0) + (ddg+edg)*V(iv0) + fdg
+B11 kdg0 0 V=2*adg*iv + cdg*iv +ddg
+B12 kdg1 0 V=2*bdg*iv +cdg*iv + edg
+B15 idg_irm 0 V=adg*V(iv0)*V(iv0) + bdg*V(iv1)*V(iv1) + cdg*V(iv0)*V(iv1) + ddg*V(iv0) + edg*V(iv1) + fdg
+B16 <idgbasso> 0 V=V(Ioodg) Laplace=(1 - s/wrhpzdg)
+B18 idg_izoh 0 V=V(idg_irm_ss) Laplace=s*Tsw/(1 - exp(-s*Tsw))
+V2 icn 0 {ic} AC 1
+B14 iv0 0 V=alpha*V(icn) + (1-alpha)*V(iv1) - Tsw*md
+B17 iv1 0 V=delay(V(iv0), Tsw)
+B19 mcmp_v 0 V={mcmp*V(icn)}
+B20 alpha_v 0 V={alpha*V(icn)}
+B5 icg_rcf 0 V=V(icg_izoh)*gcg_rcf Laplace=(Iv)*(1 - exp(-s*Dc*Tsw))/(s) + (mc)*(1 - (1 + s*Dc*Tsw)*exp(-s*Dc*Tsw))/(s*s)
+B21 idg_rcf 0 V=V(idg_izoh)*gdg_rcf Laplace=( ((Iv+md*Dpdg*Tsw))*(1 - exp(-s*Dpdg*Tsw))/(s) - md*(1 - (1 + s*Dpdg*Tsw)*exp(-s*Dpdg*Tsw))/(s*s) )*exp(-s*Dc*Tsw)
+B22 mcmp 0 V={mcmp}
+B23 Ioodgck 0 V=Iinfdg
+B24 Ioodgck2 0 V=Fsw/gdg_rcf
+* AVERAGE OUTPUT CURRENT: \nSMALL SIGNAL MODEL
+.param Vin 18
+.param Vout 5.25
+.param N 4
+.param Vcg {Vin}
+.param Vdg {N*Vout}
+.param iv 10
+.param Lm 23u
+.param Fsw 100k
+.param Tsw {1/Fsw}
+.param mc {Vcg/Lm}
+.param md {Vdg/Lm}
+.param dencom {(mc*mc + 2*mc*md + md*md)}
+.param acg {(1/(2*Tsw))*((mc)/dencom)}
+.param bcg {-(1/(2*Tsw))*((mc + 2*md)/dencom)}
+.param ccg {(1/(Tsw))*((md)/dencom)}
+.param dcg {(mc*md)/dencom}
+.param ecg {md*md/dencom}
+.param fcg  {(Tsw/2)*mc*md*md/dencom}
+* AVERAGE OUTPUT CURRENT: \nEXACT NONLINEAR EXPRESSION
+* AVERAGE OUTPUT CURRENT: \nCONVENTIONAL SMALL SIGNAL MODEL\n(e.g. CHRISTOPH BASSO)
+.param Dc {Vdg/(Vdg+Vcg)}
+.param Dp {1-Dc}
+.param wrhpz ro*Dc*Dc/(Dp*Lm)
+.param Iinf {(acg+bcg+ccg)*iv*iv + (dcg+ecg)*iv + fcg}
+.param ro {Vcg/Iinf}
+* INPUT BUS VOLTAGE\nCONVERTER OUTPUT VOLTAGE\nCOUPLED INDUCTOR/TRANSFORMER TURNS RATIO (SECONDARY:PRIMARY)\nINDUCTOR CHARGING VOLTAGE\nINDUCTOR DISCHARGING VOLTAGE AS REFLECTED BACK TO PRIMARY SIDE\nSTEADY-STATE VALLEY CURRRENT\nMAGNETIZING INDUCTANCE\nSWITCHING FREQUENCY\nSWITCHING PERIOD
+* INPUT PARAMETERS -- SYSTEM STEADY-STATE OPERATING CONDITIONS
+* INDUCTOR CURRENT CHARGING SLOPE\nINDUCTOR CURRENT DISCHARGING SLOPE\nCONVENIENT VARIABLE SUBSTITUTION FOR A DENOMINATOR TERM FOUND IN EVERY COEFFICIENT\nCOEFFICIENT: acg*iv[n]^2\nCOEFFICIENT: bcg*iv[n-1]^2\nCOEFFICIENT: ccg*iv[n]*iv[n-1]\nCOEFFICIENT: dcg*iv[n]\nCOEFFICIENT: ecg*iv[n-1]\nCONSTANT   :  fcg, APPEARS IN STEADY-STATE AVERAGE CURRENT COMPUTATION
+* COMPUTED PARAMETERS -- SYSTEM VARIABLES AND COEFFICIENTS
+* AVERAGED CURRENT STEADY STATE OUTPUT
+* SMALL SIGNAL MODELS COMPARED WITH EXACT NONLINEAR EXPRESSION
+* FIR FILTER COEFFICIENTS FOR\nLTI SMALL-SIGNAL MODEL
+* SYSTEM PARAMS RE-FACTORED\nINTO COMPATIBLE QUANTITIES\nUSED IN C. BASSO RHPZ EQN.
+* VERIFICATION OF DISCRETE TIME SMALL SIGNAL ANALYTICAL MODEL FOR SWITCH-MODE INDUCTOR:
+* TRANSFER FUNCTION OF VALLEY CURRENT TO AVERAGE OUTPUT CURRENT EXPRESSED AS FIR FILTER
+* COMPARED TO CHRISTOPHE BASSO'S CONTINUOUS-TIME APPROXIMATION OF THE RIGHT-HALF PLANE ZERO
+* DC term "fcg" maintained throughout\nthe discrete model term to see \nDC agreement with conventional \nRHPZ expression
+* INVERSE ZERO-ORDER-HOLD FUNCTION
+* AVERAGE OUTPUT CURRENT: \nSMALL SIGNAL MODEL
+;.param mc {Vcg/Lm}
+;.param md {Vdg/Lm}
+;.param dencom {(mc*mc + 2*mc*md + md*md)}
+.param adg {-(1/(2*Tsw))*((2*mc + md)/dencom)}
+.param bdg {(1/(2*Tsw))*((md)/dencom)}
+.param cdg {(1/(Tsw))*((mc)/dencom)}
+.param ddg {(mc*mc)/dencom}
+.param edg {mc*md/dencom}
+.param fdg  {(Tsw/2)*md*mc*mc/dencom}
+* AVERAGE OUTPUT CURRENT: \nEXACT NONLINEAR EXPRESSION
+* AVERAGE OUTPUT CURRENT: \nCONVENTIONAL SMALL SIGNAL MODEL\n(e.g. CHRISTOPH BASSO)
+.param Dcdg {Vdg/(Vdg+Vcg)}
+.param Dpdg {1-Dcdg}
+.param wrhpzdg rodg*Dpdg*Dpdg/(Dcdg*Lm)
+.param Iinfdg {(adg+bdg+cdg)*iv*iv + (ddg+edg)*iv + fdg}
+.param rodg {Vdg/Iinfdg}
+* INDUCTOR CURRENT CHARGING SLOPE\nINDUCTOR CURRENT DISCHARGING SLOPE\nCONVENIENT VARIABLE SUBSTITUTION FOR A DENOMINATOR TERM FOUND IN EVERY COEFFICIENT\nCOEFFICIENT: adg*iv[n]^2\nCOEFFICIENT: bdg*iv[n-1]^2\nCOEFFICIENT: cdg*iv[n]*iv[n-1]\nCOEFFICIENT: ddg*iv[n]\nCOEFFICIENT: edg*iv[n-1]\nCONSTANT   :  fdg, APPEARS IN STEADY-STATE AVERAGE CURRENT COMPUTATION
+* COMPUTED PARAMETERS -- SYSTEM VARIABLES AND COEFFICIENTS
+* AVERAGED CURRENT STEADY STATE OUTPUT
+* SMALL SIGNAL MODELS COMPARED WITH EXACT NONLINEAR EXPRESSION
+* FIR FILTER COEFFICIENTS FOR\nLTI SMALL-SIGNAL MODEL
+* SYSTEM PARAMS RE-FACTORED\nINTO COMPATIBLE QUANTITIES\nUSED IN C. BASSO RHPZ EQN.
+* VERIFICATION OF DISCRETE TIME SMALL SIGNAL ANALYTICAL MODEL FOR SWITCH-MODE INDUCTOR:
+* TRANSFER FUNCTION OF VALLEY CURRENT TO AVERAGE OUTPUT CURRENT EXPRESSED AS FIR FILTER
+* COMPARED TO CHRISTOPHE BASSO'S CONTINUOUS-TIME APPROXIMATION OF THE RIGHT-HALF PLANE ZERO
+* DC term "fcg" maintained throughout\nthe discrete model term to see \nDC agreement with conventional \nRHPZ expression
+* INVERSE ZERO-ORDER-HOLD FUNCTION
+.ac oct 500 100 {5*Fsw}
+* COMPUTED PARAMETERS -- SYSTEM VARIABLES AND COEFFICIENTS
+* ic[n]
+* iv[n]
+* SYSTEM INPUT SOURCES
+* STIMULUS GENERATION FOR VALLEY CURRENTS
+.param hvdb 3
+.param hvmag {10**(hvdb/20)}
+.param mcmp {(mc+md)*(1+hvmag)/(2*hvmag)-mc}
+* PEAK CURRENT CONTROLLER PEAKING (dB)\nPEAK CURRENT CONTROLLER PEAKING - LINEAR\nCONTROLLER SLOPE COMPENSATION
+* Place to probe for computed \nslope compensation (A/S)
+* IIR FILTER FOR TRANSFER FUNCTION
+* RELATES VALLEY CURRENTS TO PEAK CURRENT COMPARATOR THRESHOLD
+* iv[n-1]
+.param alpha {(mc+md)/(mc+mcmp)}
+* Place to probe for computed \nslope compensation (A/S)
+* IIR FILTER COEFFICIENT
+.param ic {iv+Tsw*md/alpha}
+* RECONSTRUCTION FILTER
+* RECONSTRUCTION FILTER
+.param gdg_rcf {1/(Dpdg*Tsw*Iv+0.5*md*Dpdg*Tsw*Dpdg*Tsw)}
+.param gcg_rcf {1/(Dc*Tsw*Iv+0.5*mc*Dc*Tsw*Dc*Tsw)}
+* Place to probe for computed \nslope compensation (A/S)
+.backanno
+.end
