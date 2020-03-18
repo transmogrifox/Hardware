@@ -544,17 +544,21 @@ Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area b
 Where the circumflex notation (e.g. $\hat{i}[n]$) represents the AC small-signal response of a nonlinear system. The proposed translation is executed by interpreting the $\Delta_{avg}$, $\Delta_0$, and $\Delta_1$ as peak-to-peak limits on arbitrary AC waveforms $\hat{i}_{avg}$, $\hat{i}[n]$ and $\hat{i}[n-1]$, respectively. Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter.
 
 The form of the FIR filter expressed in (\ref{avg_FIR}) is expanded to an expression of the AC transfer function between valley currents and average output currents for both charging and discharging cycles by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}), specifically,
+
 \begin{equation}
 \hat{i}_{cg} = k_{0_{cg}} \hat{i}_{v}[n] + 
 k_{1_{cg}} \hat{i}_v[n-1]
 \label{avg_FIR_cg}
 \end{equation}
+
 for the charging cycle current, and
+
 \begin{equation}
 \hat{i}_{dg} = k_{0_{dg}} \hat{i}_{v}[n] + 
 k_{1_{dg}} \hat{i}_v[n-1]
 \label{avg_FIR_dg}
 \end{equation}
+
 represents the discharging cycle current.
 
 \subsection{Continuous Time Approximation of FIR Averaging Filter}
