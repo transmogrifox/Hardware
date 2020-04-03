@@ -63,21 +63,19 @@ As pointed out by Jian Li in [ref], the Tan/Middlebrook unified model still fail
 		width=16cm,
 		keepaspectratio,
 		] {illustrations/a_SMPS_Topologies.png}}
-	\caption{Review of switched-mode power converter topologies.}
+	\caption{Review of switched-mode power converter topologies and equivalent circuit model used for developing the impulse response derived transfer functions.}
 	\label{fig:asmpstopologies}
 \end{figure*}
 
 \section{An Alternative Approach}
-This document revisits the problem of characterizing dynamic behavior in switched mode converters with the aim of exposing a closer link between transfer function elements in the waveform geometry. The defining feature of this approach is the use of inductor current waveform geometry to synthesize a series of cascaded filters representing the switched inductor's impulse response.  The system is synthesized as a signal processing chain involving a sampler, discrete time filters and a continuous time reconstruction filter.  Through a judicious process of sampling, re-sampling and reconstruction the inductor currents are expressed as a non-LTI filter response to the control input signal. The non-LTI filter may be evaluated directly by use of computerized numerical solvers or further developed analytically using small-signal analysis methods.
+This document revisits the problem of characterizing dynamic behavior in switched mode converters with the aim of exposing a closer link between transfer function elements in the waveform geometry. The defining feature of this approach is the use of inductor current waveform geometry to synthesize a series of cascaded filters representing the switched inductor's impulse response.  The system is synthesized as a signal processing chain involving a sampler, discrete time filters and a continuous time reconstruction filter.  Through a judicious process of sampling, re-sampling and reconstruction the inductor currents are expressed as a non-LTI filter response to the control input signal. The defining feature in the approach being developed is expressing cycle average currents as a function of valley currents as sampled on switching edges.  Under this approach, the control input is related to valley currents to express the nuances of a specific control scheme.  The relationship between valley and average currents is considered universal to all common control strategies.
 
 The equivalent circuit model is prepared by combining the inductor and switch together as a pair of behavioral current sources as shown in Fig. \ref{fig:asmpstopologies}. The currents $i_{cg}$ and $i_{dg}$ correspond to charging and discharging inductor currents where control-to-current transfer functions are expressed as a set of cascaded filters.  The geometry of switched current waveforms serve as a specification for the time-domain impulse responses for continuous time filters in this system's transfer function.
 
-Several common switched inductor topologies are identified in Fig. \ref{fig:asmpstopologies} to better illustrate how this alternative model is substituted for the switch and inductor in the greater context of a switched-mode converter circuit.  
-
-The lack of diodes shown schematically does not imply this model cannot accommodate diode behavior.  On the contrary, this switch representation generalizes the model to any type of device exhibiting switch-like behavior.  A diode, for example, is a special type of switch in which current may flow in only one direction -- the behavior defined for the current source representing the diode switch leg will account for this.  For circuits in the left-hand column of Fig. \ref{fig:asmpstopologies} one would consider the center position of the switch a legal state (no connection to either throw) so the switch could open like a diode preventing reverse current flow.
+Several common switched inductor topologies are identified in Fig. \ref{fig:asmpstopologies} to better illustrate how this alternative model is substituted for the switch and inductor in the greater context of a switched-mode converter circuit.  Note the left-hand models of Fig. \ref{fig:asmpstopologies} follow the 3-terminal switch construct as presented by Erickson/Maksimovic in [ref].  For these circuits the center position (no-connect) of the switch is considered a legal state so the switch may open when reverse-biased to allow modeling diode behavior.
 
 \section{Peak Current Mode Control System}
-At this point the proposed approach has been prepared in a generalized form. The next step is to derive expressions for $i_c$ and $i_d$ as a function of known quantities. To this end, a specific control scheme must be considered. Rather than providing exhaustive treatment of current source behaviors for multiple control schemes, this document will focus on the peak current mode control scheme (some other texts refer to this as current programmed mode). Peak current control is chosen as an example because of the widespread availability of reference designs and switched-mode converter controller IC's using this control implementation.
+At this point the proposed approach has been prepared in a generalized form. The next step is to derive expressions for $i_c$ and $i_d$ as a function of known quantities. To this end, a specific control scheme must be considered. Peak current mode control (also known as current programmed mode) is chosen as an example because of the widespread availability of reference designs and switched-mode converter controller IC's using this control implementation.
 
 Peak Current Mode Control is a technique used for controlling inductor currents in a switched-mode converter on a cycle-by-cycle decision-making interval. The control signal sets a threshold to limit inductor peak intake currents during the charging portion of the cycle. When the inductor current crosses this threshold, a latch is reset to signal shut-down of the primary switch device. A compensating ramp is often added to the inductor's current sense signal to induce pre-mature tripping of the comparator -- a tecnique used to stabilize the peak current control loop.
 
@@ -163,8 +161,8 @@ In the discussion of analysis steps illustrated in Fig. \ref{fig:resampling} the
 
 The associative and distributive algebraic properties of convolution imply the ZOH function is canceled using a filter having a resopnse that is the reciprocal of ZOH in the frequency domain.  The strategy employed in this analysis applies the ZOH function in the time domain (Fig. \ref{fig:resampling_c}), perform a set of linear operations (Fig. \ref{fig:resampling_d}, \ref{fig:resampling_f} and \ref{fig:resampling_g}), and then apply the inverse ZOH function in the frequency domain (not illustrated) to reconstruct $i_{cg}$ and $i_{dg}$. 
 
-\subsection{Derivation of the Discrete Time IIR Filter}
-The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak current threshold being sampled synchronous to the valley currents and then held constant throughout the switching cycle.  Charging and discharging slopes are sampled values held static throughout the sampling interval, and the compensating ramp is considered linear (constant). This system is geometrically characterized using values sampled at the rising edge of the primary gate drive signal (coincident with inductor valley currents). The effect of ZOH function is reversed for all sampled values in a single operation on the valley currents using the distributive property of convolution.
+\subsection{Derivation of IIR Filter Describing Valley Currents}
+The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak current threshold being sampled synchronous to the valley currents and then held constant throughout the switching cycle.  Charging and discharging slopes are sampled values held static throughout the sampling interval, and the compensating ramp is considered linear (constant). This system is geometrically characterized using values sampled at the rising edge of the primary gate drive signal (coincident with inductor valley currents). A noteworthy advantage of this approach is the input and output impedance and coupling can be expressed as a discrete-time system.  The effect of ZOH function applies equally to all sampled values and is reversed with a single operation on the valley currents using the distributive property of convolution. It will be shown in the derivation of averaging and reconstruction stages that the pulse shape and per-cycle energy are geometrically anchored in the valley currents.
 
 \begin{figure}[ht]
 	\centerline{\includegraphics [
@@ -175,7 +173,7 @@ The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak curre
 	\label{cpm_waveforms}
 \end{figure}
 
-The relationship between valley currents is then,
+A formula relating one valley current to the next is the following,
 \begin{equation}
 i_v[n] =  i_v[n-1] + m_c D T_{SW} - m_d  D' T_{SW}   \label{ivd}
 \end{equation} 
@@ -188,7 +186,7 @@ m_c &= \text{Slope of current during charge cycle (A/s)} \\
 m_d &= \text{Slope of current during discharge cycle (A/s)}\\
 i_v &= \text{Inductor valley current.} \\
 \end{align*}
-The duty cycle can be re-expressed in the following terms,
+The duty cycle is re-expressed in the following terms,
 \begin{equation}
 D = \dfrac{i_c [n-1] - i_v [n-1]} {(m_c + m_{cmp})T_{SW}}
 \end{equation}
@@ -205,7 +203,7 @@ where,
 \begin{align}
 \alpha &= \frac{m_c + m_d} {m_c + m_{cmp}} \label{const_alpha}
 \end{align}
-It is now apparent from (\ref{ivn}) the peak current controller has the form of a discrete-time first order IIR filter. The IIR filter closely approximates the properties of a Linear Time Invariant (LTI) system under small-signal conditions in which the inductor current slopes do not change appreciably from sample-to-sample.   
+It is now apparent from (\ref{ivn}) the peak current controller has the form of a discrete-time first order IIR filter. Note the IIR filter is an exact representation of the behavior that would be observed if all of its inputs were sampled and reconstructed using the ZOH reconstruction filter. The significance of this observation is the response to a single impulse is perfectly captured when the single impulse is first convolved with a ZOH response, the effect of which can be reversed easily in the frequency domain.
 
 \subsection{Z-transform of the Peak Current Controller}
 Given a difference equation for an LTI system (as assumed in (\ref{ivn}) ) the z-transform can be evaluated by inspection.  
@@ -222,7 +220,7 @@ One way to dismiss the effect of the constant seen in (\ref{ivn}) is by use of t
 The necessary relationships are included to maintain coherence in the approach being presented.
 
 \begin{table}[H]
-	\caption{Useful Z-transform Properties}
+	\caption{Selected Z-transform Properties}
 	\begin{center}
 		\begin{tabular}{|c|c|c|}
 			\hline
@@ -252,14 +250,14 @@ The choice of relationships expressed in Table \ref{tabun} plays on the followin
 \begin{equation}
 u[n-1] + u[-n] = 1 \label{funny_one}
 \end{equation}
-The expression in (\ref{funny_one}) is used to substitute unity in the constant expression, $ k = -T_{SW} m_d $,
+The expression in (\ref{funny_one}) is used to substitute unity in the constant expression, $ T_{SW} m_d $,
 \begin{equation}
-	\mathcal{Z}\{ 1k \} = 
-	\mathcal{Z}\{ k (u[n-1] + u[-n]) \}
+	\mathcal{Z}\{ T_{SW} m_d \} = 
+	\mathcal{Z}\{ T_{SW} m_d (u[n-1] + u[-n]) \}
 \end{equation}
 hence,
 \begin{equation}
-\mathcal{Z}\{ k \} = k \bigg( \dfrac{z^{-1}}{1-z^{-1}} + \dfrac{-z^{-1}}{1-z^{-1}} \bigg) = 0
+\mathcal{Z}\{ T_{SW} m_d \} = T_{SW} m_d \bigg( \dfrac{z^{-1}}{1-z^{-1}} + \dfrac{-z^{-1}}{1-z^{-1}} \bigg) = 0
 \end{equation}
 
 Having reasonably dismissed the constant term, (\ref{ivz}) is refactored to the following transfer function,
@@ -278,7 +276,7 @@ The condition for which it is possible for the denominator to become zero is at 
 \begin{equation}
 H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
 \end{equation}
-The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$, and the system response is a sustained oscillation with $\alpha = 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
+The condition for stability therefore requires that $\alpha < 2$.  The system is outside of the Region of Convergence (ROC) for $\alpha > 2$, while the system response is a sustained oscillation with $\alpha = 2$. It is intuitive from the time-domain expression in (\ref{ivn}) that any condition for which the magnitude of $(1 - \alpha)$ equals or exceeds 1.0, the state variable $i_v[n]$ will build rather than decay.
 Recall that $\alpha$ is a function of inductor current slopes as well as the slope compensation parameter, $m_{cmp}$.  Expanding (\ref{const_alpha}) into (\ref{cpmstability}) and rearranging terms, the amount of slope compensation necessary for stability is found by ensuring the following inequality is satisfied,
 \begin{equation}
 m_{cmp} > \dfrac{m_d - m_c}{2} \label{slope_stab}
@@ -293,7 +291,7 @@ D'_{min} = \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_{mc}}} \label{transl_stab}
 
 For consistency with the inequality stated in (\ref{slope_stab}), the quantity in (\ref{transl_stab}) will be re-expressed as an inequality defining the values for $D'$ for which the controller is stable,
 \begin{equation}
-D' > \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_{mc}}} \label{transl_stab_ineq}
+D' > \dfrac{0.5}{1 + \dfrac{m_{cmp}}{m_{c}}} \label{transl_stab_ineq}
 \end{equation}
 
 The steady-state condition within the peak current mode controller occurs when $i_v[n] - i_v[n-1]$. Evaluation of (\ref{ivd}) in the steady state condition yields the following.
@@ -314,7 +312,7 @@ Then solving (\ref{tan_stab_eq}) for slope compensation yields the following.
 	m_{cmp} > \dfrac{m_d - m_c}{2} \label{mid_stab}
 \end{equation}
 
-It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in perfect agreement.
+It is now apparent that (\ref{mid_stab}) and (\ref{slope_stab}) are in agreement.
 
 \subsection{Peak Current Controller magnitude response}
 In addition to evaluating peak current controller stability the expression in (\ref{cpmstability}) may be rearranged to express a desired peak magnitude response in terms of the coefficient $\alpha$.
@@ -396,12 +394,12 @@ i_{cg} = a_{cg}i_0^2+b_{cg}i_1^2+c_{cg}i_0i_1+d_{cg}i_0+e_{cg}i_1+f_{cg} \label{
 \end{equation}
 Where the constants are expanded per below,
 \begin{align*}
-a_{cg} = & \frac{1}{2T_{SW}} \bigg[ \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
-b_{cg} = & -\frac{1}{2T_{SW}} \bigg[ \frac{m_c + 2m_d}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
-c_{cg} = & \frac{1}{T_{SW}} \bigg[  \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \bigg] \nonumber\\
+a_{cg} = & \bigg( \frac{1}{2T_{SW}} \bigg) \frac{m_c}{m_c^2+2m_cm_d+m_d^2} \nonumber\\
+b_{cg} = & - \bigg( \frac{1}{2T_{SW}} \bigg) \frac{m_c + 2m_d}{m_c^2+2m_cm_d+m_d^2} \nonumber\\
+c_{cg} = & \bigg( \frac{1}{T_{SW}} \bigg)  \frac{m_d}{m_c^2+2m_cm_d+m_d^2} \nonumber\\
 d_{cg} = & \frac{m_cm_d}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
 e_{cg} = & \frac{m_d^2}{m_c^2+2m_cm_d+m_d^2}\nonumber\\
-f_{cg} = & \frac{T_{SW}}{2} \bigg[ \frac{m_c m_d^2}{m_c^2+2m_cm_d+m_d^2} \bigg]\nonumber\\
+f_{cg} = & \bigg( \frac{T_{SW}}{2} \bigg) \frac{m_c m_d^2}{m_c^2+2m_cm_d+m_d^2} \nonumber\\
 \end{align*}
 
 \subsection{Geometric Area of Discharging Current}
@@ -468,7 +466,7 @@ Now having briefly outlined the process, this will be applied to the generalized
 i_{avg} = a i_0^2+b i_1^2+c i_0i_1+d i_0+e i_1+f  \label{i_av_gen}
 \end{equation}
 
-In this case there are two independent variables, $i_0$ and $i_1$, so the partial derivative must be evaluated for both variables. One helpful observation is when considering the system is operating in a small-signal steady-state the preceding IIR filter stage is also presumed operating in this state, hence $i_v[n] = i_v[n-1] = i_{v\infty}$, where $i_{v\infty}$ is used to identify the final steady-state value for the valley current.
+In this case there are two independent variables, $i_0$ and $i_1$, so the partial derivative must be evaluated for both variables. One helpful observation is the preceding IIR filter stage is also presumed to be settled at steady state operating conditions, hence $i_v[n] = i_v[n-1] = i_{v\infty}$, where $i_{v\infty}$ is used to identify the final steady-state value for the valley current.
 
 \begin{align}
 \Delta{_{avg}} &= \Delta{_0}\frac{\partial i_{avg}}{\partial i_0}\bigg|_{i_1=i_{v\infty}} + \Delta{_1}\frac{\partial i_{avg}}{\partial i_1}\bigg|_{i_0=i_{v\infty}} 
@@ -507,7 +505,7 @@ I_{\infty} = (a + b +c)i_{v \infty}^2 + (d+e)i_{v \infty} + f
 \label{iavg_steady_state}
 \end{equation}
 
-Now having the DC gain of the FIR filter, the gain on small perturbations about this operating point remains to be determined.  For this,  (\ref{i_av_gen}) is evaluated using terms defined in (\ref{deltai0i1}) as substituted into (\ref{i_av_deriv}).
+Now having the DC operating point of the FIR filter, the gain on small perturbations about this operating point remains to be determined.  For this,  (\ref{i_av_gen}) is evaluated using terms defined in (\ref{deltai0i1}) as substituted into (\ref{i_av_deriv}).
 
 \begin{align}
 	\Delta_{avg} &= 
@@ -544,25 +542,21 @@ Recall geometrically the quantity $\Delta_{avg}$ is a small change to the area b
 Where the circumflex notation (e.g. $\hat{i}[n]$) represents the AC small-signal response of a nonlinear system. The proposed translation is executed by interpreting the $\Delta_{avg}$, $\Delta_0$, and $\Delta_1$ as peak-to-peak limits on arbitrary AC waveforms $\hat{i}_{avg}$, $\hat{i}[n]$ and $\hat{i}[n-1]$, respectively. Interpreting the geometric problem as shown in (\ref{avg_FIR}) has a more easily identifiable form of a first-order FIR filter.
 
 The form of the FIR filter expressed in (\ref{avg_FIR}) is expanded to an expression of the AC transfer function between valley currents and average output currents for both charging and discharging cycles by substituting coefficients identified in (\ref{i_cg_canon}) and (\ref{i_dg_canon}), specifically,
-
 \begin{equation}
 \hat{i}_{cg} = k_{0_{cg}} \hat{i}_{v}[n] + 
 k_{1_{cg}} \hat{i}_v[n-1]
 \label{avg_FIR_cg}
 \end{equation}
-
 for the charging cycle current, and
-
 \begin{equation}
 \hat{i}_{dg} = k_{0_{dg}} \hat{i}_{v}[n] + 
 k_{1_{dg}} \hat{i}_v[n-1]
 \label{avg_FIR_dg}
 \end{equation}
-
 represents the discharging cycle current.
 
 \subsection{Continuous Time Approximation of FIR Averaging Filter}
-A well-documented phenomenon of the switched inductor discharge current response (commonly associated with a flyback topology) is the right-half-plane-zero (RHPZ) that shows up in the loop response.  The system evaluated according to the equivalent circuit models of Fig. \ref{fig:asmpstopologies} indicates the RHPZ exists in buck and forward converters but its response is swamped by the complementary left-half-plane zero characteristic of the charging cycle current.
+A well-documented phenomenon of the switched inductor discharge current response (commonly associated with a buck/boost or flyback topology) is the right-half-plane-zero (RHPZ) that shows up in the loop response.  The system evaluated according to the equivalent circuit models of Fig. \ref{fig:asmpstopologies} indicates the RHPZ exists in buck and forward converters but its response is swamped by the complementary left-half-plane zero characteristic of the charging cycle current.
 
 To give intuitive context for the following derivation the FIR responses of (\ref{avg_FIR_cg}) and (\ref{avg_FIR_dg}) are plotted as discrete-time systems overlaid with the corrected response (inverse ZOH), and continuous time approximation (conventional RHPZ).
 
@@ -585,21 +579,21 @@ To give intuitive context for the following derivation the FIR responses of (\re
 \end{figure}
 
 
-\subsubsection{Derivation of the conventional RHPZ}
+\subsubsection {Derivation of the RHPZ for Discharge Cycle Current}
 From above plots it is apparent the impulse response based approach presented in this document traces the shape of the RHPZ as presented in conventional literature [ref]. It is here shown how the well-known RHPZ expression is readily obtained by evaluating (\ref{avg_FIR_dg}) in the limit as $T_{SW} \to 0$.
 
 First an intermediate variable is defined,
 \begin{equation}
-g_{dg} = \frac{1}{m_c^2+2m_cm_d+m_d^2}
+g_{dg} = \frac{1}{m_c^2+2m_cm_d+m_d^2} = \frac{1}{(m_c + m_d)^2}
 \end{equation} 
 
 which is a quantity common in every coefficient found in the discharging current polynomial expressed in (\ref{i_dg_canon}). Now the small-signal FIR filter in (\ref{avg_FIR_dg}) can be neatly expanded as follows.
 
-\begin{equation}
-\hat{i}_{dg}[n] = (2a+c)i_{v\infty} \hat{i}_{v}[n] + d + 
-(2b+c)i_{v\infty} \hat{i}_v[n-1] + e
+\begin{align}
+\hat{i}_{dg}[n] & = (2a_{dg}+c_{dg})i_{v\infty} \hat{i}_{v}[n] + d_{dg} \hat{i}_{v}[n] \nonumber \\
+ & +(2b_{dg}+c_{dg})i_{v\infty} \hat{i}_v[n-1] + e_{dg} \hat{i}_{v}[n-1]
 \label{avg_FIR_dg_expanded}
-\end{equation}
+\end{align}
 
 Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_dg_canon}),
 
@@ -621,27 +615,32 @@ Re-expressing the difference equation in the continuous time domain with further
 
 The expression in (\ref{idg_t_differential_def}) exposes a differential equation if considering what happens when sampling frequency approaches infinity.
 	
-\begin{equation}
-\lim_{T_{SW} \to 0} \frac{\hat{i}_{dg}(t)}{g_{dg}} = -(m_c + m_d) i_{v\infty} \frac{d \hat{i}_v(t)}{dt}
-+ 	( m_c^2 + m_c m_d ) i_{v\infty} \hat{i}_v(t) 
-\end{equation}
+\begin{align}
+\lim_{T_{SW} \to 0} \frac{\hat{i}_{dg}(t)}{g_{dg}} & = -(m_c + m_d) i_{v\infty} \frac{d }{dt} \hat{i}_v(t) \nonumber \\
+& + 	( m_c^2 + m_c m_d ) i_{v\infty} \hat{i}_v(t) 
+\end{align}
 
-The Laplace transform is then obtained by inspection,
+The Laplace transform is then obtained by inspection (note the constant of integration is assumed zero since (\ref{iv_laplace}) represents the small-signal AC response),
 
 \begin{equation}
 	 \frac{\hat{I}_{dg}(s)}{g_{dg}} =  - (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + ( m_c^2 + m_c m_d ) i_{v\infty} \hat{I}_{v}(s)
+     \label{iv_laplace}
 \end{equation}
 
 Finally a transfer function is defined,
 
-\begin{equation}
-H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =  g_{dg} (m_c + m_d) i_{v\infty}
+\begin{align}
+H_{dg} (s) = \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} &=  g_{dg} (m_c + m_d) i_{v\infty}
+\big (\frac{m_c}{i_{v\infty}} - s \big )  \nonumber\\
+&= \frac{m_c + m_d}{(m_c + m_d)^2} i_{v\infty}
+\big (\frac{m_c}{i_{v\infty}} - s \big ) \nonumber \\
+&= \frac{i_{v\infty}}{m_c + m_d}
 \big (\frac{m_c}{i_{v\infty}} - s \big )
 \label{RHPZ_s_raw}
-\end{equation}
+\end{align}
 
 The conventional notion of a continuous time RHPZ is now apparent in (\ref{RHPZ_s_raw}).  
-Further algebraic manipulation is required to see it in its well-known form.  The first item to re-express is the steady-state valley current, $i_{v\infty}$, which must be re-expressed in terms of the steady-state $i_{dg}$ if $R_{OUT} = V_{dg}/i_{dg}$ is to be pulled out of this expression.
+Further algebraic manipulation is required to demonstrate equivalence to a more commonly known form.  The first item nonconformant to the conventional nomenclature is the steady-state valley current, $i_{v\infty}$, which must be re-expressed in terms of the steady-state $i_{dg}$ if $R_{LOAD} = V_{dg}/i_{dg}$ is to be pulled out of this expression.
 
 \begin{equation}
 	i_{dg} = \frac{L_m}{2V_{dg}T_{SW}} (i_{pk}^2 - i_{v\infty}^2)
@@ -668,23 +667,24 @@ Substituting (\ref{steady_state_ripple}) and (\ref{ipk_ripple}) into (\ref{stead
 \begin{align}
 i_{dg} =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2\Delta_{IL} i_{v\infty} + \Delta_{IL}^2 \bigg) \nonumber \\
 =& \frac{L_m}{2V_{dg}T_{SW}} \bigg(2 D'\frac{V_{dg} T_{SW}}{L_m} i_{v\infty} + \bigg(D'\frac{V_{dg} T_{SW}}{L_m}\bigg)^2\bigg) \nonumber \\
-=&  D' i_{v\infty} + D'^2\frac{V_{dg} T_{SW}}{L_m}
+=&  D' i_{v\infty} + D'^2\frac{V_{dg} T_{SW}}{2L_m}
 \end{align}
 
 Recall this system has been evaluated in the limit as $T_{SW} \to 0$, so the steady-state relationship between $i_{dg}$ and $i_{v\infty}$ simplifies to the following.
 
 \begin{align}
 i_{dg} = D' i_{v\infty}
+\label{idg_dp_iv_rel}
 \end{align}
 
-Now, from (\ref{RHPZ_s_raw}) the location of the right-half-plane zero is extracted per following.
+Now, from (\ref{RHPZ_s_raw}) and (\ref{idg_dp_iv_rel})the location of the right-half-plane zero is extracted per following.
 
 \begin{equation}
 	\omega_{RHPZ} = \frac{m_c}{i_{v\infty}} = \frac{V_{cg}}{L_m} \frac{D'}{i_{dg}}
 	\label{wrhpz_raw}
 \end{equation}
 
-A little more work is needed to obtain the canonical continuous-time expression for the RHPZ location, specifically, re-casting $V_{cg}$ in terms of $V_{dg}$.
+Now $\omega_{RHPZ}$ is expressed using terms familiar within common literature, but further manipulation is needed for the equivalence to become obvious.  Specifically, re-casting $V_{cg}$ in terms of $V_{dg}$, where $V_{dg}$ is equivalent to the output voltage in a flyback or buck-boost topology.
 
 \begin{equation}
 V_{cg} = V_{dg} (\frac{1}{D} - 1)
@@ -695,14 +695,220 @@ Then substituting (\ref{vcgdg_equivalence}) into (\ref{wrhpz_raw}) the following
 
 \begin{align}
 	\omega_{RHPZ} =& \frac{V_{dg}}{ i_{dg} L_m } D' (\frac{1}{D} - 1) \nonumber \\
-	=& \frac{R_{OUT}}{L_m} (\frac{D'}{D} - D') \nonumber \\
-	=&  \frac{R_{OUT}}{L_m D} D'(1-D) \nonumber \\
-	=& \frac{D'^2 R_{OUT}}{D L_m}
+	=& \frac{R_{LOAD}}{L_m} (\frac{D'}{D} - D') \nonumber \\
+	=&  \frac{R_{LOAD}}{L_m D} D'(1-D) \nonumber \\
+	=& \frac{R_{LOAD} D'^2}{L_m D}
 	\label{WHRPZ_canonical}
 \end{align}
 
-It is now apparent the expression in (\ref{WHRPZ_canonical}) exactly matches the expression given in \cite{b2} for a buck-boost topology converter.  The significance of the buck-boost is output transfer function has sole dependence on the discharge cycle current.
+It is now apparent the expression in (\ref{WHRPZ_canonical}) agrees with the expression given in \cite{b2} for a buck-boost topology converter.  The significance of the buck-boost output transfer function is due to dependence on the discharge cycle current such that $V_{OUT} = V_{dg}$ and $I_{OUT} = i_{dg}$, hence, $R_{LOAD} = \frac{V_{dg}}{i_{dg}}$.
 
+The approach employed to arrive at this expression helps differentiate between sampling effects and the system dynamic response.  Using the impulse response model shows this can be treated as a continuous-time system that obtains its input from a sampler.  That is, sampling effects and system response have been decoupled.
+
+\subsubsection {Derivation of the LHPZ for the Charge Cycle Current}
+Derivation of the RHPZ was presented first because its relationship to the transfer function of a buck-boost topology is easily identifiable by comparison with prior work.  The charging cycle current has a corollary response in the form of a Left-Half-Plane-Zero (LHPZ), but such is not typically expressed as an independent quantity within the conventional treatment of switched-mode converters. In topologies where charging cycle currents flow directly to the converter output (such as buck, forward), the conventional treatment expresses the transfer function as a quantity dependent upon the sum of charging and discharging currents, hence the LHPZ does not appear in the transfer function.  As shown later, there is a cancellation between the LHPZ and RHPZ when the two current sources are summed at the output.
+
+This section will identify the LHPZ in conventional terms of $D$, $D'$ and $R_{LOAD}$ and the subsequent section will briefly explore how these sum in a buck topology to produce the typical transfer function for a peak current mode controller.
+
+Based upon FIR coefficients previously defined we see the following is true,
+\begin{equation}
+g_{cg} = g_{dg} = \frac{1}{(m_c + m_d)^2}
+\end{equation} 
+
+which is a quantity common in every coefficient found in the charging current polynomial expressed in (\ref{i_cg_canon}). Now the small-signal FIR filter in (\ref{avg_FIR_cg}) can be neatly expanded as follows.
+
+\begin{align}
+\hat{i}_{cg}[n] & = (2a_{cg}+c_{cg})i_{v\infty} \hat{i}_{v}[n] + d_{cg} \hat{i}_{v}[n] \nonumber \\
+& +(2b_{cg}+c_{cg})i_{v\infty} \hat{i}_v[n-1] + e_{cg} \hat{i}_{v}[n-1]
+\label{avg_FIR_cg_expanded}
+\end{align}
+
+Then substituting $a$, $b$, $c$, $d$ and $e$ from coefficients of (\ref{i_cg_canon}),
+
+\begin{align}
+\frac{\hat{i}_{cg}[n]}{g_{cg}} = &\frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_{v}[n] + m_c m_d \hat{i}_v[n] \nonumber \\ 
+&- \frac{m_c + m_d}{T_{SW}} i_{v\infty} \hat{i}_v[n-1] + m_d^2 \hat{i}_v[n-1]
+\label{avg_FIR_cg_expanded_coeffs}
+\end{align}
+
+Re-expressing the difference equation in the continuous time domain with further rearrangement exposes a form of the derivative definition,
+
+\begin{align}
+\frac{\hat{i}_{cg}(t)}{g_{cg}} =&  \frac{\hat{i}_v(t) - \hat{i}_v (t-T_{SW})} {T_{SW}}
+(m_c + m_d) i_{v\infty} \nonumber \\
+&+	m_c m_d \hat{i}_v(t)
++ m_d^2 \hat{i}_v(t-T_{SW})
+\label{icg_t_differential_def}
+\end{align}
+
+The expression in (\ref{icg_t_differential_def}) exposes a differential equation if considering what happens when sampling frequency approaches infinity.
+
+\begin{align}
+\lim_{T_{SW} \to 0} \frac{\hat{i}_{cg}(t)}{g_{cg}} & = (m_c + m_d) i_{v\infty} \frac{d }{dt} \hat{i}_v(t) \nonumber \\
+& + 	m_d( m_c + m_d ) i_{v\infty} \hat{i}_v(t) 
+\end{align}
+
+The Laplace transform is then obtained by inspection (note the constant of integration is assumed zero since (\ref{ivcg_laplace}) represents the small-signal AC response),
+
+\begin{equation}
+\frac{\hat{I}_{cg}(s)}{g_{cg}} =  (m_c + m_d) i_{v\infty}\hat{I}_{v}(s)s + m_d( m_c + m_d ) i_{v\infty} \hat{I}_{v}(s)
+\label{ivcg_laplace}
+\end{equation}
+
+Finally a transfer function is defined,
+
+\begin{align}
+H_{cg} (s) &= \frac{\hat{I}_{cg}(s)}{\hat{I}_{v}(s)} =  g_{cg} (m_c + m_d) i_{v\infty}
+\big (\frac{m_d}{i_{v\infty}} + s \big ) \nonumber\\
+&= \frac{m_c + m_d}{(m_c + m_d)^2} i_{v\infty}
+\big (\frac{m_d}{i_{v\infty}} + s \big ) \nonumber \\
+&= \frac{i_{v\infty}}{m_c + m_d}
+\big (\frac{m_d}{i_{v\infty}} + s \big )
+\label{LHPZ_s_raw}
+\end{align}
+
+The notion of a continuous time LHPZ is now apparent in (\ref{LHPZ_s_raw}).  The following process is nearly identical to that outlined in the prior section with specifics changed to frame this in relationship to properties of the charging cycle current.
+
+\begin{equation}
+i_{cg} = \frac{L_m}{2V_{cg}T_{SW}} (i_{pk}^2 - i_{v\infty}^2)
+\label{steady_state_icg}
+\end{equation}
+
+where $i_{pk}$ is the peak current, so the following substitution may be used.
+
+\begin{equation}
+i_{pk} = i_{v\infty} + \Delta_{IL}
+\label{ipk_ripple_redundant}
+\end{equation}
+
+The quantity $\Delta_{IL}$ is the steady-state ripple observed during CCM operation, further expanded to the following expression.
+
+\begin{equation}
+\Delta_{IL} = \frac{V_{cg}V_{dg}}{V_{cg} + V_{dg}} \frac{T_{SW}}{L_m} =
+D\frac{V_{cg} T_{SW}}{L_m}
+\label{steady_state_ripple_cg}
+\end{equation}
+
+Substituting (\ref{steady_state_ripple_cg}) and (\ref{ipk_ripple_redundant}) into (\ref{steady_state_icg}), the following is obtained.
+
+\begin{align}
+i_{cg} =& \frac{L_m}{2V_{cg}T_{SW}} \bigg(2\Delta_{IL} i_{v\infty} + \Delta_{IL}^2 \bigg) \nonumber \\
+=& \frac{L_m}{2V_{cg}T_{SW}} \bigg(2 D\frac{V_{cg} T_{SW}}{L_m} i_{v\infty} + \bigg(D\frac{V_{cg} T_{SW}}{L_m}\bigg)^2\bigg) \nonumber \\
+=&  D i_{v\infty} + D^2\frac{V_{cg} T_{SW}}{2L_m}
+\end{align}
+
+Recall this system has been evaluated in the limit as $T_{SW} \to 0$, so the steady-state relationship between $i_{cg}$ and $i_{v\infty}$ simplifies to the following.
+
+\begin{align}
+i_{cg} = D i_{v\infty}
+\label{idg_d_iv_rel}
+\end{align}
+
+Now, from (\ref{LHPZ_s_raw}) and (\ref{idg_d_iv_rel})the location of the left-half-plane zero is extracted per following.
+
+\begin{equation}
+\omega_{LHPZ} = \frac{m_d}{i_{v\infty}} = \frac{V_{dg}}{L_m} \frac{D}{i_{cg}}
+\label{wlhpz_raw}
+\end{equation}
+
+Now $\omega_{LHPZ}$ is further distilled following the process used for $\omega_{RHPZ}$.  Specifically, re-casting $V_{cg}$ in terms of $V_{dg}$, where $V_{dg}$ is equivalent to the output voltage in a flyback or buck-boost topology.
+
+\begin{equation}
+V_{dg} = \frac{D V_{cg}} {D'}
+\label{vdgcg_equivalence}
+\end{equation}
+
+Then substituting (\ref{vdgcg_equivalence}) into (\ref{wlhpz_raw}) the following emerges.
+
+\begin{align}
+\omega_{LHPZ} =& \frac{V_{cg}}{ i_{cg} L_m } D (\frac{D}{D'}) \nonumber \\
+=&  \frac{V_{cg} D^2}{i_{cg}L_m D' } \nonumber \\
+=& \frac{R_{IN} D^2}{L_m D' }
+\label{WLHPZ_compare_WRHPZ}
+\end{align}
+
+Since the quantity $R_{IN}$ does not have an intuitive connection to the converter loading conditions, it is more meaningful to relate the LHPZ to the output loading condition, $R_{LOAD}$.  Backing up to (\ref{wlhpz_raw}), and using (\ref{idg_d_iv_rel}) the following form of the expression is obtained.
+
+\begin{equation}
+	\omega_{LHPZ} = \frac{m_d}{i_{v\infty}} = \frac{V_{dg} D'}{i_{dg} L_m} = \frac{R_{LOAD} D'}{L_m}
+	\label{WLHPZ_canonical}
+\end{equation}
+
+The significance of (\ref{WLHPZ_compare_WRHPZ}) is the complementary form to the RHPZ, that is the $D$ and $D'$ terms are swapped, the load is reflected to the converter input, while the zero appears in left-half-plane.  The expression in (\ref{WLHPZ_canonical}) relates the LHPZ location to $R_{LOAD}$, which is a more intuitive quantity.
+
+\subsubsection{Effect of Summing Charging and Discharging Currents}
+In some topologies such as the buck converter, the charging cycle current is summed with the discharging cycle current at the output. It will be shown the LHPZ and RHPZ cancel and do not have an effect on the composite output response.
+
+First it will be convenient to express the complete transfer functions in further developed terms so the relationship to the conventional response is apparent. 
+
+\begin{align}
+H_{cg} (s) &= \frac{i_{v\infty}}{m_c + m_d}
+\big (\frac{m_d}{i_{v\infty}} + s \big ) \nonumber \\
+&= \frac{L_m i_{dg}}{D' (V_{cg} + V_{dg})}
+\big (\frac{R_{LOAD} D'}{L_m} + s \big ) \nonumber \\
+&= \frac{i_{dg} L_m D}{V_{dg}D'}
+\big (\frac{R_{LOAD} D'}{L_m} + s \big ) \nonumber \\
+&= \frac{L_m D}{R_{LOAD}D'}
+\big (\frac{R_{LOAD} D'}{L_m} + s \big ) 
+\label{Hcg_LHPZ_s_final}
+\end{align}
+
+Only the zero location and sign changes for discharging current, so below simplification steps are brief following on from (\ref{Hcg_LHPZ_s_final}).
+\begin{align}
+H_{dg} (s) &= \frac{i_{v\infty}}{m_c + m_d}
+\big (\frac{m_c}{i_{v\infty}} - s \big ) \nonumber \\
+&= \frac{L_m D}{R_{LOAD}D'}
+\big (\frac{R_{LOAD} D'^2}{L_m D} - s \big ) 
+\label{Hdg_RHPZ_s_final}
+\end{align}
+
+The valley-to-output-current transfer function for a buck converter then becomes the following.
+
+\begin{align}
+	H_{ibuck}(s) &= \frac{\hat{i}_{dg}(s) + \hat{i}_{cg}(s)}{\hat{i}_v(s)} =
+	\frac{\hat{i}_{out}(s)}{\hat{i}_v(s)} \nonumber \\
+	&= \frac{L_m D}{R_{LOAD}D'}
+	\big (\frac{R_{LOAD} D'}{L_m} + s \big ) \nonumber \\
+	&+  \frac{L_m D}{R_{LOAD}D'}
+	\big (\frac{R_{LOAD} D'^2}{L_m D} - s \big ) \nonumber \\
+	&= \frac{L_m D}{R_{LOAD}D'} ( \frac{R_{LOAD} D'}{L_m} + s 
+	+ \frac{R_{LOAD} D'^2}{L_m D} - s ) \nonumber \\
+	&= D + D' \nonumber \\
+	&= D + 1 - D \nonumber \\
+	&= 1
+	\label{H_valley_buck}
+\end{align}
+
+The result demonstrated in (\ref{H_valley_buck}) is intuitive given the inductor current geometry when charging and discharging cycles are combined into a single output.  The main piece missing to relate this to [ref Table 12.3, pg 470, Erickson] simple model is AC response of the peak current controller. For matching the simple model, the quantity (\ref{hvz}) may be considered equal to its DC gain,
+
+\begin{align}
+	\frac{\hat{i}_v(s)} {\hat{i}_c(s)} \approx H_v(e^{j\omega}) \bigg|_{\omega=0} &= \frac{\alpha e^{-j0}}{1- (1-\alpha) e^{-j0}} \nonumber \\
+	&= \frac{\alpha}{1 - (1-\alpha)} \nonumber \\
+	&= 1
+	\label{H_control_DC}
+\end{align}
+
+In the simple model referenced, control-to-output is expressed as output voltage as a response to control current.  The model assumes the output is a simple $R||C$ network.  In the equivalent circuit for a buck converter shown in Fig. \ref{fig:asmpstopologies} it can be seen the impulse response model for the output is then a current source in parallel with the RC network, hence,
+
+\begin{align}
+	\hat{v} &= (\hat{i}_{cg} + \hat{i}_{dg})\frac{R}{1 + sRC} \nonumber \\
+	&= \hat{i}_{out}\frac{R}{1 + sRC}
+	\label{cpm_ic_io_simple}
+\end{align}
+
+where $R=R_{LOAD}$ and $C$ is the output filter capacitor. From (\ref{H_valley_buck}) and (\ref{H_control_DC}) it is apparent that $\hat{i}_{out} = \hat{i}_c$ if the current mode controller high frequency peaking effect is neglected.  Using the stated assumptions the following is equivalent to (\ref{cpm_ic_io_simple}),
+
+\begin{align}
+\hat{v} &= \hat{i}_{c}\frac{R}{1 + sRC}
+\end{align}
+
+and finally the expression matching [ref Erickson] is obtained.
+
+\begin{align}
+\frac{\hat{v}}{\hat{i}_{c}} &= \frac{R}{1 + sRC}
+\end{align}
+
+It will be asserted the more accurate model presented by Erickson would be reproduced by evaluating the impulse response for the output voltage to valley current transfer function, from which an equivalent small-signal output impedance could be expressed. The proposed exercise is not documented here. 
 
 \subsection{Discrete to Continuous Reconstruction}
 The steady-state inductor current pulse shape includes information about the high-frequency response and (more importantly) the filter group delay. The sampled system derived to this point accurately reconstructs the system magnitude response up to half the Nyquist frequency, but fails to predict phase response in the band where gain margin might be evaluated.  In this section it is shown how the sampled system is reconstructed when assuming small-signal perturbation.
