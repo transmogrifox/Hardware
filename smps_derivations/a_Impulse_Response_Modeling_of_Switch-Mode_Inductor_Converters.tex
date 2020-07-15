@@ -28,13 +28,12 @@ ryan\_billing@selinc.com}
 \maketitle
 
 \begin{abstract}
-The transfer function of a peak current mode DC-DC converter is developed based upon analysis of the impulse response of the perturbed system. A new equivalent circuit model is introduced in which the inductor charging and discharging cycle currents are expressed (each) as a behavioral current source generating pulses to match those of the system being modeled. The proposed approach breaks the impulse response into a sampler, a system of cascaded discrete-time filters, then reconstructs the continuous-time output which is realized within the current source models.  
+The transfer function of a switched inductor converter is developed based upon analysis of the impulse response of the perturbed system. A new equivalent circuit model is introduced in which the inductor charging and discharging cycle currents are expressed (each) as a behavioral current source generating a sequence of current pulses matching the inductor currents that result from a perturbed system. The proposed approach deconstructs the switched inductor system impulse response into a system of cascaded discrete-time filters, then reconstructs the continuous-time output which is realized within the current source models.  
 
-The peak current control signal is sampled with an impulse train, then convolved with a Zero-Order-Hold (ZOH) function to simplify geometric computation of the valley currents. The sampler and ZOH system is followed by a transfer function relating control input trip threshold to valley currents expressed in discrete-time as an IIR filter.   
+The analysis technique is demonstrated by considering the control-to-output transfer function of a converter operating in current programmed mode (CPM). The CPM converter is expressed by a cascade combination of an IIR filter expressing control-to-valley current, which is then chained into a filter reversing the Zero-Order-Hold (ZOH) assumption used to work out control-to-valley transfer function.  Finally, two sets of FIR filters are used to express valley-to-average and average-to-pulse for the charging and discharging cycle inductor current.  
 
-Next, the output of the control-to-valley current is fed into the Inverse Zero-Order-Hold (IZOH) system to reverse the frequency response implicated by simplification of the geometry problem.  Unique to this work is the development of a discrete-time FIR filter relating valley currents to cycle averages for the charging and discharging cycles, albeit non-LTI. To handle the nonlinear system response, small-signal analysis is used to derive coefficients for a discrete-time first-order LTI FIR filter which characterize the perturbed system response. 
+The control-to-output transfer function is shown to match what is found in conventional literature, however, the final average-to-pulse FIR filter is not found in averaged switch models.  This final FIR stage reproduces the correct group delay, making the phase response accurate up to the Nyquist rate.  The consequence of using the final stage in the model is shown by comparing simulation results from the new model, a conventional model and measured data from a fixed frequency flyback converter.
 
-Finally, the sampled system is applied to a continuous time FIR filter with pulse shape matching the steady-state charging and discharging current pulses for each respective behavioral current source.  This final step represents group delay and high frequency magnitude response characteristics not captured by conventional averaging models, yet has material effect on phase response well below the Nyquist rate.
 \end{abstract}
 
 
@@ -43,24 +42,19 @@ Switched-mode power converters are the power electronics industry's practical im
 
 Implementation of a switched-mode converter is not without challenges. In addition to other difficulties outside the scope of this document, it is here brought to the forefront that controlling such a system is nontrivial: the control-loop dynamics are emphatically not Linear, Time-Invariant (LTI) systems.
 
-This document steps through the analytical deconstruction and reconstruction of the inductor current geometry as required to expose time dependence and nonlinear gain functions. The analytical representations of the signal at each step are combined to define an impulse response characterizing the relationship between control input and inductor current waveforms.  The derived system impulse response exactly reproduces the switched inductor current waveforms when triggered by a sampled version of the control signal. In the proposed approach it is seen that the use of averaging is not strictly necessary for understanding the dynamic behavior of a switched-mode converter.
-
-A linearized model of this nature is useful as an analytical tool for understanding what features affect gain and frequency response of a switched mode converter.  Furthermore the geometrically correct nonlinear model can be judiciously simplified to create a SPICE model with two salient benefits. The first is that it can be quickly resolved as a band-limited continuous time system, reducing simulation time.  The second benefit is that it can be solved and linearized at a steady-state operating point to take advantage of AC analysis. The reduced simulation time and complexity improves the designer's work flow while the AC analysis is not possible with a simulation tool such as SPICE when the model has discontinuities in the time domain.
-
-\section{Background}
 The conventional approach used to express the transfer function for switched inductor converters considers the average behavior of the switch element as a continuous-time impedance.  In this approach the system dynamic behavior is evaluated by modulating the switch's average impedance as a function of duty cycle. The modulator gain of the Averaged Switch Model may be applied as a nonlinear impedance for use in numerical simulations, or as a small-signal linear system for analytical characterization.
 
-The most notable cleverness in the conventional approach is the ability to treat the switch element as a three-terminal device that is characterized using only terminal voltages and currents. This switch model may be placed in any configuration to represent a large subset of switched-mode converters.  Generalization of the switch element allows for development of a unified model capturing dynamic behavior of switched-mode converters over a broader class of converter topologies. With the switch modeled as a nonlinear impedance element, there is no need to re-evaluate fundamental assumptions about averaging of the switch's dynamic behavior when using this to evaluate most converter topologies.
+The most notable cleverness in the conventional approach is the ability to treat the switch element as a three-terminal device that is characterized using only terminal voltages and currents. This switch model may be placed in any configuration to represent a large subset of switched-mode converters.  Generalization of the switch element allows for development of a unified model capturing dynamic behavior of switched-mode converters over a broader class of converter topologies. With the switch modeled as a nonlinear impedance element, there is no need to re-evaluate fundamental assumptions about averaging of the switch's dynamic behavior when using the model to evaluate most converter topologies.
 
-One behavior missing from an averaged system is a sampling sub-system.  A model neglecting the sampling effect loses visibility into a part of the dynamic behavior prominent above $\frac{1}{4} F_{SW}$ and has material impact on evaluation of the system's gain margin while also neglecting artefacts of the control system (such as subharmonic oscillation in a peak current-mode controller). The sampling effect was addressed in a further development to the averaged converter behavior presented by Tan, Middlebrook in [ref]. This document introduces a sampler and derives a method to account for it in the averaged model.
+One behavior missing from an averaged system is a model for the inherent sampling sub-system. Specifically, the system intakes (samples) and expels a discrete quantity of energy within each switching cycle.  A model neglecting the sampling effect loses visibility into a part of the dynamic behavior prominent above $\frac{1}{4} F_{SW}$ and has material impact on evaluation of the system's gain margin while also neglecting artifacts of the control system (such as subharmonic oscillation in a peak current-mode controller). 
 
-The sampling effect as introduced by Tan, Middlebrook when coupled with the averaged switch model completes a unified model with improved accuracy in the magnitude response, demonstrated up to the converter Nyquist rate. 
+The sampling effect was addressed in a further development to the averaged converter behavior presented by Tan, Middlebrook in [ref]. This document introduces a sampler and approximates its effect in the frequency domain to account for it in the averaged model. The sampling effect as introduced by Tan, Middlebrook when coupled with the averaged switch model completes a unified model with improved accuracy in the magnitude response, having negligible error up to the converter Nyquist rate. 
 
-As pointed out by Jian Li in [ref], the Tan/Middlebrook unified model still fails to predict the high frequency phase response under all conditions.  A further shortcoming of the traditional (and enhanced) averaging models is scalability, e.g., accuracy further diminishes when used to approximate different controller schemes.
+As demonstrated by Jian Li in [ref], the Tan/Middlebrook unified model still fails to predict the high frequency phase response under all conditions.  A further shortcoming identified by Li of the traditional (and enhanced) averaging models is scalability, e.g., accuracy further diminishes when used to approximate variable frequency controllers.
 
-\begin{figure*}[ht]
+\begin{figure*}[ht!]
 	\centerline{\includegraphics [
-		width=16cm,
+		width=18cm,
 		keepaspectratio,
 		] {illustrations/a_SMPS_Topologies.png}}
 	\caption{Review of switched-mode power converter topologies and equivalent circuit model used for developing the impulse response derived transfer functions.}
@@ -68,98 +62,37 @@ As pointed out by Jian Li in [ref], the Tan/Middlebrook unified model still fail
 \end{figure*}
 
 \section{An Alternative Approach}
-This document revisits the problem of characterizing dynamic behavior in switched mode converters with the aim of exposing a closer link between transfer function elements in the waveform geometry. The defining feature of this approach is the use of inductor current waveform geometry to synthesize a series of cascaded filters representing the switched inductor's impulse response.  The system is synthesized as a signal processing chain involving a sampler, discrete time filters and a continuous time reconstruction filter.  Through a judicious process of sampling, re-sampling and reconstruction the inductor currents are expressed as a non-LTI filter response to the control input signal. The defining feature in the approach being developed is expressing cycle average currents as a function of valley currents as sampled on switching edges.  Under this approach, the control input is related to valley currents to express the nuances of a specific control scheme.  The relationship between valley and average currents is considered universal to all common control strategies.
+This document revisits the problem of characterizing dynamic behavior in switched mode converters with the aim of exposing a closer link between transfer function elements in the waveform geometry. The defining feature of this approach is consideration for the link between a system's impulse response and frequency response. Like other approaches, the non-LTI nature of the system is simplified by using small-signal analysis techniques to linearize the response at a pre-determined operating point.  In this case, all system variables are held constant while a single impulse is applied to one and the system response would be derived for each input. In this document the scope is limited to derivation of control-to-output transfer function, focusing on the technique rather than producing complete models.
 
 The equivalent circuit model is prepared by combining the inductor and switch together as a pair of behavioral current sources as shown in Fig. \ref{fig:asmpstopologies}. The currents $i_{cg}$ and $i_{dg}$ correspond to charging and discharging inductor currents where control-to-current transfer functions are expressed as a set of cascaded filters.  The geometry of switched current waveforms serve as a specification for the time-domain impulse responses for continuous time filters in this system's transfer function.
 
 Several common switched inductor topologies are identified in Fig. \ref{fig:asmpstopologies} to better illustrate how this alternative model is substituted for the switch and inductor in the greater context of a switched-mode converter circuit.  Note the left-hand models of Fig. \ref{fig:asmpstopologies} follow the 3-terminal switch construct as presented by Erickson/Maksimovic in [ref].  For these circuits the center position (no-connect) of the switch is considered a legal state so the switch may open when reverse-biased to allow modeling diode behavior.
 
-\section{Peak Current Mode Control System}
-At this point the proposed approach has been prepared in a generalized form. The next step is to derive expressions for $i_c$ and $i_d$ as a function of known quantities. To this end, a specific control scheme must be considered. Peak current mode control (also known as current programmed mode) is chosen as an example because of the widespread availability of reference designs and switched-mode converter controller IC's using this control implementation.
+\section{Current Programmed Mode Control System}
+At this point the proposed approach has been prepared in a generalized form. The next step is to derive expressions for $i_{cg}$ and $i_{dg}$ as a function of known quantities. To this end, a specific control scheme must be considered. Peak current programmed mode is chosen as an example because of the widespread availability of reference designs and switched-mode converter controller IC's using this control implementation.
 
-Peak Current Mode Control is a technique used for controlling inductor currents in a switched-mode converter on a cycle-by-cycle decision-making interval. The control signal sets a threshold to limit inductor peak intake currents during the charging portion of the cycle. When the inductor current crosses this threshold, a latch is reset to signal shut-down of the primary switch device. A compensating ramp is often added to the inductor's current sense signal to induce pre-mature tripping of the comparator -- a tecnique used to stabilize the peak current control loop.
+Peak Current Programmed Mode Control is a technique used for controlling inductor currents in a switched-mode converter on a cycle-by-cycle decision-making interval. The control signal sets a threshold to limit inductor peak intake currents during the charging portion of the switching cycle. When the inductor current crosses this threshold, a latch is reset to signal shut-down of the primary switch device. A compensating ramp is often added to the controller current sense signal to induce pre-mature tripping of the comparator -- a technique used to stabilize the peak current control loop.
 
 \begin{figure}[ht!]
-	\centering
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_01}
-		\caption{}
-		\label{fig:resampling_a}
-	\end{subfigure}%
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_02}
-		\caption{}
-		\label{fig:resampling_b}
-	\end{subfigure}
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_03}
-		\caption{}
-		\label{fig:resampling_c}
-	\end{subfigure}
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_04}
-		\caption{}
-		\label{fig:resampling_d}
-	\end{subfigure}
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_05}
-		\caption{}
-		\label{fig:resampling_e}
-	\end{subfigure}
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_06}
-		\caption{}
-		\label{fig:resampling_f}
-	\end{subfigure}
-	
-	\begin{subfigure}[t]{\columnwidth}
-		\centering	
-		\includegraphics[
-		width=\columnwidth,
-		keepaspectratio,]{a_sampling_sequences/sampling_07}
-		\caption{}
-		\label{fig:resampling_g}
-	\end{subfigure}
-	
-	\caption{Illustration of the analytical process used to re-sample the peak current control input (shown in (a)) and construct output currents as a system of filters with impulse responses derived from inductor current geometry. Waveform in (a) is sampled in (b), then reconstructed with Zero-Order-Hold function in (c). Inductor current is geometrically expressed in (d) and valley currents re-sampled as a discrete time signal in (e). Sequences in (f) and (g) illustrate steps used to generate system output with a set of FIR filters using valley currents as an input.}
+	\centerline{\includegraphics [
+		width=9cm,
+		keepaspectratio,
+		] {illustrations/Impulse_Extraction.png}}
+	\caption{Extraction of the impulse response is done by evaluating system behavior resulting from the application of a pulse.  The impulse response is obtained by deconvolving the pulse pulse response and the pulse.}
 	\label{fig:resampling}
 \end{figure}
 
-\section{Dissection of the Sampled System}
-The diagram in Fig. \ref{fig:resampling} steps through the analytical process used to understand the system as a series of cascaded filters. The control input signal, $i_c(t)$ is shown in Fig. \ref{fig:resampling_a} as an arbitrary waveform with features illustrating a possibility the bandwidth of this signal may exceed the Nyquist rate.  A sampled version of this signal is illustrated in Fig. \ref{fig:resampling_b}.
 
-The first objective is to derive a relationship between the sampled control inputs of Fig. \ref{fig:resampling_b} and valley currents shown in Fig. \ref{fig:resampling_e}. The charging currents ($i_{cg}[n]$) and discharging currents ($i_{dg}[n]$) can be expressed as an FIR filter in discrete time as shown in Fig. \ref{fig:resampling_f} and \ref{fig:resampling_g}. The discrete-time impulse train is reconstructed to a continuous time waveform by convolution with an impulse response having the same shape as the inductor currents.
+\section{Extraction of the Impulse Response}
+The diagram in Fig. \ref{fig:resampling} steps through the analytical process used to understand some key features in the inductor waveform that can be used to express the system impulse response.
 
-The purpose for using a process involving multiple sampling, resampling and discrete time processing operations lies in considering the direct process is not a linear time-invariant operation. For example, the frequency response of an FIR filter having the shape of inductor currents is simply low-pass, rolling off at some frequency above the Nyquist rate. As is well-known from measurements made on switched-mode power supplies the open-loop transfer function has more features than what is indicated by a flat gain response up to Nyquist rate. As exaggerated by a large-signal response in Fig. \ref{fig:resampling_d}, every inductor current pulse may have a different geometry than the last, and such features are not linearly related to the peak current control signal. 
+The most helpful observations come to mind when the converter is considered to be a discrete time system at its core.  Specifically, there is a discrete amount of energy intake during the charging cycle and a discrete amount of energy delivered to the output during the discharging cycle.  When the converter is operating in Continuous Conduction Mode (CCM) there is a discrete amount of energy remaining in the inductor at the end of each cycle.
 
-Non-LTI systems are often evaluated as LTI systems where the excitation and response are constrained to an infinitesimal perturbation centered at a steady-state operating point. This technique, known as small-signal analysis, can be applied most easily to the immediate problem in a discrete time system.  It is intuitive to evaluate discrete units of energy transferred and stored within the system per cycle. The inductor current geometry is used to relate the energy storage and release from one cycle to the next.
+The variable most easy to express at the start of each switching interval is the valley current.  Geometrically it is easy to see the previous valley current is linearly related to the next valley current if all system variables are held constant during the switching cycle.  By superposition, all variables may be held constant and a perturbation may be applied exactly at the moment the peak current is about to exceed the threshold, but expressing this mathematically is difficult and physically unintuitive.
 
-In the discussion of analysis steps illustrated in Fig. \ref{fig:resampling} the function illustrated in Fig. \ref{fig:resampling_c} was not fully addressed.  This step constructs a type of input signal in which the sampled value is held for the entire sampling interval. Using this assumption simplifies the geometry problem of the next step, yet the consequence is not entirely immaterial. This function is commonly known as Zero-Order-Hold (ZOH), interpreted as a moving-average FIR filter having an easily derived frequency response. The consequence of this operation is well understood and can be precisely compensated in the system transfer function.
+A way around this problem of injecting the impulse at exactly the correct time is to conclude that the system inputs are band-limited to the Nyquist rate, or that we don't care that aliasing effects are neglected.  Given the assumption of band-limited inputs, all these signals can be sampled synchronously to the rising edge of the primary switching signal and then convolved with a Zero-Order-Hold (ZOH) filter function to create a geometric problem that is trivial to solve.  The box car function is reversible so the valley current filter output can be corrected by application of an inverse of the ZOH. 
 
-The associative and distributive algebraic properties of convolution imply the ZOH function is canceled using a filter having a resopnse that is the reciprocal of ZOH in the frequency domain.  The strategy employed in this analysis applies the ZOH function in the time domain (Fig. \ref{fig:resampling_c}), perform a set of linear operations (Fig. \ref{fig:resampling_d}, \ref{fig:resampling_f} and \ref{fig:resampling_g}), and then apply the inverse ZOH function in the frequency domain (not illustrated) to reconstruct $i_{cg}$ and $i_{dg}$. 
+Another way of looking at this is to consider the switching converter's pulse response rather than the impulse response, and then extracting the impulse response by deconvolving the output function from the input pulse.
 
 \subsection{Derivation of IIR Filter Describing Valley Currents}
 The analytical system presented in Fig.~\ref{cpm_waveforms} shows the peak current threshold being sampled synchronous to the valley currents and then held constant throughout the switching cycle.  Charging and discharging slopes are sampled values held static throughout the sampling interval, and the compensating ramp is considered linear (constant). This system is geometrically characterized using values sampled at the rising edge of the primary gate drive signal (coincident with inductor valley currents). A noteworthy advantage of this approach is the input and output impedance and coupling can be expressed as a discrete-time system.  The effect of ZOH function applies equally to all sampled values and is reversed with a single operation on the valley currents using the distributive property of convolution. It will be shown in the derivation of averaging and reconstruction stages that the pulse shape and per-cycle energy are geometrically anchored in the valley currents.
