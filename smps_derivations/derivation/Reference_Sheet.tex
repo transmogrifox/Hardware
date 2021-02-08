@@ -1,0 +1,187 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\author{Ryan J Billing}
+\title{Design Reference Sheet}
+\subtitle{Switched Inductor Power Supplies}
+\begin{document}
+\maketitle
+	\section{System quantities and definitions}
+		
+		\subsection{Converter types considered}
+			The following can be modeled using information contained in this reference sheet.
+			\begin{enumerate}
+				\item Boost
+				\item Buck
+				\item Buck-Boost
+				\item Flyback (Isolated Buck-Boost)
+				\item Forward (Buck)
+			\end{enumerate}
+		
+		\subsection{Control modes}
+			The following controls schemes are considered.		
+			\begin{enumerate}
+			\item Current Programmed Mode (CPM) Control (a.k.a Peak Current) Mode Control
+			\item Duty Control (a.k.a Voltage Mode Control)
+			\end{enumerate}
+		
+			Others such as Hysteretic, Constant On Time (COT), Quasi-resonant (QR) can be characterized for steady-state values but dynamic behaviors need to be derived and modified to describe the elements unique to the control scheme.
+		\subsection{Operational modes}
+		A converter can operate in a mode where energy stored in the inductor during the charging cycle is entirely discharged to the load within each cycle, or it can partially discharge and maintain a certain amount of energy stored between cycles.		
+		\begin{enumerate}
+			\item \textbf{Continuous Conduction Mode (CCM):} Inductor does not fully discharge
+			\item \textbf{Boundary Conduction Mode (BCM):} Inductor fully discharges
+			\item \textbf{Discontinuous Conduction Mode (DCM):} Inductor fully discharges
+			
+			In BCM the inductor finishes discharging immediately at termination of the switching cycle. During DCM operation the inductor discharges and remains idle for a finite period of time between cycles.
+		\end{enumerate}	
+		\subsection{Definitions for Variables}
+			
+			\begin{align*}
+			v_{CG} &= \text{Voltage across inductor during charging cycle} \\
+			v_{DG} &= \text{Voltage across inductor during discharging cycle} \\
+			F_{SW} &= \text{Modulator switching frequency}\\
+			T_{SW} &= \frac{1}{F_{SW}}\text{, Modulator switching (sampling) period} \\
+			L_m &= \text{Converter magnetizing inductance} \\
+			i_c &= \text{Peak current control set point for Current Programmed Mode (CPM) control}\\
+				i_v &= \text{Inductor valley current.} \\
+			i_{CG} &= \text{Charging cycle inductor current} \\
+			i_{DG} &= \text{Discharging cycle inductor current} \\	
+			m_c &= \frac{v_{CG}} {L_m}\text{, Slope of current during charge cycle (A/s)} \\
+			m_d &= \frac{v_{DG}} {L_m}\text{, Slope of current during discharge cycle (A/s)}\\
+			m_{cmp} &= \text{Artificial ramp added to primary current sense signal (slope compensation) (A/s)}\\
+			\alpha &= \frac{m_c + m_d} {m_c + m_{cmp}} =  \frac{v_{CG} + v_{DG}} {v_{CG} + m_{cmp} L_m}\\
+			D &= \text{Modulator charging cycle duty} \\
+			D' &= (1-D) \text{Modulator discharging cycle duty}\\	
+			\end{align*}
+
+	\section{Continuous Conduction Mode}
+		\subsection{Control-to-Valley-Current Recursive Filter Structures}
+		The average currents can be computed as a function of inductor valley current and charge/discharge slopes.  Valley current is easily related to the control input through a linear IIR filter.
+		\subsubsection{Peak current control input to valley current}
+			\begin{align}
+			i_v[n] &=  \alpha i_c[n] + ( 1 - \alpha ) i_v [n-1] - m_dT_{SW}    \label{ivn_cpm}
+			\end{align}
+		
+		\subsubsection{Duty control input to valley current}
+			\begin{align}
+			i_v[n] &= i_v[n-1] +  D[n](m_c+m_d)T_{SW} - m_dT_{SW}  \label{ivn_dc}	
+			\end{align}		
+		
+
+	\subsection{Steady State Quantities related to Valley Current}
+	This section presents interesting quantities as a function of the valley currents.
+	
+		\subsubsection{Steady State Valley Current}
+			\begin{align}
+			I_{v} &=  I_{c} - \frac{T_{SW}m_d} {\alpha} =
+			I_c - \bigg(\frac{T_{SW}} {L_m}\bigg) \frac{(V_{CG}+L_m m_{cmp})V_{DG} }{V_{CG}+V_{DG}} \label{ic_to_iv}
+			\end{align}
+			
+		\subsubsection{Steady State Inductor Current Ripple}
+			\begin{align}
+			\Delta_i &=  \frac{m_c m_d}{m_c + m_d} T_{SW} = \bigg(\frac{T_{SW}} {L_m}\bigg)\frac{V_{CG} V_{DG}}{V_{CG} + V_{DG}}
+			\end{align}	
+	
+		\subsubsection{Steady State Peak Current}
+			\begin{align}
+			I_{pk} &=  I_v + \Delta_i \label{ripple}
+			\end{align}	
+		
+		\subsubsection{Steady State Cycle Average Currents}
+			Average current during the inductor charging cycle.
+			\begin{align}
+			I_{CG} = \frac{L_m}{2V_{CG}T_{SW}} (I_{pk}^2 - I_v^2) \label{icg_ss}
+			\end{align}	
+			
+			Average current during the inductor discharging cycle.
+			\begin{align}
+			I_{DG} = \frac{L_m}{2V_{DG}T_{SW}} (I_{pk}^2 - I_v^2) \label{idg_ss}
+			\end{align}	
+			
+			Sanity check (by inspection), input power is equal to output power. Solve (\ref{icg_ss}) for $I_{CG}V_{CG}$ and (\ref{idg_ss}) for $I_{DG}V_{DG}$.  We see both are equal to the same quantity, so the following is also true.
+			\begin{align}
+			I_{CG}V_{CG} = I_{DG}V_{DG}  
+			\end{align}	
+	
+	\subsection{Steady State Quantities related to cycle average currents}	
+	In some cases it is more convenient to calculate converter state variables as a function of input or output current.  For example, if the load current is known, one would want to work backwards through the modulator to determine the valley current, inductor current ripple, and control set points.
+	
+		\subsubsection{Valley current as function of charge cycle current}
+			\begin{align}
+			I_{v} = \frac{V_{CG} + V_{DG}}{V_{DG}} I_{CG} - \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} 
+			\end{align}	
+			
+			From (\ref{ripple}),
+			\begin{align}
+			I_{pk} = \frac{V_{CG} + V_{DG}}{V_{DG}} I_{CG} + \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} 
+			\end{align}	
+			From (\ref{ic_to_iv}),
+
+			\begin{align}
+			I_{c} = \frac{V_{CG} + V_{DG}}{V_{DG}} I_{CG} - \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} + \frac{T_{SW}m_d} {\alpha}
+			\end{align}				
+				
+			\subsubsection{Valley current as function of discharge cycle current}
+			\begin{align}
+			I_{v} = \frac{V_{CG} + V_{DG}}{V_{CG}} I_{DG} - \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} 
+			\end{align}				
+			From (\ref{ripple}),
+			\begin{align}
+			I_{pk} = \frac{V_{CG} + V_{DG}}{V_{CG}} I_{DG} + \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} 
+			\end{align}	
+			From (\ref{ic_to_iv}),
+			
+			\begin{align}
+			I_{c} = \frac{V_{CG} + V_{DG}}{V_{CG}} I_{DG} - \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} + \frac{T_{SW}m_d} {\alpha}
+			\end{align}	
+
+	\section{Boundary Conduction Mode (BCM)}
+	Formulas in this section help characterize where the converter transitions from Discontinuous Conduction Mode (DCM) to Continuous Conduction Mode (CCM). The point at which a converter charges and completely discharges the inductor energy concurrent to termination of the switching period is called "Boundary Conduction Mode" (BCM).
+		\subsection{Peak current during BCM}
+		
+			\begin{align}
+			I_{pk} = \bigg(\frac{T_{SW}}{L_m}\bigg)\frac{V_{CG}V_{DG}}{V_{CG} + V_{DG}} 
+			\end{align}	
+			
+		\subsection{Steady state average currents during BCM}
+			Average inductor currents during charge cycle:
+			\begin{align}
+			I_{CG} = \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{DG}^2 V_{CG}}{(V_{CG} + V_{DG})^2} 
+			\end{align}			
+
+		   Average inductor currents during discharge cycle:
+
+			\begin{align}
+			I_{DG} = \bigg(\frac{T_{SW}}{2L_m}\bigg)\frac{V_{CG}^2 V_{DG}}{(V_{CG} + V_{DG})^2} 
+			\end{align}		
+
+	\section{Discontinuous Conduction Mode (DCM)}
+	
+		\subsection{Steady State Peak Current in DCM}
+		
+		\begin{align}
+		I_{pk} = \sqrt{\frac{2T_{SW}V_{DG}}{L_m}I_{DG}}
+		\end{align}	
+		
+		or referenced to discharge cycle average current,
+	
+		\begin{align}
+		I_{pk} = \sqrt{\frac{2T_{SW}V_{CG}}{L_m}I_{CG}}
+		\end{align}	
+		
+		\subsection{Steady State Control-to-Average Current in DCM}
+
+		\begin{align}
+		I_{CG} = \frac{L_m}{2T_{SW}V_{CG}}I_{pk}^2
+		\end{align}	
+
+		\begin{align}
+	I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2
+	\end{align}	
+	
+\end{document}
