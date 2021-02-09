@@ -181,7 +181,48 @@
 		\end{align}	
 
 		\begin{align}
-	I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2
-	\end{align}	
+		I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2
+		\end{align}	
+	
+	\section{Small signal dynamic behavior}
+	For behavior 2 decades below the switching frequency DC values can be used to express the gain of the modulator with a reasonable degree of accuracy.  Often the designer seeks to design a control loop crossover frequency much higher than $F_{SW}/100$ where the modulator dynamic behavior becomes progressively more interesting. 
+	
+	Behaviors of primary interest:
+	\begin{itemize}
+		\item $L_m C_{LOAD}$ resonance for duty (voltge-mode) control (see (\ref{ivn_dc}))
+		\item $\dfrac{F_{SW}}{2}$ peaking and phase response for CPM control (see see (\ref{ivn_cpm}))
+		\item Right-Half-Plane-Zero (RHPZ) for boost, buck-boost and flyback topologies 
+	\end{itemize}
+	
+		\subsection{CPM CCM Valley Current Response}
+		The first stage in the system dynamic response is the relationship between peak current control input and the valley current. 
+		\begin{equation}
+		H_v(z) = \frac {I_v(z)} {I_c(z)} = \frac {\alpha z^{-1}} {1 - (1-\alpha) z^{-1}}  \label{hvz}
+		\end{equation}
+			
+		Evaluating ROC and other stability yields the condition for "academic stability":
+		\begin{equation}
+		m_{cmp} > \dfrac{m_d - m_c}{2} \label{slope_stab}
+		\end{equation}
+		
+		The term "academic stability" means the system response is guaranteed to settle within a noise-free environment.  Such a designation emphasizes the likelihood that a switched-mode converter system is perpetually perturbed at high frequencies and the observed behavior near academic stability will be indistinguishable from instability.
+		
+		A useful quantity is the magnitude response at the Nyquist frequency (where peaking occurs):		
+		
+		\begin{equation}
+		H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
+		\end{equation}
+		
+		To evaluate the peaking response,the following formula can help select necessary slope compensation needed for output bounded to a sane peaking response (recommended $<6$dB).
+
+		\begin{equation}
+		m_{cmp} = (m_c + m_d) \frac{1 + |H_v(z)|}{2|H_v(z)|} - m_c \bigg|_{z=\frac{1}{2}\omega_{SW}}
+		\end{equation}
+		
+		Then of course, to express values in dB,
+		
+		\begin{equation}
+		m_{cmp} = \frac{1}{2}(m_c + m_d) \frac{1 + 10^\frac{G_{dB}}{20}}{10^\frac{G_{dB}}{20}}  - m_c 
+		\end{equation}
 	
 \end{document}
