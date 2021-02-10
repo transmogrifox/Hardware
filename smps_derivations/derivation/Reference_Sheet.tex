@@ -194,7 +194,7 @@
 		\item Right-Half-Plane-Zero (RHPZ) for boost, buck-boost and flyback topologies 
 	\end{itemize}
 	
-		\subsection{CPM CCM Valley Current Response}
+		\subsection{CPM CCM Control to Valley Current Transfer Function}
 		The first stage in the system dynamic response is the relationship between peak current control input and the valley current. 
 		\begin{equation}
 		H_v(z) = \frac {I_v(z)} {I_c(z)} = \frac {\alpha z^{-1}} {1 - (1-\alpha) z^{-1}}  \label{hvz}
@@ -210,7 +210,7 @@
 		A useful quantity is the magnitude response at the Nyquist frequency (where peaking occurs):		
 		
 		\begin{equation}
-		H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha (-1)}{1 - (1 - \alpha) (-1)} = \dfrac{- \alpha}{2 - \alpha} \label{cpmstability}
+		H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha }{1 - (1 - \alpha) (-1)} = \dfrac{\alpha}{2 - \alpha} \label{cpmstability}
 		\end{equation}
 		
 		To evaluate the peaking response,the following formula can help select necessary slope compensation needed for output bounded to a sane peaking response (recommended $<6$dB).
@@ -221,8 +221,42 @@
 		
 		Then of course, to express values in dB,
 		
-		\begin{equation}
-		m_{cmp} = \frac{1}{2}(m_c + m_d) \frac{1 + 10^\frac{G_{dB}}{20}}{10^\frac{G_{dB}}{20}}  - m_c 
-		\end{equation}
+		\begin{align}
+		G_{dB} &= 20log10\bigg(\frac{\alpha}{2-\alpha}\bigg)\label{Gpeaking}\\
+		m_{cmp} &= \frac{1}{2}(m_c + m_d) \frac{1 + 10^\frac{G_{dB}}{20}}{10^\frac{G_{dB}}{20}}  - m_c \label{mcmp_for_gpeaking}
+		\end{align}
+		
+		The magnitude of peaking response is expressed in (\ref{Gpeaking}) and the amount of slope compensation needed to achieve a certain peaking response is found by solving (\ref{mcmp_for_gpeaking}).
+		
+		\subsection{CCM Valley to Average Current Transfer Function}
+		The charging cycle current gain and left-half plane zero (LHPZ).
+
+		\begin{align}
+		H_{cg} (s) &= \frac{\hat{I}_{cg}(s)}{\hat{I}_{v}(s)} =\frac{I_{v}}{m_c + m_d}
+		\big (\frac{m_d}{I_{v}} + s \big )
+		\label{LHPZ_s_raw}
+		\end{align}
+		
+		The discharging cycle current gain and right-half plane zero (RHPZ).
+		\begin{align}
+		H_{dg} (s) &= \frac{\hat{I}_{dg}(s)}{\hat{I}_{v}(s)} =\frac{I_{v}}{m_c + m_d}
+		\big (\frac{m_c}{I_{v}} - s \big )
+		\label{RHPZ_s_raw}
+		\end{align}
+
+		\subsection{CCM Valley Average to Pulse Current Transfer Function}	
+			
+		
+		\begin{align}
+		i_{CG} =&   I_{v} \bigg( \frac{1 - e^{-sDT_{SW}}}{s} \bigg)
+		+ m_c\bigg( \frac{1 - (1 + sDT_{SW})e^{-sDT_{SW}}}{s^2} \bigg)
+		\label{icg_IR_laplace} \\
+		\nonumber\\
+		i_{DG} =& (I_{v} +m_d D'T_{SW}) \bigg( \frac{1 - e^{-sD'T_{SW}}}{s} \bigg)  e^{-sDT_{SW}}\nonumber\\
+		&- m_d \bigg( \frac{1 - (1 + sD'T_{SW})e^{-sD'T_{SW}}}{s^2} \bigg)  e^{-sDT_{SW}}
+		\label{idg_IR_laplace}
+		\end{align}
+		
+
 	
 \end{document}
