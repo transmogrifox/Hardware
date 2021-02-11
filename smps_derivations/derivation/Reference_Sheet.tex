@@ -245,18 +245,34 @@
 		\end{align}
 
 		\subsection{CCM Valley Average to Pulse Current Transfer Function}	
-			
+		The following is derived by computing the Laplace Transform of the steady-state current pulse shape.  This forms a low-pass FIR filter with magnitude response rolling off above the Nyquist frequency.  The most interesting information given by these filters is the group delay at higher frequencies.
+		
+		\subsubsection{Laplace Transform of Charge and Discharge cycle current pulses}	
 		
 		\begin{align}
-		i_{CG} =&   I_{v} \bigg( \frac{1 - e^{-sDT_{SW}}}{s} \bigg)
+		F_{CG}(s) =&   I_{v} \bigg( \frac{1 - e^{-sDT_{SW}}}{s} \bigg)
 		+ m_c\bigg( \frac{1 - (1 + sDT_{SW})e^{-sDT_{SW}}}{s^2} \bigg)
 		\label{icg_IR_laplace} \\
 		\nonumber\\
-		i_{DG} =& (I_{v} +m_d D'T_{SW}) \bigg( \frac{1 - e^{-sD'T_{SW}}}{s} \bigg)  e^{-sDT_{SW}}\nonumber\\
+		F_{DG}(s) =& (I_{v} +m_d D'T_{SW}) \bigg( \frac{1 - e^{-sD'T_{SW}}}{s} \bigg)  e^{-sDT_{SW}}\nonumber\\
 		&- m_d \bigg( \frac{1 - (1 + sD'T_{SW})e^{-sD'T_{SW}}}{s^2} \bigg)  e^{-sDT_{SW}}
 		\label{idg_IR_laplace}
 		\end{align}
 		
+		\subsubsection{DC gain of pulse transfer function}
+		The expressions in (\ref{RHPZ_s_raw}) and (\ref{LHPZ_s_raw}) as well as the control-to-valley current functions give information about the system small-signal gain while (\ref{icg_IR_laplace}) and (\ref{idg_IR_laplace}) include redundancy. Evaluating the limits for $F_{CG}$ and $F_{DG}$ yield the DC gain, the inverse of which can be used to set the overall transfer function DC gain to unity.
+		
+		\begin{align}
+		\lim_{s \to 0} F_{CG}(s) &= \frac{1}{2} D^2 T_{SW}^2m_c + D T_{SW} I_v = \frac{D^2 T_{SW}^2m_c + 2D T_{SW} I_v}{2} \label{lim_FCG} \\
+		\lim_{s \to 0} F_{DG}(s) &= \frac{1}{2} D'^2 T_{SW}^2m_d + D' T_{SW} I_v= \frac{D'^2 T_{SW}^2m_d + 2D' T_{SW} I_v}{2} \label{lim_FDG}
+		\end{align}
+		
+		\subsubsection{Normalized pulse transfer function}
+		The following will generate the system group delay and high frequency response without affecting the system's small-signal gain that has been captured within the control-to-valley current function and valley-to-average current functions. 
+		\begin{align}
+		F_{CG.NORM}(s) &= \frac{2}{D^2 T_{SW}^2m_c + 2D T_{SW} I_v} F_{CG}(s)\label{FCG_NORM} \\
+		F_{DG.NORM}(s) &= \frac{2}{D'^2 T_{SW}^2m_d + 2D' T_{SW} I_v}F_{DG}(s) \label{lim_FDG}
+		\end{align}
 
 	
 \end{document}
