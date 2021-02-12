@@ -210,10 +210,10 @@
 		A useful quantity is the magnitude response at the Nyquist frequency (where peaking occurs):		
 		
 		\begin{equation}
-		H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} = \dfrac{\alpha }{1 - (1 - \alpha) (-1)} = \dfrac{\alpha}{2 - \alpha} \label{cpmstability}
+		\bigg|H_V(z) \bigg|_{z=\frac{\omega_{SW}}{2}} =  \dfrac{\alpha}{2 - \alpha} \label{cpm_peaking}
 		\end{equation}
 		
-		To evaluate the peaking response,the following formula can help select necessary slope compensation needed for output bounded to a sane peaking response (recommended $<6$dB).
+		It is usually more useful to pick a desired maximum peaking response (recommended $<6$dB) and then determine what amount of slope compensation is needed to meet the specification.
 
 		\begin{equation}
 		m_{cmp} = (m_c + m_d) \frac{1 + |H_v(z)|}{2|H_v(z)|} - m_c \bigg|_{z=\frac{1}{2}\omega_{SW}}
@@ -226,7 +226,13 @@
 		m_{cmp} &= \frac{1}{2}(m_c + m_d) \frac{1 + 10^\frac{G_{dB}}{20}}{10^\frac{G_{dB}}{20}}  - m_c \label{mcmp_for_gpeaking}
 		\end{align}
 		
-		The magnitude of peaking response is expressed in (\ref{Gpeaking}) and the amount of slope compensation needed to achieve a certain peaking response is found by solving (\ref{mcmp_for_gpeaking}).
+		A reasonable design rule is given below by solving (\ref{mcmp_for_gpeaking}) for $G_{dB} = 6 dB$.
+		
+		\begin{align}
+			m_{cmp} = \frac{1}{4}(3m_d-m_c) \label{mcmp_rule}
+		\end{align}
+		
+		A further interesting observation is if (\ref{mcmp_rule}) is solved for the case $m_c = 3m_d$, the peak current mode controller has 6dB peaking at 25$\%$ duty cycle with no slope compensation. Industry wisdom that slope compensation is needed at 37$\%$ duty corresponds to 12 dB valley current peaking.
 		
 		\subsection{CCM Valley to Average Current Transfer Function}
 		The charging cycle current gain and left-half plane zero (LHPZ).
