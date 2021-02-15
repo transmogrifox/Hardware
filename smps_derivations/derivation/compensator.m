@@ -1,57 +1,92 @@
-f = 1:10:100000;
-w = 2*pi*f;
+%% Type II compensator with optocoupler fast-lane
+%
+%   [Vfb]--*-----------------*
+%          |                 |
+%          |                 \
+%          \                 /
+%          / Ri              \ Ro
+%          \                 /
+%          /                 |
+%          |                 __
+%          |            LED _\/_ ~^~>[CTR]-->[Iemitter]
+%          |      Cp         |
+%          *------||---------*
+%          |                 |
+%          |   Cf     Rf     |
+%          *---||---/\/\/----*
+%          |                 |
+%          |                 |
+%          |               \____
+%          |                 /\ \
+%          *----------------/  \
+%          |               ------
+%          |                  |
+%          /                  |
+%          \  Rdc_bias        |
+%          /                  |
+%          \                  |
+%          |                  |
+%          *------------------*
+%                             |
+%                           -----
+%                            ---
+%                             -
+%          Iemitter(s)
+% Hc(s) = -------------
+%            Vfb(s)
+%
 
+%%
+%% Engineering notation shorthand
+%%
+p = 1e-12;
 n = 1e-9;
 u = 1e-6;
 k = 1e3;
 
-c1 = 10*n;
-c2 = 470*n;
-rf = 2.2*k;
-ri = 2.2*k;
-ro = 499;
+%%
+%% Plotting ranges
+%%
 
-% Z transform params
-s = j.*w;
-fs = 130*k*2; %2x converter switching frequency is the minimum for acceptable accuracy.
-T = 1/fs;
-ws = 2*pi*fs;
-z1 = e.^(-s/fs);
-sz = (2/T).*(1 - z1)./(1 + z1);
+%Converter switching frequency only interesting 
+%for setting plot limits
+fsw = 125*k;
+%Multiples of fsw to plot
+nfs = 2;
+f = 1:10:(fsw*nfs);
+w = 2*pi*f;
+s = j*w;
 
+%%
+%% Compensator component values
+%%
+Cp = 47*p;
+Cf = 4.7*n;
+Rf = 150*k;
+Ri = 33.2*k;
+Ro = 1*k;
+fc_opto = 80*k;
+CTR = 0.75;
 
-p0 = 1./(s.*ri*c1*ro);
-p1 = (c1 + c2)./(rf*c1*c2);
-z0 = 1/(rf*c2);
-Hs = -(p0).*(s + z0)./(s + p1); %Without "fast lane"
-Hfs = 1/ro - Hs;  %Add "fast lane" effect
+%%
+%% System transfer functions
+%% 
+p0 = 1./(s.*Ri*Cp);
+p1 = (Cf + Cp)./(Rf*Cf*Cp);
+z0 = 1/(Rf*Cf);
+wopt = 2*pi*fc_opto;
+popt = CTR*wopt./(s + wopt);
+Hs = -(1/Ro)*p0.*(s + z0)./(s + p1); %Without "fast lane"
+Hfs = (1/Ro - Hs).*popt;  %Add "fast lane" effect
 
-%Direct representation of bilinear transform
-pz0 = 1./(sz.*ri*c1*ro);
-pz1 = (c1 + c2)./(rf*c1*c2);
-zz0 = 1/(rf*c2);
-Hz = -(pz0).*(sz + zz0)./(sz + pz1);
-Hfz = 1/ro - Hz;
-
-% Bilinear transform refactored for straightforward
-% difference equation expression
-% This can be implemented as 2 cascaded 1rst order IIR filters
-zgain = (T/(2*ri*ro*c1)) * ((2*rf*c2)/(T - 2*rf*c2)) / ((T/2)*(c1 + c2)/(c1*c2*rf) - 1);
-hz0 = (1 + z1)./(1 - z1);
-hz1n = z1 + (2*rf*c2 + T)/(T - 2*rf*c2);
-hz1d = z1 + (1 + (T/2)*(c1 + c2)/(c1*c2*rf)) / ((T/2)*(c1 + c2)/(c1*c2*rf) - 1);
-hz1 = hz1n./hz1d;
-
-hz = (1/ro) + zgain.*hz0.*hz1;  %Check against Hfz for algebra mistakes
-
-
+%%
+%% Plot transfer function
+%%
 subplot (2, 1, 1)
 hold on
-semilogx(f,20*log10(abs(Hfs)),"b")
-semilogx(f,20*log10(abs(Hfz)),"r");
-semilogx(f,20*log10(abs(hz)),"g");
+semilogx(f,20*log10(abs(Hfs)),"r","linewidth",1.5)
+#set(gca, "linewidth", 4, "fontsize", 12)
 subplot (2, 1, 2)
 hold on
-semilogx(f,angle(Hfs)*180/pi,"b")
-semilogx(f,angle(Hfz)*180/pi,"r")
-semilogx(f,angle(hz)*180/pi,"g")
+semilogx(f,angle(Hfs)*180/pi,"b","linewidth",1.5)
+#set(gca, "linewidth", 4, "fontsize", 12)
