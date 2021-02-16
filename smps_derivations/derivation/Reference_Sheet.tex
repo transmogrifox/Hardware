@@ -58,6 +58,12 @@
 			D &= \text{Modulator charging cycle duty} \\
 			D' &= (1-D) \text{Modulator discharging cycle duty}\\	
 			\end{align*}
+			
+			\subsection{Useful identities}
+			\begin{align}
+				D &= \frac{m_d}{m_c + m_d} = \frac{V_{DG}}{V_{CG}+V_{DG}}\\
+				I_{pk} &= I_c\frac{m_c}{m_c+m_{cmp}}
+			\end{align}
 
 	\section{Continuous Conduction Mode}
 		\subsection{Control-to-Valley-Current Recursive Filter Structures}
@@ -183,6 +189,15 @@
 		\begin{align}
 		I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2
 		\end{align}	
+	
+	\section{RMS Current}
+	
+	\subsection{DCM}
+	Valid for both DCM and BCM RMS current calculations.
+	\begin{align}	
+		I_{DG.RMS} &= I_{pk} \frac{1}{\sqrt{3T_{SW}m_d}} \\
+		I_{CG.RMS} &= I_{pk} \frac{1}{\sqrt{3T_{SW}m_c}}
+	\end{align}
 	
 	\section{Small signal dynamic behavior}
 	For behavior 2 decades below the switching frequency DC values can be used to express the gain of the modulator with a reasonable degree of accuracy.  Often the designer seeks to design a control loop crossover frequency much higher than $F_{SW}/100$ where the modulator dynamic behavior becomes progressively more interesting. 
