@@ -18,20 +18,20 @@ z=e.^(-s*Tsw);
 %% Flyback converter open loop gain
 Nps = 54/8; %Transformer Primary-Secondary turns ratio
 L=580*u; %Primary inductance
-vin = 88; %Input voltage
-vin_min = 75; %Minimum input voltage
+vin = 375; %Input voltage
+vin_min = 85; %Minimum input voltage
 vout = 13.25; %Output voltage
 iout = 3; %Output current
 
 %% Current sensing node
-Rcs = 0.4; %Current sense resistor
+Rcs = 0.33; %Current sense resistor
 R2 = 475;
 R3 = 4.02*k;
 R8 = 237*k*2;
 R4 = 10*k;
 R5 = 475;
-R6 = 499;
-C15 = 47*n;
+R6 = 499*k;
+C15 = 1*p;
 Rg = 1/(1/R2 + 1/R3 + 1/R8);
 Rf = R5;
 Ry = Rg+Rf;
@@ -46,15 +46,15 @@ gipk = (1/Rcs)*(Rpcs+R2)/Rpcs
 ncout = 3;
 cout = ncout*470*u; 
 cload = 470*u;
-lf = 1*u; %Filter inductor 
+lf = 0.5*u; %Filter inductor 
 cesr = 0.012; %capacitor ESR
 lesr = 0.01; %Filter inductor ESR
 
 %% Error amplifier and compensation components
-cp = (220+470)*p; %HF roll-off parallel to r-c P-Z pair
-cf = 10*n; %Low frequency pole
-rf = 61.9*k; %Forms Zero with cs
-ri = 10*k; %Input feed resistor 
+cp = 100*p; %HF roll-off parallel to r-c P-Z pair
+cf = 22*n; %Low frequency pole
+rf = 121*k; %Forms Zero with cs
+ri = 33*k; %Input feed resistor 
 ro = 1.1*k;  %Resistor in series with optocoupler LED
 ctr = 0.75;  %Optocoupler CTR
 fc_opto = 80*k; %Optocoupler cut-of frequency (pole frequency)
@@ -74,8 +74,6 @@ H_stupid = g_stupid*Rpll*(s.*Rx*Cx + 1)./(s.*(Rpll+Rx)*Cx + 1);
 
 %% Slope compensation required for <6dB valley current peaking 
 mcmp=(3*vout*Nps-vin_min)/(4*L)
-%However, it is not so good in Rev H10,
-mcmp=22*k;
 
 %% Computed system parameters
 idg = iout/Nps;
@@ -108,7 +106,7 @@ zout = zl.*zcout./(zcout+zl);
 
 %% Original design had feedback tapped from output filter
 zload = zcl*rout./(rout+zcl);
-H_out = zload./(zlf + zload);
+H_out = zload./(zlf + zload);  % Left out of transfer function for improved design
 
 %%
 %% Plot final system 
@@ -117,7 +115,7 @@ H_out = zload./(zlf + zload);
 %%
 
 subplot(2,1,1)
-semilogx(fr,20*log10(abs(H_comp.*H_stupid.*hz.*hdg.*HDG.*zout.*H_out)), 'r', 'linewidth', 1.5)
+semilogx(fr,20*log10(abs(H_comp.*H_stupid.*hz.*hdg.*HDG.*zout)), 'r', 'linewidth', 1.5)
 %semilogx(fr,20*log10(abs(H_out)), 'r', 'linewidth', 1.5)
 %semilogx(fr,20*log10(abs(H_stupid)),"r", "linewidth", 1.5)
 %semilogx(fr,20*log10(abs(H_comp)))
