@@ -1,27 +1,29 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7000 64-bit) (preloaded format=pdflatex 2019.8.5)  16 FEB 2021 13:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.8.2)  20 FEB 2021 22:25
 entering extended mode
-**./Reference_Sheet.tex
-(Reference_Sheet.tex
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**Reference_Sheet.tex
+(./Reference_Sheet.tex
 LaTeX2e <2018-12-01>
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\scrartcl.cls"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrartcl.cls
 Document Class: scrartcl 2019/02/01 v3.26b KOMA-Script document class (article)
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\scrkbase.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrkbase.sty
 Package: scrkbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-dependent 
 basics and keyval usage)
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\scrbase.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrbase.sty
 Package: scrbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-independent
  basics and keyval usage)
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\keyval.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks14
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\scrlfile.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrlfile.sty
 Package: scrlfile 2019/02/01 v3.26b KOMA-Script package (loading files)
 )))
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\tocbasic.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/tocbasic.sty
 Package: tocbasic 2019/02/01 v3.26b KOMA-Script package (handling toc-files)
 \scr@dte@tocline@numberwidth=\skip41
 \scr@dte@tocline@numbox=\box27
@@ -33,11 +35,11 @@ Class scrartcl Info: File `scrsize11pt.clo' used instead of
 (scrartcl)           file `scrsize11.clo' to setup font sizes on input line 216
 2.
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\scrsize11pt.clo"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrsize11pt.clo
 File: scrsize11pt.clo 2019/02/01 v3.26b KOMA-Script font size class option (11p
 t)
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/koma-script\typearea.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/typearea.sty
 Package: typearea 2019/02/01 v3.26b KOMA-Script package (type area)
 \ta@bcor=\skip42
 \ta@div=\count80
@@ -113,57 +115,52 @@ Package tocbasic Info: omitting babel extension for `lot'
 Class scrartcl Info: Redefining `\numberline' on input line 5957.
 \bibindent=\dimen102
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/base\inputenc.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2018/08/11 v1.3c Input encoding file
 \inpenc@prehook=\toks15
 \inpenc@posthook=\toks16
 )
-("C:\Program Files\MiKTeX 2.9\tex/generic/babel\babel.sty"
-Package: babel 2019/04/03 3.29 The Babel package
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2018/11/13 3.27 The Babel package
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/babel\switch.def"
-File: switch.def 2019/04/03 3.29 Babel switching mechanism
+(/usr/share/texlive/texmf-dist/tex/generic/babel/switch.def
+File: switch.def 2018/11/13 3.27 Babel switching mechanism
 )
-*************************************
-* Local config file bblopts.cfg used
-*
-("C:\Program Files\MiKTeX 2.9\tex/latex/arabi\bblopts.cfg"
-File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
- babel
-)
-("C:\Program Files\MiKTeX 2.9\tex/latex/babel-english\english.ldf"
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
 Language: english 2017/06/06 v3.3r English support from the babel system
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/babel\babel.def"
-File: babel.def 2019/04/03 3.29 Babel common definitions
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
+File: babel.def 2018/11/13 3.27 Babel common definitions
 \babel@savecnt=\count89
 \U@D=\dimen103
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/babel\txtbabel.def")
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
 \bbl@dirlevel=\count90
 )
+\l@british = a dialect from \language\l@english 
+\l@UKenglish = a dialect from \language\l@english 
 \l@canadian = a dialect from \language\l@american 
 \l@australian = a dialect from \language\l@british 
 \l@newzealand = a dialect from \language\l@british 
 ))
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsmath.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2018/12/01 v2.17b AMS math features
 \@mathmargin=\skip57
 
 For additional information on amsmath, use the `?' option.
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amstext.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
 Package: amstext 2000/06/29 v2.01 AMS text
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsgen.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks17
 \ex@=\dimen104
 ))
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsbsy.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen105
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsmath\amsopn.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2016/03/08 v2.02 operator names
 )
 \inf@bad=\count91
@@ -204,39 +201,39 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 730.
 LaTeX Info: Redefining \[ on input line 2844.
 LaTeX Info: Redefining \] on input line 2845.
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\amsfonts.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\amssymb.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\graphicx.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\graphics.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
 Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics\trig.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
 Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics-cfg\graphics.cfg"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 99.
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/graphics-def\pdftex.def"
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
 File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen113
 \Gin@req@width=\dimen114
 )
-(Reference_Sheet.aux
+(./Reference_Sheet.aux
 
-LaTeX Warning: Label `lim_FDG' multiply defined.
+LaTeX Warning: Label `FCG_NORM_DCM' multiply defined.
 
 )
 \openout1 = `Reference_Sheet.aux'.
@@ -253,7 +250,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
- ("C:\Program Files\MiKTeX 2.9\tex/context/base/mkii\supp-pdf.mkii"
+ (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count103
 \scratchdimen=\dimen115
@@ -266,39 +263,39 @@ LaTeX Font Info:    ... okay on input line 11.
 \MPnumerator=\count107
 \makeMPintoPDFobject=\count108
 \everyMPtoPDFconversion=\toks23
-) ("C:\Program Files\MiKTeX 2.9\tex/latex/oberdiek\epstopdf-base.sty"
+) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\infwarerr.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
 Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
 )
-("C:\Program Files\MiKTeX 2.9\tex/latex/oberdiek\grfext.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
 Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\kvdefinekeys.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
 Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\ltxcmds.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
 Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
 )))
-("C:\Program Files\MiKTeX 2.9\tex/latex/oberdiek\kvoptions.sty"
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
 Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\kvsetkeys.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
 Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\etexcmds.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/etexcmds.sty
 Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\ifluatex.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
 Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
 ))))
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\pdftexcmds.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
 )
 
-("C:\Program Files\MiKTeX 2.9\tex/generic/oberdiek\ifpdf.sty"
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
 Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
 )
 Package pdftexcmds Info: LuaTeX not detected.
@@ -312,20 +309,24 @@ Package grfext Info: Graphics extension search list:
 (grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
 G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
-)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
 LaTeX Font Info:    Try loading font information for U+msa on input line 13.
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd"
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Try loading font information for U+msb on input line 13.
 
-("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd"
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 
-{C:/Users/ryanbill/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 Overfull \hbox (13.03546pt too wide) detected at line 60
 []
  []
@@ -333,40 +334,51 @@ Overfull \hbox (13.03546pt too wide) detected at line 60
 [2] [3] [4] [5]
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 219.
 
- ("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 219.
 
-[6] [7] [8] [9] (Reference_Sheet.aux)
+[6] [7] [8]
+
+LaTeX Warning: Reference `icg_ss_dcm' on page 9 undefined on input line 327.
+
+
+LaTeX Warning: Reference `idg_ss_dcm' on page 9 undefined on input line 327.
+
+[9] [10] (./Reference_Sheet.aux)
+
+LaTeX Warning: There were undefined references.
+
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5016 strings out of 492946
- 82610 string characters out of 3135620
- 268012 words of memory out of 3000000
- 8849 multiletter control sequences out of 15000+200000
- 12676 words of font info for 49 fonts, out of 3000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 51i,12n,51p,9123b,229s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Pr
-ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Fi
-les/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX 2.9/fo
-nts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
-/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/a
-msfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/c
-m/cmr6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb
-><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmssbx10.pfb><C:/P
-rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on Reference_Sheet.pdf (9 pages, 170967 bytes).
+ 5014 strings out of 494485
+ 82160 string characters out of 6175793
+ 263493 words of memory out of 5000000
+ 8621 multiletter control sequences out of 15000+600000
+ 12676 words of font info for 49 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 51i,12n,51p,9121b,229s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on Reference_Sheet.pdf (10 pages, 163020 bytes).
 PDF statistics:
- 84 PDF objects out of 1000 (max. 8388607)
+ 89 PDF objects out of 1000 (max. 8388607)
+ 63 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

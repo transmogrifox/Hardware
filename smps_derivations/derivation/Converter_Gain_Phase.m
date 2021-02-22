@@ -5,7 +5,7 @@ k=1e3;
 
 e = exp(1);
 
-fsw=125*k %Switching frequency
+fsw=120*k %Switching frequency
 Tsw = 1/fsw
 wm=2*pi*fsw;
 w=0;
@@ -47,7 +47,7 @@ ncout = 3;
 cout = ncout*470*u; 
 cload = 470*u;
 lf = 1*u; %Filter inductor 
-cesr = 0.012; %capacitor ESR
+cesr = 0.008; %capacitor ESR
 lesr = 0.01; %Filter inductor ESR
 
 %% Error amplifier and compensation components
@@ -56,7 +56,7 @@ cf = 10*n; %Low frequency pole
 rf = 61.9*k; %Forms Zero with cs
 ri = 10*k; %Input feed resistor 
 ro = 1.1*k;  %Resistor in series with optocoupler LED
-ctr = 0.75;  %Optocoupler CTR
+ctr = 0.5;  %Optocoupler CTR
 fc_opto = 80*k; %Optocoupler cut-of frequency (pole frequency)
 
 %% Error amplifier transfer function 
@@ -75,7 +75,7 @@ H_stupid = g_stupid*Rpll*(s.*Rx*Cx + 1)./(s.*(Rpll+Rx)*Cx + 1);
 %% Slope compensation required for <6dB valley current peaking 
 mcmp=(3*vout*Nps-vin_min)/(4*L)
 %However, it is not so good in Rev H10,
-mcmp=22*k;
+mcmp=18*k;
 
 %% Computed system parameters
 idg = iout/Nps;
@@ -99,7 +99,7 @@ gDG = 2/(Dp^2*Tsw^2*md + 2*Dp*Tsw*Iv);
 HDG = gDG*(Iv+md*Dp*Tsw).*((1 - e.^(-s*Dp*Tsw))./s).*e.^(-s*D*Tsw) - gDG*md*((1 - (1+s*Dp*Tsw).*e.^(-s*Dp*Tsw))./(s.^2)).*e.^(-s*D*Tsw);
 
 %% Output impedance network
-rout = vout/idg
+rout = vout/(idg*Nps)
 zlf = s*lf + lesr;
 zcl = 1./(s*cload) + cesr;
 zcout = 1./(s*cout) + cesr/ncout;
@@ -115,20 +115,35 @@ H_out = zload./(zlf + zload);
 %%
 %% VOUT->[Error Amp]->[Stupid Comp]->[Valley Current]->[Average Current]->[Group Delay]->[Zout]
 %%
+meas=dlmread('../measurement/88V_in_3A_Load_2_18.csv',',');
+tmp=meas(:,1);
+freqm = tmp(2:length(tmp));
+tmp=meas(:,4);
+gainm = tmp(2:length(tmp));
+tmp=meas(:,7);
+phasem = tmp(2:length(tmp));
 
 subplot(2,1,1)
-semilogx(fr,20*log10(abs(H_comp.*H_stupid.*hz.*hdg.*HDG.*zout.*H_out)), 'r', 'linewidth', 1.5)
+hold on
+Hsys = H_comp.*H_stupid.*hz.*hdg.*HDG.*zout.*H_out;
+semilogx(fr,20*log10(abs(Hsys)), 'r', 'linewidth', 1.5)
+semilogx(freqm,gainm, 'm', 'linewidth', 1)
 %semilogx(fr,20*log10(abs(H_out)), 'r', 'linewidth', 1.5)
 %semilogx(fr,20*log10(abs(H_stupid)),"r", "linewidth", 1.5)
 %semilogx(fr,20*log10(abs(H_comp)))
 %semilogx(fr,20*log10(abs(hdg)))
 %semilogx(fr,20*log10(abs(HDG)))
 %semilogx(fr,20*log10(abs(zout)))
+hold off
 subplot(2,1,2)
-phase = unwrap(angle(-H_stupid.*H_comp.*HDG.*hdg.*hz.*zout));
+hold on
+phase = unwrap(angle(-Hsys));
 semilogx(fr,180*phase/pi, 'b', 'linewidth', 1.5)
+semilogx(freqm,phasem, 'm', 'linewidth', 1)
 %semilogx(w,180*(unwrap(angle(HDG)))/pi)
 %subplot(3,1,3)
+hold off
+
 
 %phase = unwrap(angle(HDG));
 lp=length(phase);

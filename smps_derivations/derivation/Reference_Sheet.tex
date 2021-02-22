@@ -186,11 +186,11 @@
 		\subsection{Steady State Control-to-Average Current in DCM}
 
 		\begin{align}
-		I_{CG} = \frac{L_m}{2T_{SW}V_{CG}}I_{pk}^2
+		I_{CG} = \frac{L_m}{2T_{SW}V_{CG}}I_{pk}^2 \label{dcm_c2cg_ss}
 		\end{align}	
 
 		\begin{align}
-		I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2
+		I_{DG} = \frac{L_m}{2T_{SW}V_{DG}}I_{pk}^2 \label{dcm_c2dg_ss}
 		\end{align}	
 	
 	\section{RMS Current}
@@ -211,7 +211,7 @@
 		I_{DG.RMS} &= I_{pk} \frac{1}{\sqrt{3T_{SW}m_d}} 
 	\end{align}
 	
-	\section{Small signal dynamic behavior}
+	\section{CCM Small signal dynamic behavior}
 	For behavior 2 decades below the switching frequency DC values can be used to express the gain of the modulator with a reasonable degree of accuracy.  Often the designer seeks to design a control loop crossover frequency much higher than $F_{SW}/100$ where the modulator dynamic behavior becomes progressively more interesting. 
 	
 	Behaviors of primary interest:
@@ -277,7 +277,7 @@
 		\label{RHPZ_s_raw}
 		\end{align}
 
-		\subsection{CCM Valley Average to Pulse Current Transfer Function}	
+		\subsection{CCM Average to Pulse Current Transfer Function}	
 		The following is derived by computing the Laplace Transform of the steady-state current pulse shape.  This forms a low-pass FIR filter with magnitude response rolling off above the Nyquist frequency.  The most interesting information given by these filters is the group delay at higher frequencies.
 		
 		\subsubsection{Laplace Transform of Charge and Discharge cycle current pulses}	
@@ -304,8 +304,60 @@
 		The following will generate the system group delay and high frequency response without affecting the system's small-signal gain that has been captured within the control-to-valley current function and valley-to-average current functions. 
 		\begin{align}
 		F_{CG.NORM}(s) &= \frac{2}{D^2 T_{SW}^2m_c + 2D T_{SW} I_v} F_{CG}(s)\label{FCG_NORM} \\
-		F_{DG.NORM}(s) &= \frac{2}{D'^2 T_{SW}^2m_d + 2D' T_{SW} I_v}F_{DG}(s) \label{lim_FDG}
+		F_{DG.NORM}(s) &= \frac{2}{D'^2 T_{SW}^2m_d + 2D' T_{SW} I_v}F_{DG}(s) \label{FDG_NORM}
 		\end{align}
+		
+\section{DCM small signal dynamic behavior}	
+The transfer functions expressed in this section cover DCM converter operation.  In most instances the CCM model is better suited for operation near BCM, however, results will be very similar using either model for characterizing BCM operation.	
+	\subsection{CPM DCM control-to-average-current transfer functions }
+	Steady state values from (\ref{dcm_c2cg_ss}) and (\ref{dcm_c2dg_ss}) are evaluated for small-signal response by partial derivative, yielding the following small-signal gain quantities.
+	
+	\begin{align}
+	\hat i_{CG} &= \frac{L_mI_{pk}}{T_{SW}V_{CG}}  \hat i_{pk} =  \frac{m_c}{m_c + m_{cmp}}\frac{L_mI_{c}}{T_{SW}V_{CG}} \hat i_{c} \\
+	\hat i_{DG} &= \frac{L_mI_{pk}}{T_{SW}V_{DG}} \hat i_{pk} =  \frac{m_c}{m_c + m_{cmp}}\frac{L_mI_{c}}{T_{SW}V_{DG}} \hat i_{c}
+	\end{align}
+	
+	Notice control-to-output gain is expressed in a single step whereas CCM uses control-to-valley current, then valley-to-output current in its transfer function.
+	
+	During DCM operation there is no memory from cycle-to-cycle so its transfer function is captured as a single FIR system.
 
+	\subsection{Voltage Mode DCM control-to-average-current transfer functions}
+	When the modulator input is duty control, the transfer functions are the following.
+	
+	By using the relationship between duty cycle and peak current, (\ref{icg_ss_dcm}) and (\ref{idg_ss_dcm}) can be used with the following substitution.
+	
+	\begin{align}
+		I_{pk} &= D T_{SW} m_c = D \frac{T_{SW} V_{CG}}{L_m}
+	\end{align}
+	\begin{align}
+	\hat i_{CG} &= \frac{L_m D T_{SW} m_c}{T_{SW}V_{CG}}  \hat d T_{SW} m_c = \frac{ D T_{SW} V_{CG}}{L_m} \hat d \\
+	\hat i_{DG} &= \frac{L_m D T_{SW} m_c}{T_{SW}V_{DG}} \hat d T_{SW} m_c = \frac{ D T_{SW} V_{CG}^2}{L_m V_{DG}} \hat d
+	\end{align}
+	
+\subsection{DCM Average to Pulse Current Transfer Function}	
+The following is derived by computing the Laplace Transform of the steady-state current pulse shape.  This forms a low-pass FIR filter with magnitude response rolling off above the Nyquist frequency.  The most interesting information given by these filters is the group delay at higher frequencies.
+
+\subsubsection{Laplace Transform of Charge and Discharge cycle current pulses}	
+
+\begin{align}
+F_{CG}(s) =&   m_c\bigg( \frac{1 - (1 + sT_{CG})e^{-sT_{CG}}}{s^2} \bigg)
+\label{icg_IR_laplace_dcm} \\
+\nonumber\\
+F_{DG}(s) =&  m_d T_{DG} \bigg( \frac{1 - e^{-sT_{DG}}}{s} \bigg)  e^{-sT_{CG}}\nonumber\\
+&- m_d \bigg( \frac{1 - (1 + sT_{DG})e^{-sT_{DG}}}{s^2} \bigg)  e^{-sT_{CG}}
+\label{idg_IR_laplace_dcm}
+\end{align}
+where,
+\begin{align}
+	T_{CG} &= \frac{I_{pk}} {m_c} \text{ , time to charge inductor during charging cycle}\\
+	T_{DG} &= \frac{I_{pk}} {m_d} \text{ , time to discharge inductor during discharging cycle}
+\end{align}
+	
+		\subsubsection{Normalized pulse transfer function}
+		The pulse transfer function normalization uses the same formulae as (\ref{FCG_NORM}) and (\ref{FDG_NORM}), setting $I_v=0$.
+		\begin{align}
+		F_{CG.NORM}(s) &= \frac{2}{T_{CG}^2m_c } F_{CG}(s)\label{FCG_NORM_DCM} \\
+		F_{DG.NORM}(s) &= \frac{2}{T_{DG}^2m_d }F_{DG}(s) \label{FCG_NORM_DCM}
+		\end{align}
 	
 \end{document}
