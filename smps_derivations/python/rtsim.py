@@ -13,16 +13,16 @@ class SteadyState:
         self.Nps = Nps          #Primary to secondary turns ratio (for isolated or coupled topologies)
         self.top = topology     #Converter topology
         self.rectifierMode = rectifierMode  #Force CCM or diode operation
-        
+
         ##
         ## Internal variables
         ##
-        
+
         self.mode = "CCM" #CCM, DCM or BCM
         #Inductor voltages
         self.vCG = 0.0    #Voltage across inductor during charging cycle
         self.vDG = 0.0   #Voltage across inductor during discharging cycle
-        
+
         #Inductor currents
         self.ic = 0.0     #Peak current control set point
         self.ipk = 0.0    #Peak current
@@ -31,7 +31,7 @@ class SteadyState:
         self.iDG = 0.0    #Discharging cycle average inductor current
         self.iRMS_in = 0.0 #RMS input current
         self.iRMS_out = 0.0 #RMS output current
-        
+
         #Helpful variables
         self.Tsw = 0.0    #Switching period
         self.mc = 0.0     #Charging cycle inductor current slope
@@ -40,12 +40,12 @@ class SteadyState:
         self.duty = 0.0   #Duty Cycle
         self.dcg = 0.0    #Discharge duty if operating in DCM
         self.idle = 0.0   #Idle time after discharge if operating in DCM
-        
+
         ##
         ## Initialize internal variables
         ##
         self.compute_sys_params()
-        
+
     def compute_ic(self):
         if self.mode == "CCM" :
             self.ic =   self.iDG*(self.vCG + self.vDG)/self.vCG \
@@ -54,25 +54,25 @@ class SteadyState:
         else:
             self.compute_ipk()
             self.ic = self.ipk*(self.mc + self.mcmp)/self.mc;
-    
+
     def compute_ipk(self):
         if self.mode == "CCM" :
             self.ipk =   self.iDG*(self.vCG + self.vDG)/self.vCG \
                         + (self.Tsw/(2*self.Ls))*self.vCG*self.vDG/(self.vCG + self.vDG)
         else:
-            self.ipk = np.sqrt(2*self.Tsw*self.vDG*self.iDG/self.Ls) 
-    
+            self.ipk = np.sqrt(2*self.Tsw*self.vDG*self.iDG/self.Ls)
+
     def compute_iv(self):
         if self.mode == "CCM" :
             self.iv =   self.iDG*(self.vCG + self.vDG)/self.vCG \
                         - (self.Tsw/(2*self.Ls))*self.vCG*self.vDG/(self.vCG + self.vDG)
         else:
             self.iv = 0.0;
-    
+
     def compute_alpha(self):
         self.alpha =      (self.mc + self.md) \
                         /(self.mc + self.mcmp)
-    
+
     def compute_duty(self):
         if self.mode == "DCM" :
             self.compute_ipk()
@@ -83,7 +83,7 @@ class SteadyState:
             self.duty =  self.vDG/(self.vCG + self.vDG)
             self.dcg =  1.0 - self.duty
             self.idle = 0.0
-            
+
     def compute_rms(self):
         irmscg = 0.0
         irmsdg = 0.0
@@ -97,11 +97,11 @@ class SteadyState:
         else:
             irmscg = self.ipk/np.sqrt(3*self.Tsw*self.mc)
             irmsdg = self.ipk/np.sqrt(3*self.Tsw*self.md)
-            
+
         #Initialize as if a buck-boost
         self.iRMS_in = irmscg
         self.iRMS_out = irmsdg
-        
+
         if self.top == "BOOST":
             self.iRMS_in = irmscg
             self.iRMS_out = irmsdg
@@ -116,19 +116,19 @@ class SteadyState:
             self.iRMS_out = irmsdg + irmscg
         if self.top == "FLYBACK":
             self.iRMS_in = irmscg
-            self.iRMS_out = irmsdg*self.Nps           
-        
-    
+            self.iRMS_out = irmsdg*self.Nps
+
+
     def compute_sys_params(self):
-     
+
         ## Configure inductor voltages based upon topology ##
-        
+
         #Initialize as buck-boost
         self.vCG = self.Vin
         self.vDG = self.Vout + self.Vdiode
         self.iDG = self.iload
         self.iCG = self.iDG*self.vDG/self.vCG
-        
+
         #Then determine if it's something else
         if self.top == "BOOST":
             self.vCG = self.Vin
@@ -144,7 +144,7 @@ class SteadyState:
             self.vCG = self.Vin
             self.vDG = self.Vout + self.Vdiode
             self.iDG = self.iload
-            self.iCG = self.iDG*self.vDG/self.vCG  
+            self.iCG = self.iDG*self.vDG/self.vCG
         if self.top == "FORWARD": #Evaluated as buck with Vin reflected to secondary
             self.vCG = self.Vin/self.Nps - (self.Vout + self.Vdiode)
             self.vDG = self.Vout + self.Vdiode
@@ -155,16 +155,16 @@ class SteadyState:
             self.vDG = (self.Vout + self.Vdiode)*self.Nps
             self.iDG = self.iload/self.Nps
             self.iCG = self.iDG*self.vDG/self.vCG
-            
+
         #Helpful variables
         self.Tsw = 1/self.Fsw           #Switching period
         self.mc = self.vCG/self.Ls      #Charging cycle inductor current slope
         self.md = self.vDG/self.Ls      #Discharging cycle inductor current slope
         self.compute_alpha()   #IIR coefficient
-        
+
         #Test CCM or DCM
         self.compute_iv()
-        
+
         #Evaluate mode based on valley current
         if self.iv == 0:
             self.mode = "BCM"
@@ -174,15 +174,15 @@ class SteadyState:
             self.mode = "DCM"
         if self.rectifierMode == "FCCM":
             self.mode = "CCM"
-        
+
         #Re-compute according to mode
         self.compute_ic()
         self.compute_ipk()
         self.compute_iv()
-        self.compute_duty() 
+        self.compute_duty()
         self.compute_rms()
-        
-        
+
+
     def print_sys_params(self):
         #System inputs
         print("Topology =\t", self.top)
@@ -193,25 +193,25 @@ class SteadyState:
         print("Switching Frequency =\t", self.Fsw, "\tHz")
         print("Switching Period =\t", self.Tsw, "\ts")
         print("Switched Inductor =\t", self.Ls, "\tH")
-        
+
         if self.top == "FORWARD":
             print("Isolation XFMR Magnetizing Inductance =\t", self.Lmag, "\tH")
-            
+
         print("Primary to secondary turns ratio =\t", self.Nps, "\tTurns")
-        
+
         #Inductor voltages
         print("Inductor charging voltage =\t", self.vCG, "\tVolts")
         print("Inductor discharging voltage =\t", self.vDG, "\tVolts")
-        
+
         #Inductor currents
         print("Peak current control set point =\t", self.ic, "\tAmps")
         print("Inductor peak current =\t", self.ipk, "\tAmps")
         print("Inductor valley current =\t", self.iv, " \tAmps")
         print("Charge cycle average current =\t", self.iCG, " \tAmps")
-        print("Discharge cycle average current =\t",self.iDG, " \tAmps")       
+        print("Discharge cycle average current =\t",self.iDG, " \tAmps")
         print("Input RMS current =\t",self.iRMS_in, " \tAmps")
         print("Output RMS current =\t",self.iRMS_out, " \tAmps")
-        
+
         #Helpful variables
         print("Charging current slope =\t", self.mc, "\tA/s")
         print("Discharging current slope =\t",self.md, "\tA/s")
@@ -221,11 +221,10 @@ class SteadyState:
         print("Discharge duty =\t ", self.dcg, "\tUnitless")
         print("Idle duty =\t ", self.idle, "\tUnitless")
         print("Operating in mode: ", self.mode)
-        
+
 ##
 ## Test Program
 ##
 
 ss =  SteadyState(75.0, 12.5, 0.75, 3.0, 120000.0, 580e-6, 0.0, 80000.0, (54.0/8.0), "FLYBACK", "DCMCCM")
 ss.print_sys_params()
-        

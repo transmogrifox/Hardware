@@ -40,21 +40,27 @@
 			In BCM the inductor finishes discharging immediately at termination of the switching cycle. During DCM operation the inductor discharges and remains idle for a finite period of time between cycles.
 		\end{enumerate}	
 		\subsection{Definitions for Variables}
+		
+		From Tan/Middlebrook, "Notation conventions adopted here  are  as  follows.  Capital letters are used  to indicate quantities associated with steady- state, hatted letters are quantities associated with small-signal perturbations, and small letters represent quantities associated with perturbed state,  i.e.,  quantities which are  the sum of capital and  hatted letters."
 			
+		The following parameters are generally used to express system state variables,
 			\begin{align*}
-			v_{CG} &= \text{Voltage across inductor during charging cycle} \\
-			v_{DG} &= \text{Voltage across inductor during discharging cycle} \\
+			I_C, i_C, \hat{i}_c &= \text{Peak current control set point for Current Programmed Mode (CPM) control}\\
+			I_V, i_V, \hat{i}_v &= \text{Inductor valley current.} \\
+			V_{CG},v_{CG},\hat{v}_{cg} &= \text{Voltage across inductor during charging cycle} \\
+			V_{DG},v_{DG},\hat{v}_{dg}  &= \text{Voltage across inductor during discharging cycle} \\
+			I_{CG}, i_{CG}, \hat{i}_{cg} &= \text{Charging cycle inductor current} \\
+			I_{DG}, i_{DG}, \hat{i}_{dg} &= \text{Discharging cycle inductor current}
+			\end{align*}
+			Items generally used as constants,
+			\begin{align*}	
 			F_{SW} &= \text{Modulator switching frequency}\\
 			T_{SW} &= \frac{1}{F_{SW}}\text{, Modulator switching (sampling) period} \\
 			L_m &= \text{Converter magnetizing inductance} \\
-			i_c &= \text{Peak current control set point for Current Programmed Mode (CPM) control}\\
-				i_v &= \text{Inductor valley current.} \\
-			i_{CG} &= \text{Charging cycle inductor current} \\
-			i_{DG} &= \text{Discharging cycle inductor current} \\	
-			m_c &= \frac{v_{CG}} {L_m}\text{, Slope of current during charge cycle (A/s)} \\
-			m_d &= \frac{v_{DG}} {L_m}\text{, Slope of current during discharge cycle (A/s)}\\
+			m_c &= \frac{V_{CG}} {L_m}\text{, Slope of current during charge cycle (A/s)} \\
+			m_d &= \frac{V_{DG}} {L_m}\text{, Slope of current during discharge cycle (A/s)}\\
 			m_{cmp} &= \text{Artificial ramp added to primary current sense signal (slope compensation) (A/s)}\\
-			\alpha &= \frac{m_c + m_d} {m_c + m_{cmp}} =  \frac{v_{CG} + v_{DG}} {v_{CG} + m_{cmp} L_m}\\
+			\alpha &= \frac{m_c + m_d} {m_c + m_{cmp}} =  \frac{V_{CG} + V_{DG}} {V_{CG} + m_{cmp} L_m}\\
 			D &= \text{Modulator charging cycle duty} \\
 			D' &= (1-D) \text{Modulator discharging cycle duty}\\	
 			\end{align*}
@@ -183,6 +189,12 @@
 		\subsection{Duty cycle and switch idle time}
 		Duty cycle expressed in (\ref{duty_general}), but the quantity $D'$ no longer represents discharge cycle time.  There is a switch conduction interval followed by an interval while the switch is idle (no conduction) during the discharging cycle.
 		
+		\begin{align}
+		D &= \frac{ I_{pk}}{ T_{SW} m_{c}} = \frac{1}{ T_{SW} m_{c}} \sqrt{\frac{2T_{SW}V_{CG}}{L_m}I_{CG}} =  \sqrt{\frac{2 L_m}{T_{SW} V_{CG}}I_{CG}} = \sqrt{\frac{2 L_m V_{DG}}{T_{SW}V_{CG}^2}I_{DG}} \\
+		D' &= \frac{ I_{pk}}{ T_{SW} m_{d}} = \frac{1}{ T_{SW} m_{d}} \sqrt{\frac{2T_{SW}V_{DG}}{L_m}I_{DG}}	 = \sqrt{\frac{2L_m} {T_{SW} V_{DG} }I_{DG}} \\
+		D_{idle} &= 1 - D - D'
+		\end{align}			
+				
 		\subsection{Steady State Control-to-Average Current in DCM}
 
 		\begin{align}
