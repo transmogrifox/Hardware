@@ -1,6 +1,13 @@
 import numpy as np
+#import matplotlib as mpl
+import matplotlib.pyplot as plt
 
-class SteadyState:
+#
+# 1) Create a steadyState object to define the system
+# 2) Pass the steadyState object into smallSignal for modulator small signal
+#      AC response.
+
+class modulatorSystem:
     def __init__(self, Vin, Vout, Vdiode, iload, Fsw, Ls, Lmag, mcmp, Nps, topology, rectifierMode ):
         self.Vin = Vin                      #Converter input voltage
         self.Vout = Vout                    #Converter output voltage
@@ -15,6 +22,27 @@ class SteadyState:
                                             #  (for isolated or coupled topologies)
         self.top = topology                 #Converter topology
         self.rectifierMode = rectifierMode  #Force CCM or diode operation
+
+
+################################################################################
+##                                                                            ##
+##              Converter steady state operating conditions                   ##
+##                                                                            ##
+################################################################################
+
+class steadyState:
+    def __init__(self, sys ):
+        self.Vin = sys.Vin
+        self.Vout = sys.Vout
+        self.Vdiode = sys.Vdiode
+        self.iload = sys.iload
+        self.Fsw = sys.Fsw
+        self.Ls = sys.Ls
+        self.Lmag = sys.Lmag
+        self.mcmp = sys.mcmp
+        self.Nps = sys.Nps
+        self.top = sys.top
+        self.rectifierMode = sys.rectifierMode
 
         ##
         ## Internal variables
@@ -52,6 +80,21 @@ class SteadyState:
         ## Initialize internal variables
         ##
         self.compute_sys_params()
+
+    def update(self, sys ):
+        self.Vin = sys.Vin
+        self.Vout = sys.Vout
+        self.Vdiode = sys.Vdiode
+        self.iload = sys.iload
+        self.Fsw = sys.Fsw
+        self.Ls = sys.Ls
+        self.Lmag = sys.Lmag
+        self.mcmp = sys.mcmp
+        self.Nps = sys.Nps
+        self.top = sys.top
+        self.rectifierMode = sys.rectifierMode
+        self.compute_sys_params()
+
 
     def compute_ic(self):
         if self.mode == "CCM" :
@@ -234,4 +277,106 @@ class SteadyState:
         print("Load at BCM =\t ", self.iDG_bcm, "\tAmps")
         print("Operating in mode: ", self.mode)
 
+################################################################################
+##                                                                            ##
+##                   Small Signal AC response                                 ##
+##                                                                            ##
+################################################################################
+
+#
+# Instance of steadyState variables are needed to compute the
+#   small signal gain model
+# Assumes frequency response is wanted:
+#  fstart = lowest frequency of interest
+#  fend = highest frequency of interest
+#  npoints = number of log-spaced components between fstart...fend
+#
+
+class smallSignal:
+    def __init__(self, steadyState, fstart, fend, npoints):
+        self.sys = steadyState
+        self.f =  np.logspace(np.log10(fstart), np.log10(fend), npoints)
+        self.s = 2j*np.pi*self.f
+        self.z1 = np.exp(-self.s*self.sys.Tsw)
+
+        #Peak-to-valley current transfer function
+        self.Hv = []
+
+        #Valley-to-average current transfer functions
+        self.Hcg = []
+        self.Hdg = []
+        
+        #Output reconstruction filters
+        self.Gcg = []
+        self.Gdg = []
+        
+        #Combined control-to-output transfer function
+        self.Fcg = []
+        self.Fdg = []
+        
+        #Run the filters
+        self.compute_Hv()
+        self.compute_Hcg()
+        self.compute_Hdg()
+        self.compute_G()
+        self.compute_F()
+
+    def compute_Hv(self):
+        a = self.sys.alpha
+        z1 = self.z1
+        f = self.f
+        self.Hv = a/(1.0 - (1.0 - a)*z1)
+
+    def compute_Hcg(self):
+        self.Hcg =  (self.sys.iv/(self.sys.mc + self.sys.md))\
+                    *(self.sys.md/self.sys.iv + self.s)
+
+    def compute_Hdg(self):
+        self.Hdg =  (self.sys.iv/(self.sys.mc + self.sys.md))\
+                    *(self.sys.mc/self.sys.iv - self.s)
+
+    def compute_G(self):
+        Iv = self.sys.iv
+        mc = self.sys.mc
+        md = self.sys.md
+        D = self.sys.duty
+        Dp = self.sys.dcg
+        Tsw = self.sys.Tsw
+        s = self.s
+        
+        #Charging cycle reconstruciton filter
+        Gcg = Iv*(1.0 - np.exp(-s*D*Tsw))/s \
+                  + mc*( (1.0 - (1.0 + s*D*Tsw)*np.exp(-s*D*Tsw))/s**2)
+                   
+        #Discharging cycle reconstruction filter
+        Gdg = np.exp(-s*D*Tsw)*(Iv + md*Dp*Tsw)*(1.0 - np.exp(-s*Dp*Tsw))/s \
+                  - np.exp(-s*D*Tsw)*md*( (1.0 - (1.0 + s*Dp*Tsw)*np.exp(-s*Dp*Tsw))/s**2)
+                  
+        #Normalization functions
+        normCG = 2.0/(D*D*Tsw*Tsw*mc + 2.0*D*Tsw*Iv)
+        normDG = 2.0/(Dp*Dp*Tsw*Tsw*md + 2.0*Dp*Tsw*Iv)
+        
+        #Normalize
+        self.Gcg = normCG*Gcg
+        self.Gdg = normDG*Gdg
+
+    def compute_F(self):
+        self.Fcg = self.Hv*self.Hcg*self.Gcg
+        self.Fdg = self.Hv*self.Hdg*self.Gdg
+    
+    def plot_response(self, f, H):
+        mag_dB = 20.0*np.log10(np.abs(H))
+        phase_deg = 180.0*np.unwrap(np.angle(H))/np.pi
+        
+        fig, ax = plt.subplots(nrows=2,ncols=1)
+        plt.subplot(2, 1, 1)
+        plt.semilogx(f, mag_dB,"r")
+        plt.grid()
+        plt.subplot(2, 1, 2)
+        plt.semilogx(f, phase_deg,"b-")
+        plt.grid()
+        plt.show()
+        
+        
+        
 
