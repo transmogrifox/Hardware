@@ -2,44 +2,51 @@ import numpy as np
 
 class SteadyState:
     def __init__(self, Vin, Vout, Vdiode, iload, Fsw, Ls, Lmag, mcmp, Nps, topology, rectifierMode ):
-        self.Vin = Vin          #Converter input voltage
-        self.Vout = Vout        #Converter output voltage
-        self.Vdiode = Vdiode    #Drop across rectifier output
-        self.iload = iload       #Output load current
-        self.Fsw = Fsw          #Switching frequency
-        self.Ls = Ls             #Switched inductor in all topologies
-        self.Lmag = Lmag        #Magnetizing inductane in case of isolated forward
-        self.mcmp = mcmp        #Artificial ramp (slope compensation)
-        self.Nps = Nps          #Primary to secondary turns ratio (for isolated or coupled topologies)
-        self.top = topology     #Converter topology
+        self.Vin = Vin                      #Converter input voltage
+        self.Vout = Vout                    #Converter output voltage
+        self.Vdiode = Vdiode                #Drop across rectifier output
+        self.iload = iload                  #Output load current
+        self.Fsw = Fsw                      #Switching frequency
+        self.Ls = Ls                        #Switched inductor in all topologies
+        self.Lmag = Lmag                    #Magnetizing inductane in case of
+                                            #  isolated forward
+        self.mcmp = mcmp                    #Artificial ramp (slope compensation)
+        self.Nps = Nps                      #Primary to secondary turns ratio
+                                            #  (for isolated or coupled topologies)
+        self.top = topology                 #Converter topology
         self.rectifierMode = rectifierMode  #Force CCM or diode operation
 
         ##
         ## Internal variables
         ##
 
-        self.mode = "CCM" #CCM, DCM or BCM
+        self.mode = "CCM"   #CCM, DCM or BCM
         #Inductor voltages
-        self.vCG = 0.0    #Voltage across inductor during charging cycle
-        self.vDG = 0.0   #Voltage across inductor during discharging cycle
+        self.vCG = 0.0      #Voltage across inductor during charging cycle
+        self.vDG = 0.0      #Voltage across inductor during discharging cycle
 
         #Inductor currents
-        self.ic = 0.0     #Peak current control set point
-        self.ipk = 0.0    #Peak current
-        self.iv = 0.0     #Inductor valley current
-        self.iCG = 0.0    #Charging cycle average inductor current
-        self.iDG = 0.0    #Discharging cycle average inductor current
-        self.iRMS_in = 0.0 #RMS input current
+        self.ic = 0.0       #Peak current control set point
+        self.ipk = 0.0      #Peak current
+        self.iv = 0.0       #Inductor valley current
+        self.iCG = 0.0      #Charging cycle average inductor current
+        self.iDG = 0.0      #Discharging cycle average inductor current
+        self.iRMS_in = 0.0  #RMS input current
         self.iRMS_out = 0.0 #RMS output current
 
         #Helpful variables
-        self.Tsw = 0.0    #Switching period
-        self.mc = 0.0     #Charging cycle inductor current slope
-        self.md = 0.0     #Discharging cycle inductor current slope
-        self.alpha = 0.0  #IIR coefficient
-        self.duty = 0.0   #Duty Cycle
-        self.dcg = 0.0    #Discharge duty if operating in DCM
-        self.idle = 0.0   #Idle time after discharge if operating in DCM
+        self.Tsw = 0.0      #Switching period
+        self.mc = 0.0       #Charging cycle inductor current slope
+        self.md = 0.0       #Discharging cycle inductor current slope
+        self.alpha = 0.0    #IIR coefficient
+        
+        #Output characteristics
+        self.duty = 0.0     #Duty Cycle
+        self.dcg = 0.0      #Discharge duty if operating in DCM
+        self.idle = 0.0     #Idle time after discharge if operating in DCM
+        self.iDG_bcm = 0.0  #Loading at specified input/output voltages 
+                            #  for which the converter is operating in 
+                            #  boundary conduction mode
 
         ##
         ## Initialize internal variables
@@ -118,6 +125,9 @@ class SteadyState:
             self.iRMS_in = irmscg
             self.iRMS_out = irmsdg*self.Nps
 
+    def compute_bcm(self):
+        self.iDG_bcm = self.Nps*(self.Tsw/(2.0*self.Ls))*self.vDG*self.vDG*self.vCG/\
+                       ((self.vCG + self.vDG)*(self.vCG + self.vDG))
 
     def compute_sys_params(self):
 
@@ -181,6 +191,7 @@ class SteadyState:
         self.compute_iv()
         self.compute_duty()
         self.compute_rms()
+        self.compute_bcm()
 
 
     def print_sys_params(self):
@@ -220,11 +231,7 @@ class SteadyState:
         print("Duty Cycle =\t ", self.duty, "\tUnitless")
         print("Discharge duty =\t ", self.dcg, "\tUnitless")
         print("Idle duty =\t ", self.idle, "\tUnitless")
+        print("Load at BCM =\t ", self.iDG_bcm, "\tAmps")
         print("Operating in mode: ", self.mode)
 
-##
-## Test Program
-##
 
-ss =  SteadyState(75.0, 12.5, 0.75, 3.0, 120000.0, 580e-6, 0.0, 80000.0, (54.0/8.0), "FLYBACK", "DCMCCM")
-ss.print_sys_params()
