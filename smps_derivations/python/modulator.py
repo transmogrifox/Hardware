@@ -332,7 +332,11 @@ class smallSignal:
                     *(self.sys.md/self.sys.iv + self.s)
 
     def compute_Hdg(self):
-        self.Hdg =  (self.sys.iv/(self.sys.mc + self.sys.md))\
+        Gdg = 1.0
+        if self.sys.top == "FLYBACK":
+            Gdg = self.sys.Nps
+        
+        self.Hdg = Gdg*(self.sys.iv/(self.sys.mc + self.sys.md))\
                     *(self.sys.mc/self.sys.iv - self.s)
 
     def compute_G(self):
