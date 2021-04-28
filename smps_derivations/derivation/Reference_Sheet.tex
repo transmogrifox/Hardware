@@ -406,7 +406,12 @@ Abstracting impedances connected within the error amplifier, the gain can be exp
 	
 	Then expanding $Z_o$ the expression becomes much more tidy,
 	\begin{align}
-		H_{LED} = \frac{1}{R_{LED}} (G_{thev} \frac{Z_f }{R_i} + 1)
+		H_{LED} = \frac{1}{R_{LED}} (G_{thev} \frac{Z_f }{R_i} + 1) \label{hled_inf}
 	\end{align} 
+
+	The full transfer function with finite transconductance included below. It is apparent by inspection that (\ref{hled_gm}) reduces to (\ref{hled_inf}) in the limit as $g_m \to \infty$.
+	\begin{align}
+	H_{LED} = \frac{1}{R_{LED}} \frac{ Z_i + G_{thev}(Z_f - \frac{1}{g_m}) +  \frac{1}{g_m} } {Z_i + ( \frac{Z_f + Z_i}{Z_o} + 1)\frac{1}{g_m}} \label{hled_gm}
+\end{align}	
 	
 \end{document}
