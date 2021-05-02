@@ -54,9 +54,9 @@ n = 1e-9
 u = 1e-6
 k = 1e3
 
-class errorAmp:
+class errorAmp2z:
 
-    def __init__(self, Vref, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+    def __init__(self, Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                  fc_opto, fstart, fend, npoints):
         # Plotting range defaults
         self.fstart = 10.0
@@ -67,6 +67,7 @@ class errorAmp:
 
         # Error amp default component values
         self.Vref = 2.5
+        self.gm = 3.0
         self.Rdc_Bias = 8.25*k
         self.Cp = 100.0*n
         self.Cf1 = 10.0*n
@@ -79,12 +80,13 @@ class errorAmp:
         self.CTR = 0.4
 
         # Transfer functions
+        self.Hk = []
+        self.Hc = []
 
-
-        self.updateParams(Vref, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+        self.updateParams(Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                           fc_opto, fstart, fend, npoints)
 
-    def updateParams(self, Vref, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+    def updateParams(self, Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                  fc_opto, fstart, fend, npoints) :
         # Plotting ranges
         self.fstart = fstart
@@ -95,12 +97,13 @@ class errorAmp:
 
         # Error amp component values
         self.Vref = Vref
+        self.gm = gm
         self.Rdc_Bias = Rdc_Bias
         self.Cp = Cp
-        self.Cf = Cf1
-        self.Rf = Rf1
-        self.Cf = Cf2
-        self.Rf = Rf2
+        self.Cf1 = Cf1
+        self.Rf1 = Rf1
+        self.Cf2 = Cf2
+        self.Rf2 = Rf2
         self.Ri = Ri
         self.Ro = Ro
         self.fc_opto = fc_opto
@@ -120,6 +123,9 @@ class errorAmp:
         Rf2 = self.Rf2
         Cp = self.Cp
         Ro = self.Ro
+        gm = self.gm
+        Rl = self.Rdc_Bias
+        Rh = self.Ri
 
         wopt = 2.0*np.pi*self.fc_opto
         Hopt = self.CTR*wopt/(s + wopt)
@@ -133,18 +139,23 @@ class errorAmp:
 
         zcp =  1.0/(s*Cp)
 
-        Zf = zf0.*zcp./(zf0 + zcp)
+        Zf = zf0*zcp/(zf0 + zcp)
         Zi = Rl*Rh/(Rl + Rh)
         Gth = Rl/(Rl + Rh)
 
         # Transconductance amp open loop gain
-        gm = 3.0
-        fbw = 2.0*np.pi*1.0*k #TL431 LF pole appears to be ~1kHz in test jig
+        fbw = 2.0*np.pi*6.0*k #TL431 LF pole
         Gs = (1.0/100.0)*gm*(s+100.0*fbw)/(s + fbw)
 
         # Closed loop transfer function
-        Hcomp = (1.0/(Gs*Ro) - Gth*Zf/(Zf + Zi)) \
-              / (Zi/(Zf + Zi) + 1.0/(Gs*Ro) + 1.0/(Gs*Zf))
+        self.Hk = ( (1.0/(Gs*Ro) - Gth*Zf/(Zf + Zi)) \
+              / (Zi/(Zf + Zi) + 1.0/(Gs*Ro) + 1.0/(Gs*Zf)) ) / Ro
 
         #self.Hk = -(1.0/self.Ro)*p0*(s + z0)/(s + p1) #Without "fast lane"
-        self.Hc = Hcomp*Hopt  #Add "fast lane" effect
+        self.Hc = (1.0/Ro - self.Hk)*Hopt  #Add "fast lane" effect
+
+
+
+
+
+        ### EOF ###

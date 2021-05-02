@@ -378,5 +378,47 @@ where,
 		F_{CG.NORM}(s) &= \frac{2}{T_{CG}^2m_c } F_{CG}(s)\label{FCG_NORM_DCM} \\
 		F_{DG.NORM}(s) &= \frac{2}{T_{DG}^2m_d }F_{DG}(s) \label{FCG_NORM_DCM}
 		\end{align}
+
+\section{Error Amplifier}
+
+Abstracting impedances connected within the error amplifier, the gain can be expressed by means of basic circuit analysis while preventing the multiplicity of terms becoming unruly.
+
+	\begin{align}
+		H_{EA} = \frac{i_o}{v_o} &= \frac{ Z_i + G_{thev}(Z_f - \frac{1}{g_m}) +  \frac{1}{g_m} } {Z_i Z_o + (Z_f + Z_i + Z_o)\frac{1}{g_m}} \\
+		 &= \frac{1}{Z_o} \frac{ Z_i + G_{thev}(Z_f - \frac{1}{g_m}) +  \frac{1}{g_m} } {Z_i + ( \frac{Z_f + Z_i}{Z_o} + 1)\frac{1}{g_m}}
+	\end{align}
+	
+	The value in such analysis is to see more clearly how this strange device (TL431 or TLV431) actually behaves in this circuit.  The relative role of the device's amplification factor defines how closely it emulates the response of an ideal amplifier.  Below the transfer function is expressed in the limit as transconductance approaches infinity.
+	
+	\begin{align}
+		\lim_{g_m \to \infty} H_{EA} &= \frac{1}{Z_o} (G_{thev} \frac{Z_f }{Z_i} + 1) \label{lim_Hea} \\
+	\end{align}
+	
+	Finally, the input resistor divider is expanded back out in the expression as $\lim_{g_m \to \infty}$, and we see the DC bias resistor, $R_b$ simply drops out of the formula.
+	\begin{align}
+		G_{thev} &= \frac{R_b}{R_b+R_i}\\
+		Z_i &= \frac{R_b R_i}{R_b + R_i}\\
+		H_{EA} &= \frac{1}{Z_o} (\frac{R_b}{R_b+R_i} \frac{Z_f }{\frac{R_b R_i}{R_b + R_i}} + 1) = \frac{1}{Z_o} (G_{thev} \frac{Z_f }{R_i} + 1)
+	\end{align}
+	
+	The transfer function for current through $Z_o$, so only a simple current divider network needs to be considered for expressing final gain to the optocoupler LED.
+	
+	\begin{align}
+		g_{LED} = \frac{i_{LED}}{i_o} = \frac{R_o}{R_{LED} + R_o}
+	\end{align}
+	Finally,
+	\begin{align}
+		H_{LED} = \frac{i_{LED}} {v_o} = g_{LED} H_{EA} = \frac{R_o}{R_{LED} + R_o} \frac{1}{Z_o} (G_{thev} \frac{Z_f }{R_i} + 1)
+	\end{align}
+	
+	Then expanding $Z_o$ the expression becomes much more tidy,
+	\begin{align}
+		H_{LED} = \frac{1}{R_{LED}} (G_{thev} \frac{Z_f }{R_i} + 1) \label{hled_inf}
+	\end{align} 
+
+	The full transfer function with finite transconductance included below. It is apparent by inspection that (\ref{hled_gm}) reduces to (\ref{hled_inf}) in the limit as $g_m \to \infty$.
+	\begin{align}
+	H_{LED} = \frac{1}{R_{LED}} \frac{ Z_i + G_{thev}(Z_f - \frac{1}{g_m}) +  \frac{1}{g_m} } {Z_i + ( \frac{Z_f + Z_i}{Z_o} + 1)\frac{1}{g_m}} \label{hled_gm}
+\end{align}	
 	
 \end{document}
