@@ -44,14 +44,21 @@
 		From Tan/Middlebrook, "Notation conventions adopted here  are  as  follows.  Capital letters are used  to indicate quantities associated with steady- state, hatted letters are quantities associated with small-signal perturbations, and small letters represent quantities associated with perturbed state,  i.e.,  quantities which are  the sum of capital and  hatted letters."
 			
 		The following parameters are generally used to express system state variables,
-			\begin{align*}
-			I_C, i_C, \hat{i}_c &= \text{Peak current control set point for Current Programmed Mode (CPM) control}\\
-			I_V, i_V, \hat{i}_v &= \text{Inductor valley current.} \\
-			V_{CG},v_{CG},\hat{v}_{cg} &= \text{Voltage across inductor during charging cycle} \\
-			V_{DG},v_{DG},\hat{v}_{dg}  &= \text{Voltage across inductor during discharging cycle} \\
-			I_{CG}, i_{CG}, \hat{i}_{cg} &= \text{Charging cycle inductor current} \\
-			I_{DG}, i_{DG}, \hat{i}_{dg} &= \text{Discharging cycle inductor current}
-			\end{align*}
+
+\begin{table}[]
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{\begin{tabular}[c]{@{}l@{}}State \\ Variable\end{tabular}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Steady\\ State\\ Value\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Small\\ Signal\\ Value\end{tabular}}} & \textbf{Description}                                         \\ \hline
+		$i_C$                                                              & $I_c$                                                                                        & $\hat{i_c}$                                                                                  & Control set point for Current Programmed Mode (CPM) control  \\ \hline
+		$d$                                                                & $D$                                                                                          & $\hat{d}$                                                                                    & Duty cycle control set point for Voltage Mode (Duty) Control \\ \hline
+		$i_V$                                                              & $I_v$                                                                                        & $\hat{i_v}$                                                                                  & Inductor valley current                                      \\ \hline
+		$v_{CG}$                                                           & $V_{cg}$                                                                                     & $\hat{v_cg}$                                                                                 & Voltage across inductor during charging cycle                \\ \hline
+		$v_{DG}$                                                           & $V_{dg}$                                                                                     & $\hat{v_dg}$                                                                                 & Voltage across inductor during discharging cycl              \\ \hline
+		$i_{CG}$                                                           & $I_{cg}$                                                                                     & $\hat{i_cg}$                                                                                 & Charging cycle inductor current                              \\ \hline
+		$i_{DG}$                                                           & $I_{dg}$                                                                                     & $\hat{i_dg}$                                                                                 & Discharging cycle inductor current                           \\ \hline
+	\end{tabular}
+\end{table}
+
 			Items generally used as constants,
 			\begin{align*}	
 			F_{SW} &= \text{Modulator switching frequency}\\
