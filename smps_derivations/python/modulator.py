@@ -43,6 +43,7 @@ class steadyState:
         self.Nps = sys.Nps
         self.top = sys.top
         self.rectifierMode = sys.rectifierMode
+        self.Rload = (self.Vout - self.Vdiode)/self.iload
 
         ##
         ## Internal variables
@@ -174,6 +175,7 @@ class steadyState:
 
     def compute_sys_params(self):
 
+        self.Rload = (self.Vout - self.Vdiode)/self.iload
         ## Configure inductor voltages based upon topology ##
 
         #Initialize as buck-boost
@@ -325,19 +327,31 @@ class smallSignal:
         a = self.sys.alpha
         z1 = self.z1
         f = self.f
-        self.Hv = a/(1.0 - (1.0 - a)*z1)
+        
+        if self.sys.mode == "CCM":
+            self.Hv = a/(1.0 - (1.0 - a)*z1)
+        else:
+            self.Hv = 1.0
 
     def compute_Hcg(self):
-        self.Hcg =  (self.sys.iv/(self.sys.mc + self.sys.md))\
-                    *(self.sys.md/self.sys.iv + self.s)
+        if self.sys.mode == "CCM":
+            self.Hcg =  (1.0/(self.sys.mc + self.sys.md))\
+                        *(self.sys.md + self.sys.iv*self.s)
+        else: #DCM small signal gain
+            self.Hcg = self.sys.mc*self.sys.Ls*self.sys.ic/((self.sys.mc + self.sys.mcmp)*self.sys.Tsw*self.sys.vCG)
 
     def compute_Hdg(self):
         Gdg = 1.0
         if self.sys.top == "FLYBACK":
             Gdg = self.sys.Nps
+
+
+        if self.sys.mode == "CCM":
+            self.Hdg = Gdg*(1.0/(self.sys.mc + self.sys.md))\
+                       *(self.sys.mc - self.sys.iv*self.s)
+        else: #DCM small signal gain
+            self.Hdg = Gdg*self.sys.mc*self.sys.Ls*self.sys.ic/((self.sys.mc + self.sys.mcmp)*self.sys.Tsw*self.sys.vDG)
         
-        self.Hdg = Gdg*(self.sys.iv/(self.sys.mc + self.sys.md))\
-                    *(self.sys.mc/self.sys.iv - self.s)
 
     def compute_G(self):
         Iv = self.sys.iv

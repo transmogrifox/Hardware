@@ -1,17 +1,17 @@
 
 ## Type II compensator with optocoupler fast-lane
 #
-#   [Vfb]--*-----------------*
-#          |                 |
-#          |                 \
-#          \                 /
-#          / Ri              \ Ro
-#          \                 /
-#          /                 |
-#          |                 __
-#          |            LED _\/_ ~^~>[CTR]-->[Iemitter]
-#          |      Cp         |
-#          *------||---------*
+#   [Vfb]--*-----------------*-------*
+#          |                 |        |
+#          |                 |        \
+#          \                 \        /
+#          / Ri              / Ro     \ R_LED
+#          \                 \        /
+#          /                 /        |
+#          |                 |        __
+#          |                 |   LED _\/_ ~^~>[CTR]-->[Iemitter]
+#          |      Cp         |        |
+#          *------||---------*--------*
 #          |                 |
 #          |   Cf1   Rf1     |
 #          *---||---/\/\/----*-->[Vk]
@@ -56,7 +56,7 @@ k = 1e3
 
 class errorAmp2z:
 
-    def __init__(self, Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+    def __init__(self, Vref, gm, Rdc_Bias, Ro, Rled, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                  fc_opto, fstart, fend, npoints):
         # Plotting range defaults
         self.fstart = 10.0
@@ -76,6 +76,7 @@ class errorAmp2z:
         self.Rf2 = 332.0*k
         self.Ri = 33.0*k
         self.Ro = 1.0*k
+        self.Rled = 1.0*k
         self.fc_opto = 100.0*k
         self.CTR = 0.4
 
@@ -83,10 +84,10 @@ class errorAmp2z:
         self.Hk = []
         self.Hc = []
 
-        self.updateParams(Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+        self.updateParams(Vref, gm, Rdc_Bias, Ro, Rled, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                           fc_opto, fstart, fend, npoints)
 
-    def updateParams(self, Vref, gm, Rdc_Bias, Ro, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
+    def updateParams(self, Vref, gm, Rdc_Bias, Ro, Rled, Ri, Rf1, Cf1, Rf2, Cf2, Cp, CTR, \
                  fc_opto, fstart, fend, npoints) :
         # Plotting ranges
         self.fstart = fstart
@@ -106,6 +107,7 @@ class errorAmp2z:
         self.Rf2 = Rf2
         self.Ri = Ri
         self.Ro = Ro
+        self.Rled = Rled
         self.fc_opto = fc_opto
         self.CTR = CTR
 
@@ -123,8 +125,9 @@ class errorAmp2z:
         Rf2 = self.Rf2
         Cp = self.Cp
         Ro = self.Ro
+        Rl = self.Rled
         gm = self.gm
-        Rl = self.Rdc_Bias
+        Rb = self.Rdc_Bias
         Rh = self.Ri
 
         wopt = 2.0*np.pi*self.fc_opto
@@ -132,15 +135,15 @@ class errorAmp2z:
 
         zcf1 = 1.0/(s*Cf1)
         zcf2 = 1.0/(s*Cf2)
+        zcp =  1.0/(s*Cp)
+        
         zf1 = zcf1 + Rf1
         zf2 = zcf2 + Rf2
+        zf12 = zf1*zf2/(zf1 + zf2)
 
-        zf0 = zf1*zf2/(zf1 + zf2)
-
-        zcp =  1.0/(s*Cp)
-
-        Zf = zf0*zcp/(zf0 + zcp)
+        Zf = zf12*zcp/(zf12 + zcp)
         Zi = Rl*Rh/(Rl + Rh)
+        Zo = Ro*Rl/(Ro+Rl)
         Gth = Rl/(Rl + Rh)
 
         # Transconductance amp open loop gain
@@ -148,11 +151,10 @@ class errorAmp2z:
         Gs = (1.0/100.0)*gm*(s+100.0*fbw)/(s + fbw)
 
         # Closed loop transfer function
-        self.Hk = ( (1.0/(Gs*Ro) - Gth*Zf/(Zf + Zi)) \
-              / (Zi/(Zf + Zi) + 1.0/(Gs*Ro) + 1.0/(Gs*Zf)) ) / Ro
+        self.Hk = Zf/Zi
 
-        #self.Hk = -(1.0/self.Ro)*p0*(s + z0)/(s + p1) #Without "fast lane"
-        self.Hc = (1.0/Ro - self.Hk)*Hopt  #Add "fast lane" effect
+        Hled = (1.0/Rl)*(Zi + Gth*(Zf - 1.0/Gs) + 1.0/Gs)/(Zi + ((Zf + Zi)/Zo + 1.0)/Gs)
+        self.Hc = Hled*Hopt  #Add optocoupler response
 
 
 
