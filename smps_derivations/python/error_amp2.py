@@ -147,7 +147,7 @@ class errorAmp2z:
         Gth = Rl/(Rl + Rh)
 
         # Transconductance amp open loop gain
-        fbw = 2.0*np.pi*6.0*k #TL431 LF pole
+        fbw = 2.0*np.pi*12.0*k #TL431 LF pole
         Gs = (1.0/100.0)*gm*(s+100.0*fbw)/(s + fbw)
 
         # Closed loop transfer function

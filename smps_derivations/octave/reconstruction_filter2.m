@@ -26,11 +26,11 @@ x2 = mc*( (1 - (1 + s*tc).*e.^(-s*tc))./(s.^2) );
 
 x1l = 20*log10(fs*abs(x1));
 x2l = 20*log10(fs*abs(x2));
-x1p = 180*angle(fs*x1)/pi;
-x2p = 180*angle(fs*x2)/pi;
+x1p = 180*unwrap(angle(x1))/pi;
+x2p = 180*unwrap(angle(x2))/pi;
 
 xl = 20*log10(fs*(x1 + x2));
-xp = 180*angle(fs*(x1 + x2))/pi;
+xp = 180*unwrap(angle(x1 + x2))/pi;
 
 subplot(4,1,1)
 semilogx(f, x1l, f, x2l)

@@ -4,7 +4,7 @@ u = 1e-6;
 fsw = 130*k
 Ts = 1/fsw;
 
-ff = 10:10:fsw;
+ff = 10:10:fsw*4;
 ws = 2*pi*ff;
 s = j*ws;
 z1 = e.^(-s*Ts);
