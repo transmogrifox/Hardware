@@ -102,6 +102,77 @@
 	\begin{align}
 	i(t) &= \frac{V_{i1} - V_{i2}}{R_1}  e^{-\frac{t}{\tau}} 
 	\end{align}
+
+	\section{Determine final settled voltage}
+	Either one of two approaches may be used to determine the final voltage measured at nodes $V_1 = V_2$.  One approach integrates the current, $i(t)$, to determine the charge transferred and then using the formula $Q=CV$ to solve for the final voltage.  
 	
+	A second approach looks directly to energy lost during the stabilization, or,
+	\begin{align}
+		E_{R1} = R_1 \int_{0}^{\infty} i(t)^2 dt
+	\end{align}
+
+	\subsection{Charge based approach}
+	The total charge transfer is the following.
+	\begin{align}
+	Q_{R1} &= \frac{V_{i1} - V_{i2}}{R_1}  \int_{0}^{\infty}  e^{-\frac{t}{\tau}} dt \nonumber \\
+	&= \frac{V_{i1} - V_{i2}}{R_1}   \bigg[ -\tau e^{-\frac{t}{\tau}} \bigg ]_{0}^{\infty} \nonumber \\
+	&= \frac{V_{i1} - V_{i2}}{R_1}  \bigg[ 0 - \big ( -\tau e^{-\frac{0}{\tau}} \big) \bigg ] \nonumber \\
+	&= \tau \frac{V_{i1} - V_{i2}}{R_1}
+	\end{align}	
+
+	Next it is observed that the same amount of charge leaves $C_1$ and is added to $C_2$.  The final charge, $Q_f$, can be expressed in terms of either $V_1$ or $V_2$ as follows.
+	
+	\begin{align}
+	Q_{f} &= C_1 V_{i1} - Q_{R1} \nonumber \\
+	&= C_2 V_{i2} + Q_{R1} \nonumber \\
+	&= (C_1 + C_2)V_f
+	\end{align}
+
+	Picking one,
+	\begin{align}
+		Q_{f} &= C_2 V_{i2} + \tau \frac{V_{i1} - V_{i2}}{R_1} \label{qfv2}
+	\end{align}
+
+	Since the quantity $V_f$ is wanted, the expression (\ref{qfv2}) is solved.
+	\begin{align}
+		(C_1 + C_2)V_f &= C_2 V_{i2} + \tau \frac{V_{i1} - V_{i2}}{R_1}  \nonumber \\
+		V_f &= \frac {C_2 V_{i2} + \tau \frac{V_{i1} - V_{i2}}{R_1}} {C_1 + C_2} 		
+	\end{align}
+
+	Final manipulation yields the following.
+	\begin{align}
+		V_f &= \frac {C_2 V_{i2} + \tau (V_{i1} - V_{i2})} {R_1(C_1 + C_2)} \label{vfinal_cg_based}
+	\end{align}
+
+	\subsection{Energy based approach}
+	Combined with knowledge of energy stored in capacitors,
+	\begin{align}
+		E_{FINAL} &= E_{C1} + E_{C2} - E_{R1} \nonumber \\
+		&= \frac{1}{2} (C_1+C_2)V_{FINAL}^2 \label{efinal}
+	\end{align}
+	where,
+	\begin{align}
+		E_{C1} &= \frac{1}{2}C_1V_1^2 \nonumber\\
+		E_{C2} &= \frac{1}{2}C_2V_2^2
+	\end{align}
+
+	And then the expression for $E_{R1}$ is determined by the following,
+	\begin{align}
+		E_{R1} &= R_1 \int_{0}^{\infty} \bigg( \frac{V_{i1} - V_{i2}}{R_1}  e^{-\frac{t}{\tau}}  \bigg)^2 dt \nonumber \\
+		&=R_1 \bigg( \frac{V_{i1} - V_{i2}}{R_1}  \bigg)^2 \int_{0}^{\infty}    e^{-\frac{2t}{\tau}}  dt \nonumber \\
+		&=  \frac{\big(V_{i1} - V_{i2}\big)^2}{R_1}  \bigg[ \frac{\tau}{2} e^{-\frac{2t}{\tau}} \bigg]_{0}^{\infty} \nonumber\\
+		&=  \frac{\big(V_{i1} - V_{i2}\big)^2}{R_1}  \bigg[ \frac{\tau}{2} e^{-\frac{2(0)}{\tau}} - \frac{\tau}{2} e^{-\frac{2(\infty)}{\tau}} \bigg] \nonumber \\
+		&=  \frac{\big(V_{i1} - V_{i2}\big)^2}{R_1}  \bigg[ \frac{\tau}{2}  - 0 \bigg] \nonumber \\
+		&= \frac{\tau}{2R_1} \big(V_{i1} - V_{i2}\big)^2
+	\end{align}
+	
+	Then (\ref{efinal}) is expanded.
+	\begin{align}
+		\frac{1}{2} (C_1+C_2)V_{FINAL}^2 &= \frac{1}{2}C_1V_1^2 +\frac{1}{2}C_2V_2^2 - \frac{\tau}{2R_1} \big(V_{i1} - V_{i2}\big)^2 \nonumber \\
+		V_{FINAL}^2 &= \frac{C_1V_1^2 +C_2V_2^2 - \frac{\tau}{R_1} \big(V_{i1} - V_{i2}\big)^2}{C_1+C_2} \nonumber \\
+		V_{FINAL} &= \sqrt{\frac{C_1V_1^2 +C_2V_2^2 - \frac{\tau}{R_1} \big(V_{i1} - V_{i2}\big)^2}{C_1+C_2}} \label{vf_energy_based}
+	\end{align}
+	
+	With sufficient algebraic manipulation of (\ref{vf_energy_based}) the expression stated in (\ref{vfinal_cg_based}) is obtained, so it will not re-stated here.
 
 \end{document}
