@@ -4,6 +4,7 @@ import numpy as np
 class component:
     def __init__(self, name="default", value=1, tol=1, sigma=3, minval=0.99, maxval=1.01, step = 0.01, usetol=True, makestep=False, logspace=False, clip=True):
         self.name = name
+        self.logspace = logspace
         self.typ = value
         self.step = step
         self.valsize = 0
@@ -19,8 +20,13 @@ class component:
             self.maxval = minval
             self.minval = maxval
             self.step = step
-            #TODO add logspace option
-            self.value = np.arange(start=minval, stop=(maxval+step), step=step)
+            if logspace:
+                stop = np.log10(maxval)
+                start = np.log10(minval)
+                num = int((stop-start)/step)
+                self.value = np.logspace(start, stop, num=num, endpoint=True, base=10.0)
+            else:
+                self.value = np.arange(start=minval, stop=(maxval+step), step=step)
             self.valsize = len(self.value)
             #print("Makestep supposed to be true")
             #print(self.value)
@@ -69,7 +75,8 @@ class ipl:
             name = df.loc[r, 'Parameter']
             mul = df.loc[r, 'Multiplier']
             unit = df.loc[r, 'Unit']
-            step = df.loc[r, 'Step']
+            step = df.loc[r, 'Linstep']
+            logstep = df.loc[r, 'Logstep']
             mulval = 1.0
 
             if mul == 'f':
@@ -97,11 +104,16 @@ class ipl:
             if mul == 'T':
                 mulval = 1.0e12
 
-            if step != "-":
+            if (step != "-") or (logstep != "-"):
                 #print(f"step evaluated true on name {name} and stepval {step}")
-                cmpnt = component(name=name,value=typ*mulval, maxval=maxval*mulval, minval=minval*mulval, sigma=3.0,  usetol=False,clip=True,makestep=True, step=step)
-                self.components.append(cmpnt)
-                #print(cmpnt.value)
+                if (step != "-"):
+                    cmpnt = component(name=name,value=typ*mulval, maxval=maxval*mulval, minval=minval*mulval, sigma=3.0,  usetol=False,clip=True,makestep=True, step=step)
+                    self.components.append(cmpnt)
+                    #print(cmpnt.value)
+                else:
+                    cmpnt = component(name=name,value=typ*mulval, maxval=maxval*mulval, minval=minval*mulval, sigma=3.0,  usetol=False,clip=True,makestep=True, step=logstep, logspace=True)
+                    self.components.append(cmpnt)
+                    #print(cmpnt.value)
             else:
                 if tol != "-":
                     cmpnt = component(name=name,value=typ*mulval, tol=tol, sigma=3.0,usetol=True,clip=True,makestep=False)
@@ -132,8 +144,12 @@ class ipl:
             self.vcg = self.get_cmpnt_val("Vcg")
             self.vdg = self.get_cmpnt_val("Vout")
             self.rcs = self.get_cmpnt_val("Rcs")
+            self.rdg = self.get_cmpnt_val("Rdg")
+            self.csfst = self.get_cmpnt_val("Csfst")
             self.vsns = self.get_cmpnt_val("Vsense")
             self.imax = self.vsns/self.rcs
+            self.gvc = self.get_cmpnt_val("gVC")
+            self.isfst = self.get_cmpnt_val("Isfst")
             self.lm = self.get_cmpnt_val("Lm")
             self.nps = self.get_cmpnt_val("Nps")
             cfs1 = self.get_cmpnt_val("Cfs1")
@@ -148,6 +164,21 @@ class ipl:
             self.dend = self.get_cmpnt_val("Dend")
             self.kcomp = self.get_cmpnt_val("Kcomp")
             self.mcmp = self.imax*self.kcomp*self.fsw/(self.dend-self.dstart)
+
+            self.vout = self.get_cmpnt_val("Vout")
+            self.cf = self.get_cmpnt_val("Cf")
+            self.rf = self.get_cmpnt_val("Rfl")
+            self.rfu1 = self.get_cmpnt_val("Rfu1")
+            self.rfu2 = self.get_cmpnt_val("Rfu2")
+            self.rfu3 = self.get_cmpnt_val("Rfu3")
+            #print(self.rfu1, self.rfu2, self.rfu3)
+            self.rru = self.get_cmpnt_val("Rru")
+            self.rrl = self.get_cmpnt_val("Rrl")
+            self.vref = self.get_cmpnt_val("Vref")
+            self.tp = self.get_cmpnt_val("Tprop")
+
+            self.fplot = self.get_cmpnt_val("Fplot")
+
             if self.debug:
                 self.spew_typical()
                 print(f"Cfs = {cfs*1e12} pF")
@@ -199,16 +230,23 @@ class ipl:
     #   accounting for RC filter, comparator overdrive/prop delay
     #
     def compute_itrip_eq(self, vin):
-        vout = self.get_cmpnt_val("Vout")
-        lm = self.get_cmpnt_val("Lm")
-        rcs = self.get_cmpnt_val("Rcs")
-        cf = self.get_cmpnt_val("Cf")
-        rf = self.get_cmpnt_val("Rfl")
-        rru = self.get_cmpnt_val("Rru")
-        rrl = self.get_cmpnt_val("Rrl")
-        vref = self.get_cmpnt_val("Vref")
-        tp = self.get_cmpnt_val("Tprop")
+        vout = self.vout
+        lm = self.lm
+        rcs = self.rcs
+        cf = self.cf
+        rf = self.rf
+        rru = self.rru
+        rrl = self.rrl
+        rfu1 = self.rfu1
+        rfu2 = self.rfu2
+        rfu3 = self.rfu3
+        vref = self.vref
+        tp = self.tp
         ts = self.tsw
+
+        rh = rfu1 + rfu2 + rfu3
+
+        voffst = vin*rf/(rh+rf)
 
         # RC Filter settles to constant offset, Cfilter*dVrcs/dt
         dvdt_sns = rcs*vin/lm #change of sense voltage
@@ -226,28 +264,107 @@ class ipl:
         vt = vt0 + dVsense + dvP # Add offset due to filter cap
 
         #Equivalent Itrip, reflected back to current sense resistor
-        Itrip = vt/rcs
+        Itrip = (vt - voffst)/rcs
 
         return Itrip
+
+    #
+    # Compute k_vc, piecewise function of duty cycle and itrip
+    #
+    def compute_kvc(self, Itrip=10.0, df=0.5 ):
+        kcomp = self.kcomp
+        imax = self.imax
+        dstart = self.dstart
+        dend = self.dend
+        Rcs = self.rcs
+        gVC = self.gvc
+
+        kVC = 1.0 + Itrip*Rcs/gVC
+
+        if (df <1.0) and (df > dstart):
+            kVC = 1.0 + (Rcs/gVC)*(Itrip + imax*kcomp*(df - dstart)/(dend - dstart))
+
+        return kVC
+
+    #
+    # Compute vs, piecewise function of duty cycle and itrip
+    #
+    def compute_vs(self, vin=12.0, Itrip=10.0, df=0.5 ):
+        Rcs = self.rcs
+        gVC = self.gvc
+
+        kvc = self.compute_kvc(Itrip=Itrip, df=df )
+        idpk = self.compute_idpk(vin=vin, kvc=kvc )
+
+        Vs = kvc + idpk*Rcs/gVC
+
+        return Vs
+
+    #
+    # Compute  I_Delta_PK, piecewise function of duty cycle and itrip
+    #
+    def compute_idpk(self, vin=12.0, kvc=2.0 ):
+        kcomp = self.kcomp
+        rcs = self.rcs
+        rdg = self.rdg
+        gvc = self.gvc
+        lm = self.lm
+        tsw = self.tsw
+        isfst = self.isfst
+
+        IdPK = (np.sqrt( (kvc*gvc/rcs)**2 + 4.0*vin*isfst*rdg*tsw*gvc/(lm*rcs)) - kvc*gvc/rcs)/2.0
+
+        return IdPK
+
+    #
+    #  SFST pin IIR coefficient
+    #
+    def compute_as(vs=2.0, vin=8.5, lm=35.0e-6, rdg=1000, ci=100.0e-9):
+        return vs*lm/(vin*rdg*ci)
 
     #
     # Generate arrays of all variables dependent on Vin
     #
     def generate_output_arrays(self):
         md = self.vdg*self.nps/self.lm
+        lm = self.lm
+        ci = self.csfst
+        rdg = self.rdg
+        tsw = self.tsw
         mc = 0.0
+        self.s = 1j*2.0*np.pi*self.fplot
+        self.z = np.exp(-self.s*self.tsw)
+
         self.md = md
-        self.mc = []
-        self.duty = []
-        self.itrip = []
+        self.mc_ = []
+        self.duty_ = []
+        self.itrip_ = []
+        self.kvc_ = []
+        self.vs_ = []
+        self.idpk_ = []
+        self.ipk_ = []
+        self.icg_ = []
+        self.pin_ = []
         for vc in self.vcg:
             mc = vc/self.lm
             duty = md/(mc + md)
             itrip = self.compute_itrip_eq(vc)
-            self.mc.append(mc)
-            self.duty.append(duty)
-            self.itrip.append(itrip)
-            print(vc,duty,itrip)
+            kvc = self.compute_kvc(Itrip=itrip, df=duty)
+            vs = self.compute_vs(vin=vc, Itrip=itrip, df=duty )
+            idpk = self.compute_idpk(vin=vc, kvc=kvc )
+            Ipk = itrip + idpk
+            Icg = (Ipk - mc*duty*tsw/2.0)*duty
+            Pin = Icg*vc
+            self.mc_.append(mc)
+            self.duty_.append(duty)
+            self.itrip_.append(itrip)
+            self.kvc_.append(kvc)
+            self.vs_.append(vs)
+            self.idpk_.append(idpk)
+            self.ipk_.append(Ipk)
+            self.icg_.append(Icg)
+            self.pin_.append(Pin)
+            #print(vc,duty,itrip,kvc,vs,idpk,Ipk,Icg,Pin)
 
 
 
