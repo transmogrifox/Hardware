@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 class component:
     def __init__(self, name="default", value=1, tol=1, sigma=3, minval=0.99, maxval=1.01, step = 0.01, usetol=True, makestep=False, logspace=False, clip=True):
@@ -25,6 +26,7 @@ class component:
                 start = np.log10(minval)
                 num = int((stop-start)/step)
                 self.value = np.logspace(start, stop, num=num, endpoint=True, base=10.0)
+                #print(self.value)
             else:
                 self.value = np.arange(start=minval, stop=(maxval+step), step=step)
             self.valsize = len(self.value)
@@ -165,6 +167,7 @@ class ipl:
             self.kcomp = self.get_cmpnt_val("Kcomp")
             self.mcmp = self.imax*self.kcomp*self.fsw/(self.dend-self.dstart)
 
+            self.vin = self.get_cmpnt_val("Vin")
             self.vout = self.get_cmpnt_val("Vout")
             self.cf = self.get_cmpnt_val("Cf")
             self.rf = self.get_cmpnt_val("Rfl")
@@ -317,10 +320,13 @@ class ipl:
         return IdPK
 
     #
-    #  SFST pin IIR coefficient
+    #  SFST pin IIR coefficients
     #
-    def compute_as(vs=2.0, vin=8.5, lm=35.0e-6, rdg=1000, ci=100.0e-9):
-        return vs*lm/(vin*rdg*ci)
+    def compute_as(self,vs=2.0, vin=8.5, lm=35.0e-6, rdg=1000, ci=100.0e-9):
+        return -vs*lm/(vin*rdg*ci)
+
+    def compute_bs(self,idpk=0.03, vin=8.5, lm=35.0e-6, rdg=1000, ci=100.0e-9):
+        return (1.0 - idpk*lm/(vin*rdg*ci))
 
     #
     # Generate arrays of all variables dependent on Vin
@@ -365,6 +371,59 @@ class ipl:
             self.icg_.append(Icg)
             self.pin_.append(Pin)
             #print(vc,duty,itrip,kvc,vs,idpk,Ipk,Icg,Pin)
+
+        #
+        # Small signal response computations
+        #
+        self.as_ = []
+        self.bs_ = []
+        self.hVS_ = []
+        for vi in self.vin:
+            mc = vi/self.lm
+            duty = md/(mc + md)
+            itrip = self.compute_itrip_eq(vi)
+            kvc = self.compute_kvc(Itrip=itrip, df=duty)
+            vs = self.compute_vs(vin=vi, Itrip=itrip, df=duty )
+            idpk = self.compute_idpk(vin=vi, kvc=kvc )
+
+            aS = self.compute_as(vs=vs, vin=vi, lm=self.lm, rdg=self.rdg, ci=self.csfst)
+            bS = self.compute_bs(idpk=idpk, vin=vi, lm=self.lm, rdg=self.rdg, ci=self.csfst)
+
+            hVS = aS*self.z/(1.0 - bS*self.z)
+
+            self.as_.append(aS)
+            self.bs_.append(bS)
+            self.hVS_.append(hVS)
+            n=0
+            for f in self.fplot:
+                print(f"{f:.2f}\t{20.0*np.log10(abs(hVS[n])):.1f}")
+                n=n+1
+
+            fig, ax = plt.subplots(nrows=2,ncols=1, figsize=(16,10))
+            fig.subplots_adjust(hspace=0.35, wspace=0)
+            fig.subplots_adjust(hspace=0.35, wspace=0)
+            plt.subplot(2, 1, 1)
+            plt.semilogx(self.fplot, 20.0*np.log10(abs(hVS)),"r", label="hVS")
+
+            plt.title("Hvs(Z)")
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Magnitude (dB)')
+            #plt.legend(loc="lower left")
+            plt.grid()
+
+            plt.subplot(2, 1, 2)
+            H_deg = 180.0*np.unwrap(np.angle(hVS))/np.pi
+            plt.semilogx(self.fplot, H_deg,"b", label="Phase")
+            plt.title('Phase')
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Phase (\xb0)')
+            #plt.legend(loc="lower left")
+            plt.grid()
+            # fname = "B1431_revC1_Error_Amp.png"
+            #plt.savefig(fname)
+            plt.show()
+            quit()
+
 
 
 

@@ -15,6 +15,7 @@ print(f"Cfs1 = {cfs1*1e12:.2f} pF")
 print(f"Slope Compensation, mcmp = {ipl0.compute_mcmp()/1000.0:.1f} kA/s")
 print(f"Itrip [8Vin, 60Vin] = {it8:.2f}, {it60:.2f} A")
 
+print(ipl0.bs_)
 
 
 
