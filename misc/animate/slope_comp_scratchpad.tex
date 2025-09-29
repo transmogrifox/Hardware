@@ -22,12 +22,22 @@
 		\\
 		G_{pk} &= \frac{1}{2D\bigg(\dfrac{m_{cmp}}{m_d} - 1 \bigg) + 1} \\
 		\\
-		m_{cmp} (D) &= \frac{1}{D} \bigg(\frac{1-G_{pk}}{2 G_{pk}}m_d\bigg) + m_d \\
+		m_{cmp} (D) &= \frac{1}{D} \bigg(\frac{1-G_{pk}}{2 G_{pk}}\bigg)m_d + m_d \\
 		\\
-		I_{cmp} (D) &= T_{SW}\int_{0}^{D} m_{cmp}(D) dD \\
+		I_{cmp\_NL} (D) &= T_{SW}\int_{0}^{D} m_{cmp}(D) dD \\
 		\\
-		I_{cmp} (D) &= m_d T_{SW} \bigg( \frac{1 - G_{pk}}{2 G_{pk}} \ln(D) + D + \frac{1-G_{pk}}{2 G_{pk}} + 2 \ln \bigg(\frac{G_{pk} - 1}{2 G_{pk}} \bigg) \bigg)
+		I_{cmp\_NL} (D) &= m_d T_{SW} \bigg( \frac{1 - G_{pk}}{2 G_{pk}} \ln(D) + D + \frac{1-G_{pk}}{2 G_{pk}} + 2 \ln \bigg(\frac{G_{pk} - 1}{2 G_{pk}} \bigg) \bigg)\\
+		\\	
+		I_{cmp\_LIN} (D) &= m_{cmp} D T_{SW} \\	
 	\end{align*}
+
+\begin{equation*}
+	I_{cmp\_LIN0} (D) = \begin{cases}
+		0& , m_{cmp} D T_{SW} \leq I_{OFST}\\
+		\\
+		m_{cmp} D T_{SW} - I_{OFST}& , m_{cmp} D T_{SW} > I_{OFST}
+	\end{cases} \label{IPK_vs_piecewise} 
+\end{equation*}
 
 	 
 	
