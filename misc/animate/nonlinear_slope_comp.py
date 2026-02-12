@@ -15,6 +15,22 @@ fsw = Fs
 Ts = 1.0/Fs
 Tus = np.array(1e6*Ts)
 
+rcs=27.0
+ncs=100.0
+gcs=rcs/ncs #V/A
+mdx = vo*nps/lm
+mcmpx = 0.75*mdx
+mvcs = gcs*mcmpx
+cramp = 10.0e-9 #Ramp synthesizer capacitance
+vramp = 15.0 #Ramp synthesizer 'on' state voltage
+dVramp = mvcs*Ts
+rramp = (vramp-dVramp)/(mvcs*cramp)
+print(f"Down-slope, reflected to primary: {mdx/1000.0:.1f} kA/s")
+print(f"Slope compensation, 75% down-slope:  {0.75*mdx/1000.0:.1f} kA/s")
+print(f"Current sense voltage ramp: {mvcs/1000.0:.1f} kV/s")
+print(f"Ramp synth R&C: {cramp*1e9:.2f} nF & {rramp/1000:.1f} kOhm")
+print(f"Ramp capacitor voltage change: {dVramp:.2f} V")
+
 def get_freqz(Fmax=100.0*kHz, Fmin=10.0, ptsPerDec=100.0):
     fstart = np.log10(Fmin)
     fstop = np.log10(Fmax)
