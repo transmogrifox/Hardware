@@ -31,15 +31,34 @@ print(f"Current sense voltage ramp: {mvcs/1000.0:.1f} kV/s")
 print(f"Ramp synth R&C: {cramp*1e9:.2f} nF & {rramp/1000:.1f} kOhm")
 print(f"Ramp capacitor voltage change: {dVramp:.2f} V")
 
-def get_freqz(Fmax=100.0*kHz, Fmin=10.0, ptsPerDec=100.0):
+def get_freqz(Fmax=260.0*kHz, Fmin=10.0, ptsPerDec=100.0, Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kCOMP=0.75,ZOH=True):
+
+    mcg = (Vin - Vbr)/Lm
+    mdg = (Vout + Vd)*Nps/Lm
+    mcomp = kCOMP*mdg
+    
+    alpha = (mcomp - mdg)/(mcomp + mcg)
+    beta = 1.0 - alpha
+    
     fstart = np.log10(Fmin)
     fstop = np.log10(Fmax)
     ndec = fstop/fstart
     num = int(ndec*ptsPerDec + 0.5)
     Frq = np.logspace(start=fstart, stop=fstop, num=num, endpoint=True, base=10.0)
-    z1 = np.exp(-1j*2.0*np.pi*Frq/Fmax)
+    z1 = np.exp(-1j*2.0*np.pi*Frq/Fsw)
+    s=1j*2.0*np.pi*Frq
+    Tsw = 1.0/Fsw
     
-    return Frq, z1
+    Hzoh = Fsw*(1.0-np.exp(-s*Tsw))/s
+    
+    Hz = beta*z1/(1.0-alpha*z1)
+    if ZOH:
+        Hz = Hz*Hzoh
+    
+    HzMAG = 20.0*np.log10(np.abs(Hz))
+    HzPH = np.unwrap(np.angle(Hz,deg=True), period=360.0)
+    
+    return Frq, HzMAG, HzPH, mcomp
    
 def get_mcmpD(Fsw=100.0*kHz, Vout=12.5, Lm=18.0*uH, Nps=10.0/7.3, duty=0.5, gpeak=2.0,mcmp_const=250.0e3):
     
@@ -146,7 +165,47 @@ for Vi in np.arange(vmax,vmin,-1.0):
     Hx.append(hx)
     Hy.append(hy)
     #quit()
-    
+
+usezoh = False
+Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=67.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kCOMP=0.75, ZOH=usezoh)
+
+figH = plt.figure(figsize=(14, 10))
+
+plt.subplot(211)
+
+plt.semilogx(Fn, Hmag, label="Vin = 30V")
+plt.title("Peak Current Mode Controller Frequency Response\nSlope Compensation, $m_{cmp}$ =" + f" {mcmp/1000.0:.1f} kA/s \n\nMagnitude")
+plt.xlabel("Frequency (Hz)\n")
+plt.ylabel("Magnitude (dB)")
+plt.grid()
+plt.legend(loc="upper left", prop={'size': 10})
+plt.ylim(-1.0, 5.0)
+
+plt.tight_layout()
+
+plt.subplot(212)
+
+plt.semilogx(Fn, Hphase, label="Vin = 30V")
+plt.title("Phase")
+plt.xlabel("Frequency (Hz)\n")
+plt.ylabel("Phase (degrees)")
+plt.grid()
+plt.legend(loc="lower left", prop={'size': 10})
+plt.ylim(-180.0, 30.0)
+plt.tight_layout()
+
+for vx in [48.0,80.0,170.0,375.0]:
+    Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=67.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=67.0*kHz,Vin=vx,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kCOMP=0.75, ZOH=usezoh)
+    plt.subplot(211)
+    plt.semilogx(Fn, Hmag, label=f"Vin = {vx:.1f}")
+    plt.legend(loc="upper left", prop={'size': 10})
+    plt.subplot(212)
+    plt.semilogx(Fn, Hphase, label=f"Vin = {vx:.1f}")
+    plt.legend(loc="lower left", prop={'size': 10})
+
+plt.show()
+
+quit()
     
 fig = plt.figure(figsize=(14, 10))
 plt.subplot(311)
@@ -175,9 +234,9 @@ D.append(maxD+0.001)
 D.append(1.0)
 acmp_.append(0.0)
 acmp_.append(0.0)
-plt.plot(D*Tus, acmp_, label="Nonlinear slope comp")
+#plt.plot(D*Tus, acmp_, label="Nonlinear slope comp")
 plt.plot([0,maxD*Tus,maxD*(0.001 + Tus), Tus], [0, imax,0,0], label="Linear slope comp")
-plt.plot([0,dstart*Tus, maxD*Tus,maxD*(0.001 + Tus), Tus], [0.0,0.0, iend,0.0,0.0], dashes=[3,3], linewidth=3, label="Linear slope comp w/ offset, clipped")
+#plt.plot([0,dstart*Tus, maxD*Tus,maxD*(0.001 + Tus), Tus], [0.0,0.0, iend,0.0,0.0], dashes=[3,3], linewidth=3, label="Linear slope comp w/ offset, clipped")
 print(f"Tus = {Tus} ")
 
 plt.title("Slope compensation synthesized ramp waveforms")
@@ -189,9 +248,9 @@ plt.xlim(0.0, 15.0)
 plt.xticks(np.linspace(0.0,15.0,31, endpoint=True))
 plt.subplot(313)
 
-plt.plot(100.0*np.array(Dx), dBV(Hx), label="Nonlinear slope comp")
+#plt.plot(100.0*np.array(Dx), dBV(Hx), label="Nonlinear slope comp")
 plt.plot(100.0*np.array(Dx), dBV(Hy), label="Linear slope comp")
-plt.plot(100.0*np.array(Dx), dBV(Hm), dashes=[3,3], linewidth=3 ,label="Linear slope comp, w/ offset, clipped")
+#plt.plot(100.0*np.array(Dx), dBV(Hm), dashes=[3,3], linewidth=3 ,label="Linear slope comp, w/ offset, clipped")
 
 plt.title("Peaking magnitude vs Duty Cycle")
 plt.xlabel("Duty (%)")
