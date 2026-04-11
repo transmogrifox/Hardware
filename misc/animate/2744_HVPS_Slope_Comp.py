@@ -76,8 +76,8 @@ def dBV(v):
 ##
 
 
-usezoh = False
-Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
+usezoh = True
+Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=30.0,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
 
 figH = plt.figure(figsize=(14, 10))
 
@@ -89,7 +89,7 @@ plt.xlabel("Frequency (Hz)\n")
 plt.ylabel("Magnitude (dB)")
 plt.grid()
 plt.legend(loc="upper left", prop={'size': 10})
-plt.ylim(-1.0, 5.0)
+plt.ylim(-6.0, 6.0)
 
 plt.tight_layout()
 
@@ -104,7 +104,7 @@ plt.legend(loc="lower left", prop={'size': 10})
 plt.ylim(-180.0, 30.0)
 plt.tight_layout()
 
-for vx in [48.0,80.0,170.0,375.0]:
+for vx in [48.0,80.0,125.0,170.0,250.0,375.0]:
     Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
     plt.subplot(211)
     plt.semilogx(Fn, Hmag, label=f"Vin = {vx:.1f}")
