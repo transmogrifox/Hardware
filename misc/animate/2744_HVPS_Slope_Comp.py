@@ -3,40 +3,37 @@ import matplotlib.pyplot as plt
 
 kHz=1000.0
 uH=1.0e-6
+m = 1e-3
 
-Fs = 67.7*kHz
+Fs = 65.0*kHz
 gpk = 2.0
-nps = 32.0/8.0
-lm = 200.0*uH
+nps = 5.5
+lm = 385.0*uH
 vmin=22.0
 vmax = 375.0
-vo = 15.0+1.0
+vo = 12.75+0.5
 fsw = Fs
 Ts = 1.0/Fs
 Tus = np.array(1e6*Ts)
 kmd = 0.75
 
-rcs=27.0
-ncs=100.0
-gcs=rcs/ncs #V/A
+rcs=27.0*m
+gcs=rcs #V/A
 mdx = vo*nps/lm
 mcmpx = kmd*mdx
-mvcs = gcs*mcmpx
-cramp = 10.0e-9 #Ramp synthesizer capacitance
-vramp = 15.0 #Ramp synthesizer 'on' state voltage
-dVramp = mvcs*Ts
-rramp = (vramp-dVramp)/(mvcs*cramp)
+
 print(f"Down-slope, reflected to primary: {mdx/1000.0:.1f} kA/s")
 print(f"Slope compensation, 75% down-slope:  {0.75*mdx/1000.0:.1f} kA/s")
-print(f"Current sense voltage ramp: {mvcs/1000.0:.1f} kV/s")
-print(f"Ramp synth R&C: {cramp*1e9:.2f} nF & {rramp/1000:.1f} kOhm")
-print(f"Ramp capacitor voltage change: {dVramp:.2f} V")
 
-def get_freqz(Fmax=260.0*kHz, Fmin=10.0, ptsPerDec=100.0, Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kmd=0.75,ZOH=True):
+
+def get_freqz(Fmax=260.0*kHz, Fmin=10.0, ptsPerDec=100.0, Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kmd=0.75,ZOH=True,dstart = 0.37):
 
     mcg = (Vin - Vbr)/Lm
     mdg = (Vout + Vd)*Nps/Lm
-    mcomp = kmd*mdg
+    D = mdg/(mcg+mdg)
+    mcomp = 0.0
+    if D>dstart:
+        mcomp = kmd*mdg
     
     alpha = (mcomp - mdg)/(mcomp + mcg)
     beta = 1.0 - alpha
@@ -80,7 +77,7 @@ def dBV(v):
 
 
 usezoh = False
-Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=67.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kmd=0.75, ZOH=usezoh)
+Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
 
 figH = plt.figure(figsize=(14, 10))
 
@@ -108,7 +105,7 @@ plt.ylim(-180.0, 30.0)
 plt.tight_layout()
 
 for vx in [48.0,80.0,170.0,375.0]:
-    Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=67.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=67.0*kHz,Vin=vx,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kmd=0.75, ZOH=usezoh)
+    Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
     plt.subplot(211)
     plt.semilogx(Fn, Hmag, label=f"Vin = {vx:.1f}")
     plt.legend(loc="upper left", prop={'size': 10})
