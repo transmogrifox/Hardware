@@ -1,9 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+k = 1000.0
 kHz=1000.0
 uH=1.0e-6
 m = 1e-3
+mΩ = m
+mV = m
+uA = 1.0e-6
 
 Fs = 65.0*kHz
 gpk = 2.0
@@ -16,15 +20,33 @@ fsw = Fs
 Ts = 1.0/Fs
 Tus = np.array(1e6*Ts)
 kmd = 0.75
+md = (nps*vo)/lm
 
-rcs=27.0*m
+rcs=27.0*mΩ
+vcs=100.0*mV
+iCOMP = 50.0*uA
+kCOMP = 0.24
+dstart = 0.37
+dend = 0.8
+Rext = 120.0
+Rint = kCOMP*vcs/iCOMP
+Req = Rint + Rext
+kCOMPeq = Req*iCOMP/vcs
 gcs=rcs #V/A
 mdx = vo*nps/lm
 mcmpx = kmd*mdx
+mcmpr = kCOMPeq*vcs/(Ts*rcs*(dend-dstart))
+kmdr = mcmpr/md
+
+print(f"Rint = {Rint:.1f}")
+print(f"Req = {Req:.1f}")
+print(f"kCOMPeq = {kCOMPeq:.3f}")
+
 
 print(f"Down-slope, reflected to primary: {mdx/1000.0:.1f} kA/s")
 print(f"Slope compensation, 75% down-slope:  {0.75*mdx/1000.0:.1f} kA/s")
-
+print(f"Slope compensation, circuit implementation:  {mcmpr/k:.1f} kA/s")
+print(f"kmd = {mcmpr/md:0.3f} (as implemented)")
 
 def get_freqz(Fmax=260.0*kHz, Fmin=10.0, ptsPerDec=100.0, Fsw=67.0*kHz,Vin=30.0,Vout=15.0,Vbr=1.8,Vd=0.5,Lm=200.0*uH,Nps=4.0, kmd=0.75,ZOH=True,dstart = 0.37):
 
@@ -77,7 +99,7 @@ def dBV(v):
 
 
 usezoh = True
-Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=30.0,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
+Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=30.0,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=kmdr, ZOH=usezoh)
 
 figH = plt.figure(figsize=(14, 10))
 
@@ -105,7 +127,7 @@ plt.ylim(-180.0, 30.0)
 plt.tight_layout()
 
 for vx in [48.0,80.0,125.0,170.0,250.0,375.0]:
-    Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=0.75, ZOH=usezoh)
+    Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=vx,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=kmdr, ZOH=usezoh)
     plt.subplot(211)
     plt.semilogx(Fn, Hmag, label=f"Vin = {vx:.1f}")
     plt.legend(loc="upper left", prop={'size': 10})
