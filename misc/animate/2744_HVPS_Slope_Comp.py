@@ -9,6 +9,8 @@ mΩ = m
 mV = m
 uA = 1.0e-6
 
+usezoh = True
+
 Fs = 65.0*kHz
 gpk = 2.0
 nps = 5.5
@@ -23,7 +25,7 @@ kmd = 0.75
 md = (nps*vo)/lm
 
 rcs=27.0*mΩ
-vcs=100.0*mV
+vcs=98.0*mV
 iCOMP = 50.0*uA
 kCOMP = 0.24
 dstart = 0.37
@@ -97,8 +99,6 @@ def dBV(v):
 ## Start main prog
 ##
 
-
-usezoh = True
 Fn, Hmag, Hphase, mcmp = get_freqz(Fmax=65.0*kHz, Fmin=10.0, ptsPerDec=100.0,Fsw=65.0*kHz,Vin=30.0,Vout=12.75,Vbr=1.8,Vd=0.5,Lm=385.0*uH,Nps=5.5, kmd=kmdr, ZOH=usezoh)
 
 figH = plt.figure(figsize=(14, 10))
@@ -111,6 +111,7 @@ plt.xlabel("Frequency (Hz)\n")
 plt.ylabel("Magnitude (dB)")
 plt.grid()
 plt.legend(loc="upper left", prop={'size': 10})
+plt.xlim(10.0, 130.0*kHz)
 plt.ylim(-6.0, 6.0)
 
 plt.tight_layout()
@@ -123,6 +124,7 @@ plt.xlabel("Frequency (Hz)\n")
 plt.ylabel("Phase (°)")
 plt.grid()
 plt.legend(loc="lower left", prop={'size': 10})
+plt.xlim(10.0, 130.0*kHz)
 plt.ylim(-180.0, 30.0)
 plt.tight_layout()
 
