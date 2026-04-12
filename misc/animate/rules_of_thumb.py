@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 kHz=1000.0
 uH=1.0e-6
 
-Fs = 100*kHz
+Fs = 67.7*kHz
 Ts = 1.0/Fs
 Tus = np.array(1e6*Ts)
 
@@ -70,10 +70,10 @@ H0p5 = []
 H0p75 = []
 H1p0 = []
 gpk = 2.0
-nps = 10.0/7.3
-lm = 18.0*uH
-vo = 12.5
-fsw = 100.0*kHz
+nps = 32.0/8.0
+lm = 200.0*uH
+vo = 15.0+1.0
+fsw = 67.7*kHz
 ac = 0.0
 dstart = 0.0
 

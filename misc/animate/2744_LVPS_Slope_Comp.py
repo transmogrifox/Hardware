@@ -106,7 +106,7 @@ figH = plt.figure(figsize=(14, 10))
 plt.subplot(211)
 
 plt.semilogx(Fn, Hmag, label="Vin = 30V")
-plt.title("Peak Current Mode Controller Frequency Response\nSlope Compensation, $m_{cmp}$ =" + f" {mcmpr/1000.0:.0f} kA/s" + ", $k_{md}$ =" + f" {kmdr*100.0:.0f} % \n\nMagnitude")
+plt.title("LVPS Peak Current Mode Controller Frequency Response\nSlope Compensation, $m_{cmp}$ =" + f" {mcmpr/1000.0:.0f} kA/s" + ", $k_{md}$ =" + f" {kmdr*100.0:.0f} % \n\nMagnitude")
 plt.xlabel("Frequency (Hz)\n")
 plt.ylabel("Magnitude (dB)")
 plt.grid()
